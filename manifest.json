@@ -1,0 +1,11 @@
+{
+	"id": "obsidian-incremental-reading",
+	"name": "Incremental Reading",
+	"version": "1.0.1",
+	"minAppVersion": "0.15.0",
+	"description": "Intelligent incremental reading system with priority-based recommendations, TF-IDF similarity analysis, and three roaming modes (Continue Roaming, Smart Recommendations, Random Roaming). Features five-dimensional document metrics, weighted random selection, and real-time probability display.",
+	"author": "ebAobS (ported by Claude)",
+	"authorUrl": "https://github.com/yg2224/obsidian-incremental-reading",
+	"fundingUrl": "https://github.com/yg2224/obsidian-incremental-reading",
+	"isDesktopOnly": false
+}
