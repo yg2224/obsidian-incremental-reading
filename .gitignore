@@ -107,7 +107,9 @@ temp/
 
 # Obsidian
 .obsidian
+# Only ignore Obsidian vault markdown files, but allow README.md
 *.md
+!README.md
 
 # Build artifacts
 main.js
