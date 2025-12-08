@@ -1,4 +1,4 @@
-> [!WARNING] 🚧 开发阶段提示 (Under Heavy Development)
+> 🚧 开发阶段提示 (Under Heavy Development)
 > 本插件目前处于 **早期开发与快速迭代阶段**。
 > 
 > * **功能变动**：API 和核心功能可能会在后续版本中进行调整。
