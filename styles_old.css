@@ -1,0 +1,1125 @@
+/*
+ * Obsidian Incremental Reading Plugin Styles
+ */
+
+/* Modal Styles - Scoped to our plugin */
+.incremental-reading-modal {
+  max-width: 90vw;
+}
+
+.incremental-reading-modal .modal-title {
+  margin-bottom: 1rem;
+  color: var(--text-normal);
+}
+
+.incremental-reading-modal .modal-content {
+  margin-bottom: 1.5rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.incremental-reading-modal .modal-button-container {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.incremental-reading-modal .modal-button-container button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.incremental-reading-modal .modal-button-container .mod-cta {
+  background-color: var(--interactive-accent);
+  color: var(--text-on-accent);
+}
+
+.incremental-reading-modal .modal-button-container .mod-cancel {
+  background-color: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+/* Slider Modal Styles - Scoped to our plugin */
+.incremental-reading-modal.slider-modal .slider-container {
+  margin: 1.5rem 0;
+}
+
+.incremental-reading-modal .slider-container .value-display {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text-accent);
+  margin-bottom: 1rem;
+}
+
+.incremental-reading-modal .slider-container .slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--background-modifier-border);
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.incremental-reading-modal .slider-container .slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--interactive-accent);
+  cursor: pointer;
+}
+
+.incremental-reading-modal .slider-container .slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--interactive-accent);
+  cursor: pointer;
+  border: none;
+}
+
+/* Document Metrics Modal Styles - Scoped to our plugin */
+.incremental-reading-modal.document-metrics-modal .sliders-container {
+  max-height: 60vh;
+  overflow-y: auto;
+  margin: 1rem 0;
+}
+
+.incremental-reading-modal.document-metrics-modal .slider-group {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  background: var(--background-secondary);
+}
+
+.incremental-reading-modal.document-metrics-modal .label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.incremental-reading-modal.document-metrics-modal .metric-label {
+  font-weight: 500;
+  color: var(--text-normal);
+}
+
+.incremental-reading-modal.document-metrics-modal .value-display {
+  font-weight: 600;
+  color: var(--text-accent);
+  min-width: 3rem;
+  text-align: right;
+}
+
+/* Folder Selection Modal Styles */
+.incremental-reading-modal.folder-selection-modal .folder-list-container {
+  max-height: 50vh;
+  overflow-y: auto;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  margin: 1rem 0;
+}
+
+.incremental-reading-modal.folder-selection-modal .folder-list {
+  max-height: 100%;
+}
+
+.incremental-reading-modal.folder-selection-modal .folder-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--background-modifier-border);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.incremental-reading-modal.folder-selection-modal .folder-item:hover {
+  background-color: var(--background-modifier-hover);
+}
+
+.incremental-reading-modal.folder-selection-modal .folder-item:last-child {
+  border-bottom: none;
+}
+
+.incremental-reading-modal.folder-selection-modal .folder-checkbox {
+  margin-right: 0.75rem;
+}
+
+.incremental-reading-modal.folder-selection-modal .folder-label {
+  flex: 1;
+  color: var(--text-normal);
+}
+
+/* Multi-file Selection Modal Styles */
+.incremental-reading-modal.multi-file-selection-modal .search-container {
+  margin: 1rem 0;
+}
+
+.incremental-reading-modal.multi-file-selection-modal .search-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  background: var(--background-primary);
+  color: var(--text-normal);
+  font-size: 0.9rem;
+}
+
+.incremental-reading-modal.multi-file-selection-modal .search-input:focus {
+  outline: none;
+  border-color: var(--interactive-accent);
+}
+
+.incremental-reading-modal.multi-file-selection-modal .file-list-container {
+  max-height: 50vh;
+  overflow-y: auto;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  margin: 1rem 0;
+}
+
+.incremental-reading-modal.multi-file-selection-modal .file-list {
+  max-height: 100%;
+}
+
+.incremental-reading-modal.multi-file-selection-modal .file-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--background-modifier-border);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.incremental-reading-modal.multi-file-selection-modal .file-item:hover {
+  background-color: var(--background-modifier-hover);
+}
+
+.incremental-reading-modal.multi-file-selection-modal .file-item:last-child {
+  border-bottom: none;
+}
+
+.incremental-reading-modal.multi-file-selection-modal .file-checkbox {
+  margin-right: 0.75rem;
+}
+
+.incremental-reading-modal.multi-file-selection-modal .file-label {
+  flex: 1;
+  color: var(--text-normal);
+  font-size: 0.85rem;
+  word-break: break-all;
+}
+
+.incremental-reading-modal.multi-file-selection-modal .selection-info {
+  text-align: center;
+  color: var(--text-accent);
+  font-weight: 500;
+  margin: 1rem 0;
+}
+
+/* Instruction Text */
+.instruction-text {
+  color: var(--text-muted);
+  font-style: italic;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* Loading Indicator */
+.loading-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: var(--text-muted);
+}
+
+.loading-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid var(--background-modifier-border);
+  border-top: 2px solid var(--interactive-accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-message {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* Error Boundary */
+.error-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: var(--text-error);
+  text-align: center;
+}
+
+.error-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.error-message {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.error-retry {
+  padding: 0.5rem 1rem;
+  background-color: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Custom Metrics Settings */
+.custom-metrics-container {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  background: var(--background-secondary);
+}
+
+.metrics-list {
+  margin-top: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+/* 为指标列表添加滚动条样式 */
+.metrics-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.metrics-list::-webkit-scrollbar-track {
+  background: var(--background-secondary);
+  border-radius: 3px;
+}
+
+.metrics-list::-webkit-scrollbar-thumb {
+  background: var(--interactive-accent);
+  border-radius: 3px;
+}
+
+.metrics-list::-webkit-scrollbar-thumb:hover {
+  background: var(--interactive-accent-hover);
+}
+
+.metric-setting-item {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  background: var(--background-primary);
+}
+
+.metric-setting-item:last-child {
+  margin-bottom: 0;
+}
+
+/* Document Metrics Styles - edit button removed for cleaner interface */
+
+/* Metric Management Styles */
+.metric-management-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin: 1rem 0 1.5rem 0;
+}
+
+.incremental-reading-settings .metric-management-header .setting-item-description {
+  margin-bottom: 0;
+  flex: 1;
+}
+
+.add-metric-btn {
+  padding: 0.5rem 1rem;
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.add-metric-btn:hover {
+  background: var(--interactive-accent-hover);
+  transform: translateY(-1px);
+}
+
+.metric-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.metric-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-normal);
+}
+
+.delete-metric-btn {
+  padding: 0.4rem 0.8rem;
+  background: var(--color-red);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-metric-btn:hover {
+  background: var(--color-red-hover);
+  transform: translateY(-1px);
+}
+
+/* Delete Confirmation Modal */
+.delete-confirmation-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+}
+
+.modal-content h3 {
+  margin: 0 0 1rem 0;
+  color: var(--color-red);
+  font-size: 1.2rem;
+}
+
+.modal-content p {
+  margin: 0.5rem 0;
+  color: var(--text-normal);
+}
+
+.modal-content .warning {
+  color: var(--color-orange);
+  font-weight: 500;
+  margin: 1rem 0;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  justify-content: center;
+}
+
+.modal-buttons button {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.cancel-btn {
+  background: var(--background-secondary);
+  color: var(--text-normal);
+}
+
+.cancel-btn:hover {
+  background: var(--background-modifier-hover);
+}
+
+.confirm-btn {
+  background: var(--color-red);
+  color: white;
+  border-color: var(--color-red);
+}
+
+.confirm-btn:hover {
+  background: var(--color-red-hover);
+  border-color: var(--color-red-hover);
+}
+
+/* Document Metrics Sliders */
+.metric-item {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  background: var(--background-secondary);
+}
+
+.metric-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.metric-label {
+  font-weight: 500;
+  color: var(--text-normal);
+}
+
+.metric-value {
+  font-weight: 600;
+  font-size: 1.1rem;
+  min-width: 3rem;
+  text-align: right;
+}
+
+.metric-slider {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--background-modifier-border);
+  outline: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  margin: 0.75rem 0;
+  position: relative;
+}
+
+.metric-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--interactive-accent);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 3px solid var(--background-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.metric-slider::-webkit-slider-thumb:hover {
+  background: var(--interactive-accent-hover);
+  transform: scale(1.15);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
+}
+
+.metric-slider::-webkit-slider-thumb:active {
+  transform: scale(1.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.metric-slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--interactive-accent);
+  cursor: pointer;
+  border: 3px solid var(--background-primary);
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.metric-slider::-moz-range-thumb:hover {
+  background: var(--interactive-accent-hover);
+  transform: scale(1.15);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
+}
+
+.metric-slider::-moz-range-thumb:active {
+  transform: scale(1.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Add value markers on the slider */
+.metric-item {
+  position: relative;
+}
+
+.metric-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    var(--text-muted) 0%,
+    var(--text-muted) 20%,
+    transparent 20%,
+    transparent 40%,
+    var(--text-muted) 40%,
+    var(--text-muted) 60%,
+    transparent 60%,
+    transparent 80%,
+    var(--text-muted) 80%,
+    var(--text-muted) 100%
+  );
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* Ranking Toggle Buttons */
+.ranking-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.ranking-header h3 {
+  margin: 0;
+  color: var(--text-normal);
+}
+
+.ranking-toggle {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.toggle-btn {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  background: var(--background-secondary);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.toggle-btn:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.toggle-btn.active {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border-color: var(--interactive-accent);
+}
+
+.toggle-btn.active:hover {
+  background: var(--interactive-accent-hover);
+}
+
+/* Ranking Score Styles */
+.main-score {
+  font-weight: 600;
+  font-size: 1rem;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.secondary-score {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Recommendation Similarity Score */
+.similarity-info {
+  margin: 0.5rem 0;
+  text-align: center;
+}
+
+.similarity-score-large {
+  font-size: 1.2rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  background: var(--background-secondary);
+}
+
+/* Ranking Score Display */
+.score-info {
+  margin: 0.5rem 0;
+  text-align: center;
+}
+
+.score-info .main-score {
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  background: var(--background-secondary);
+  display: inline-block;
+}
+
+/* Recommendation Buttons */
+.recommendation-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.refresh-recommendations-btn,
+.smart-jump-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--interactive-accent);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.refresh-recommendations-btn {
+  background: var(--background-secondary);
+  color: var(--text-normal);
+  border-color: var(--background-modifier-border);
+}
+
+.refresh-recommendations-btn:hover {
+  background: var(--background-modifier-hover);
+}
+
+.smart-jump-btn {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border-color: var(--interactive-accent);
+}
+
+.smart-jump-btn:hover {
+  background: var(--interactive-accent-hover);
+  border-color: var(--interactive-accent-hover);
+}
+
+/* Non-Roaming Document Prompt */
+.non-roaming-prompt {
+  padding: 2rem;
+  text-align: center;
+  border: 2px dashed var(--background-modifier-border);
+  border-radius: 8px;
+  background: var(--background-secondary);
+  margin: 1rem 0;
+}
+
+.prompt-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.prompt-icon {
+  font-size: 2rem;
+  opacity: 0.8;
+}
+
+.prompt-title {
+  margin: 0;
+  color: var(--text-normal);
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.prompt-description {
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.benefits-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.5rem;
+  text-align: left;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.benefits-list li {
+  padding: 0.5rem;
+  background: var(--background-primary);
+  border-radius: 4px;
+  font-size: 0.9rem;
+  border: 1px solid var(--background-modifier-border);
+}
+
+.prompt-action {
+  margin-top: 1rem;
+}
+
+.add-to-roaming-btn {
+  padding: 0.75rem 1.5rem;
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.add-to-roaming-btn:hover {
+  background: var(--interactive-accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.add-to-roaming-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Incremental Reading Plugin Specific Settings - Layout Fix */
+/* Only target elements with our specific class to avoid affecting other plugins */
+
+/* Our plugin's main settings container */
+.incremental-reading-settings {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 1rem !important;
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+  flex: 1 !important;
+  display: block !important;
+}
+
+/* Ensure all direct children fill the container */
+.incremental-reading-settings > div,
+.incremental-reading-settings > form,
+.incremental-reading-settings > h2,
+.incremental-reading-settings > h3 {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+}
+
+/* Individual setting items - the core of the layout issue */
+.incremental-reading-settings .setting-item {
+  margin: 1rem 0 !important;
+  padding: 1rem !important;
+  border-radius: 6px !important;
+  background: var(--background-primary) !important;
+  border: 1px solid var(--background-modifier-border) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-start !important;
+  min-height: auto !important;
+  min-width: 0 !important;
+  flex: 0 0 auto !important;
+}
+
+.incremental-reading-settings .setting-item:not(:last-child) {
+  margin-bottom: 1.5rem !important;
+}
+
+/* Info area - should take available space but not overflow */
+.incremental-reading-settings .setting-item-info {
+  flex: 1 1 auto !important;
+  margin-right: 1rem !important;
+  min-width: 200px !important;
+  max-width: calc(100% - 200px) !important;
+  width: auto !important;
+  min-width: 0 !important;
+  overflow-wrap: break-word !important;
+  word-wrap: break-word !important;
+}
+
+/* Control area - should only take needed space */
+.incremental-reading-settings .setting-item-control {
+  flex: 0 0 auto !important;
+  min-width: 150px !important;
+  max-width: 300px !important;
+  width: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  flex-wrap: wrap !important;
+}
+
+/* Ensure nested settings also work properly - only for our plugin */
+.incremental-reading-settings .setting-item .setting-item {
+  margin: 0.75rem 0 !important;
+  padding: 0.75rem !important;
+  background: var(--background-secondary) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.incremental-reading-settings .setting-item .setting-item:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* Custom metrics container - ensure it doesn't cause overflow */
+.incremental-reading-settings .custom-metrics-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
+}
+
+.incremental-reading-settings .metrics-list {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-y: auto !important;
+  overflow-x: visible !important;
+}
+
+.incremental-reading-settings .metric-setting-item {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
+}
+
+/* TextArea specific styles - scoped to our plugin */
+.incremental-reading-settings .setting-item-textarea {
+  width: 100% !important;
+  min-height: 100px;
+  resize: vertical;
+  font-family: var(--font-monospace);
+  font-size: 0.85rem;
+  padding: 0.75rem;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  background: var(--background-primary);
+  color: var(--text-normal);
+  box-sizing: border-box !important;
+}
+
+.incremental-reading-settings .setting-item-textarea:focus {
+  outline: none;
+  border-color: var(--interactive-accent);
+  box-shadow: 0 0 0 2px var(--interactive-accent-hover);
+}
+
+/* Slider improvements - scoped to our plugin */
+.incremental-reading-settings .setting-item-slider {
+  flex: 1;
+  margin: 0 1rem;
+}
+
+.incremental-reading-settings .setting-item-slider .slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--background-modifier-border);
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.incremental-reading-settings .setting-item-slider .slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--interactive-accent);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.incremental-reading-settings .setting-item-slider .slider::-webkit-slider-thumb:hover {
+  background: var(--interactive-accent-hover);
+  transform: scale(1.1);
+}
+
+/* Button improvements in settings - scoped to our plugin */
+.incremental-reading-settings .setting-item-control button {
+  margin: 0.25rem;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.incremental-reading-settings .setting-item-control button:hover {
+  transform: translateY(-1px);
+}
+
+/* Custom metrics container improvements - scoped to our plugin */
+.incremental-reading-settings .custom-metrics-container {
+  margin: 1rem 0 !important;
+  padding: 1.5rem !important;
+  border: 1px solid var(--background-modifier-border) !important;
+  border-radius: 8px !important;
+  background: var(--background-secondary) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.incremental-reading-settings .metrics-list {
+  margin-top: 1rem !important;
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 8px;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.incremental-reading-settings .metric-setting-item {
+  margin-bottom: 1.5rem !important;
+  padding: 1.5rem !important;
+  border: 1px solid var(--background-modifier-border) !important;
+  border-radius: 8px !important;
+  background: var(--background-primary) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.incremental-reading-settings .metric-setting-item:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Better spacing for nested settings - scoped to our plugin */
+.incremental-reading-settings .setting-item .setting-item {
+  margin: 0.75rem 0 !important;
+  padding: 0.75rem !important;
+  background: var(--background-secondary) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.incremental-reading-settings .setting-item .setting-item:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* Language selector improvement - scoped to our plugin */
+.incremental-reading-settings .language-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.incremental-reading-settings .language-selector select {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  background: var(--background-primary);
+  color: var(--text-normal);
+  font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .incremental-reading-modal {
+    max-width: 95vw;
+    margin: 1rem;
+  }
+
+  .document-metrics-modal .sliders-container {
+    max-height: 70vh;
+  }
+
+  .folder-selection-modal .folder-list-container,
+  .multi-file-selection-modal .file-list-container {
+    max-height: 60vh;
+  }
+
+  .modal-button-container {
+    flex-direction: column;
+  }
+
+  .modal-button-container button {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .modal-button-container button:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Settings responsive fixes - ONLY for our plugin */
+  .incremental-reading-settings.setting-tab-content {
+    padding: 0.5rem !important;
+  }
+
+  .incremental-reading-settings .setting-item {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    margin: 0.75rem 0 !important;
+    padding: 0.75rem !important;
+  }
+
+  .incremental-reading-settings .setting-item-info {
+    margin-right: 0 !important;
+    margin-bottom: 0.5rem !important;
+    min-width: auto !important;
+  }
+
+  .incremental-reading-settings .setting-item-control {
+    width: 100% !important;
+    min-width: auto !important;
+  }
+
+  .incremental-reading-settings .setting-item-control button {
+    width: 100% !important;
+    justify-content: center;
+  }
+
+  .incremental-reading-settings .metrics-list {
+    max-height: 400px !important;
+  }
+
+  .incremental-reading-settings .metric-setting-item {
+    padding: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+}

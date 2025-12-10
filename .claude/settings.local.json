@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(test:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm install:*)",
+      "Bash(node:*)",
+      "Bash(find:*)",
+      "Bash(tree:*)",
+      "Bash(nul:*)",
+      "Bash(git remote add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
