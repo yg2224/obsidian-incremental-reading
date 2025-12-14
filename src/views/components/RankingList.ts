@@ -2,6 +2,7 @@ import { TFile } from 'obsidian';
 import IncrementalReadingPlugin from '../../main';
 import { SharedUtils } from '../../utils/SharedUtils';
 import { DocumentMetricsModal } from '../../components/Modal';
+import { i18n } from '../../i18n';
 
 /**
  * 排行榜组件 - 显示Top 10优先级文档
@@ -35,20 +36,20 @@ export class RankingList {
         // Create header with toggle buttons
         const headerContainer = rankingSection.createEl('div', { cls: 'ranking-header' });
 
-        const title = headerContainer.createEl('h3', { text: '🏆 文档排行榜' });
+        const title = headerContainer.createEl('h3', { text: '🏆 ' + i18n.t('ranking.title') });
 
         // Toggle buttons for ranking type
         const toggleContainer = headerContainer.createEl('div', { cls: 'ranking-toggle' });
 
         const priorityBtn = toggleContainer.createEl('button', {
             cls: `toggle-btn ${this.currentRankingType === 'priority' ? 'active' : ''}`,
-            text: '优先级排行'
+            text: i18n.t('ranking.priorityToggle')
         });
         priorityBtn.onclick = () => this.switchRankingType('priority');
 
         const visitsBtn = toggleContainer.createEl('button', {
             cls: `toggle-btn ${this.currentRankingType === 'visits' ? 'active' : ''}`,
-            text: '访问次数排行'
+            text: i18n.t('ranking.visitsToggle')
         });
         visitsBtn.onclick = () => this.switchRankingType('visits');
 
@@ -61,7 +62,7 @@ export class RankingList {
 
         if (rankedDocuments.length === 0) {
             rankingList.createEl('p', {
-                text: '暂无漫游文档，请先添加文档到漫游列表',
+                text: i18n.t('ranking.emptyMessage'),
                 cls: 'empty-message'
             });
             return;
@@ -78,7 +79,7 @@ export class RankingList {
         // Add refresh button
         const refreshBtn = rankingSection.createEl('button', {
             cls: 'refresh-ranking-btn',
-            text: '🔄 刷新排行榜'
+            text: '🔄 ' + i18n.t('ranking.refreshButton')
         });
         refreshBtn.onclick = () => this.render();
     }
@@ -144,10 +145,10 @@ export class RankingList {
 
         const mainScoreEl = scoreInfo.createEl('span', { cls: 'main-score' });
         if (this.currentRankingType === 'priority') {
-            mainScoreEl.textContent = `优先级: ${score.toFixed(1)}`;
+            mainScoreEl.textContent = `${i18n.t('metrics.priorityLabel')}: ${score.toFixed(1)}`;
             mainScoreEl.style.color = SharedUtils.getPriorityColor(score);
         } else {
-            mainScoreEl.textContent = `访问次数: ${score}次`;
+            mainScoreEl.textContent = `${i18n.t('ranking.visits')}: ${score}`;
             mainScoreEl.style.color = this.getVisitCountColor(score);
         }
 
@@ -157,9 +158,9 @@ export class RankingList {
         // Open button
         const openBtn = actions.createEl('button', {
             cls: 'open-btn',
-            text: '📖 打开'
+            text: '📖 ' + i18n.t('ranking.openButton')
         });
-        openBtn.title = '打开文档';
+        openBtn.title = i18n.t('view.openDocument');
         openBtn.onclick = () => this.onOpenDocument(file);
 
         return item;

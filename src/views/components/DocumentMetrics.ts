@@ -2,6 +2,7 @@ import { TFile, Notice } from 'obsidian';
 import IncrementalReadingPlugin from '../../main';
 import { DocumentMetrics, CustomMetric } from '../../models/Settings';
 import { SharedUtils } from '../../utils/SharedUtils';
+import { i18n } from '../../i18n';
 
 /**
  * 文档指标显示组件
@@ -54,20 +55,15 @@ export class DocumentMetricsDisplay {
         // Icon and title
         const header = promptSection.createEl('div', { cls: 'prompt-header' });
         header.createEl('span', { cls: 'prompt-icon', text: '📋' });
-        header.createEl('h3', { cls: 'prompt-title', text: '此文档尚未加入漫游列表' });
+        header.createEl('h3', { cls: 'prompt-title', text: i18n.t('view.nonRoaming.title') });
 
         // Description
         const description = promptSection.createEl('p', { cls: 'prompt-description' });
-        description.textContent = '加入漫游列表后，您就可以为此文档设置自定义指标、调整优先级，并享受智能推荐功能。';
+        description.textContent = i18n.t('view.nonRoaming.description');
 
         // Benefits list
         const benefitsList = promptSection.createEl('ul', { cls: 'benefits-list' });
-        const benefits = [
-            '📊 设置自定义指标评分',
-            '🎯 调整文档优先级',
-            '🧠 获得智能推荐',
-            '📈 参与排行榜统计'
-        ];
+        const benefits = i18n.t('view.nonRoaming.benefits') as unknown as string[];
 
         benefits.forEach(benefit => {
             const li = benefitsList.createEl('li');
@@ -78,14 +74,14 @@ export class DocumentMetricsDisplay {
         const actionSection = promptSection.createEl('div', { cls: 'prompt-action' });
         const addButton = actionSection.createEl('button', {
             cls: 'add-to-roaming-btn',
-            text: '+ 加入漫游列表'
+            text: '+ ' + i18n.t('view.nonRoaming.action')
         });
 
         addButton.onclick = async () => {
             try {
                 // Check if file is markdown
                 if (this.file.extension !== 'md') {
-                    new Notice(`只能添加Markdown文档到漫游列表`);
+                    new Notice(i18n.t('notices.onlyMarkdownFiles'));
                     return;
                 }
 
@@ -98,7 +94,7 @@ export class DocumentMetricsDisplay {
                     await this.plugin.updateDocumentMetrics(this.file, defaultMetrics);
 
                     await this.plugin.saveSettings();
-                    new Notice(`✅ 已将 "${this.file.basename}" 加入漫游列表`);
+                    new Notice(i18n.t('notices.addedToRoaming', { filename: this.file.basename }));
 
                     // Re-render to show the metrics interface
                     this.container.empty();
@@ -109,7 +105,7 @@ export class DocumentMetricsDisplay {
                 }
             } catch (error) {
                 console.error('加入漫游失败:', error);
-                new Notice('加入漫游失败');
+                new Notice(i18n.t('notices.errorSavingSettings'));
             }
         };
     }
@@ -178,13 +174,13 @@ export class DocumentMetricsDisplay {
         // Total score
         const totalScore = this.calculatePriority(this.metrics);
         const totalItem = breakdown.createEl('div', { cls: 'breakdown-item total' });
-        totalItem.createEl('span', { cls: 'breakdown-label', text: '总分:' });
+        totalItem.createEl('span', { cls: 'breakdown-label', text: i18n.t('metrics.totalLabel') + ':' });
         totalItem.createEl('span', { cls: 'breakdown-score total-score', text: totalScore.toFixed(2) });
     }
 
     private createPrioritySection(metricsContent: HTMLElement) {
         const prioritySection = metricsContent.createEl('div', { cls: 'priority-section' });
-        prioritySection.createEl('div', { cls: 'priority-label', text: '优先级' });
+        prioritySection.createEl('div', { cls: 'priority-label', text: i18n.t('metrics.priorityLabel') });
 
         const calculatedPriority = this.calculatePriority(this.metrics);
         const priorityValue = prioritySection.createEl('div', {
@@ -199,7 +195,7 @@ export class DocumentMetricsDisplay {
 
     private createCustomMetricsSection(metricsContent: HTMLElement) {
         const customMetricsSection = metricsContent.createEl('div', { cls: 'custom-metrics-section' });
-        customMetricsSection.createEl('h4', { text: '自定义指标' });
+        customMetricsSection.createEl('h4', { text: i18n.t('metrics.customMetricsTitle') });
 
         const metricsList = customMetricsSection.createEl('div', { cls: 'metrics-list' });
 
@@ -325,18 +321,18 @@ export class DocumentMetricsDisplay {
 
     private createVisitStatsSection(metricsContent: HTMLElement) {
         const visitSection = metricsContent.createEl('div', { cls: 'visit-section' });
-        visitSection.createEl('h4', { text: '访问统计' });
+        visitSection.createEl('h4', { text: i18n.t('metrics.visitStatsTitle') });
 
         const visitStats = visitSection.createEl('div', { cls: 'visit-stats' });
 
         // Visit count
         const visitCount = visitStats.createEl('div', { cls: 'visit-stat' });
-        visitCount.createEl('span', { cls: 'stat-label', text: '访问次数: ' });
+        visitCount.createEl('span', { cls: 'stat-label', text: i18n.t('metrics.visitCountLabel') + ': ' });
         visitCount.createEl('span', { cls: 'stat-value', text: this.metrics.visitCount.toString() });
 
         // Last visited
         const lastVisited = visitStats.createEl('div', { cls: 'visit-stat' });
-        lastVisited.createEl('span', { cls: 'stat-label', text: '最后访问: ' });
+        lastVisited.createEl('span', { cls: 'stat-label', text: i18n.t('metrics.lastVisitedLabel') + ': ' });
 
         if (this.metrics.lastVisited) {
             const lastVisitedDate = new Date(this.metrics.lastVisited);
@@ -345,12 +341,12 @@ export class DocumentMetricsDisplay {
                 text: lastVisitedDate.toLocaleString()
             });
         } else {
-            lastVisited.createEl('span', { cls: 'stat-value', text: '从未访问' });
+            lastVisited.createEl('span', { cls: 'stat-value', text: i18n.t('metrics.neverVisited') });
         }
     }
 
     private createWeightBreakdown(breakdown: HTMLElement) {
-        breakdown.createEl('h5', { text: '权重分析' });
+        breakdown.createEl('h5', { text: i18n.t('metrics.weightBreakdown') });
         const breakdownList = breakdown.createEl('div', { cls: 'breakdown-list' });
         this.createWeightBreakdownContent(breakdownList);
     }

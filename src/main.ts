@@ -14,6 +14,9 @@ import { RecommendationSettings } from './settings/RecommendationSettings';
 import { FilterSettings } from './settings/FilterSettings';
 import { DataManagementSettings } from './settings/DataManagementSettings';
 
+// 导入国际化
+import { i18n } from './i18n';
+
 export default class IncrementalReadingPlugin extends Plugin {
     settings: IncrementalReadingSettings;
     recommendationService: RecommendationService;
@@ -27,6 +30,9 @@ export default class IncrementalReadingPlugin extends Plugin {
 
         // 加载设置
         await this.loadSettings();
+
+        // 初始化语言
+        i18n.setLanguage(this.settings.language || 'en');
 
         // 初始化服务
         this.recommendationService = new RecommendationService(this.app, this.settings);
@@ -70,11 +76,11 @@ export default class IncrementalReadingPlugin extends Plugin {
                 await this.saveData(this.settings);
 
                 // 显示升级提示
-                new Notice('🎉 漫游阅读功能已升级！请使用"加入漫游"功能重新添加你想漫游的文档');
+                new Notice('Plugin upgraded! Please re-add documents to roaming list using "Add to Roaming"');
             }
         } catch (error) {
             console.error('Error loading settings:', error);
-            new Notice('Error loading settings, using defaults');
+            new Notice(i18n.t('notices.errorLoadingSettings'));
             this.settings = { ...DEFAULT_SETTINGS };
         }
     }
@@ -101,9 +107,29 @@ export default class IncrementalReadingPlugin extends Plugin {
             this.notifyViewsRefresh();
         } catch (error) {
             console.error('Error saving settings:', error);
-            new Notice('Error saving settings');
+            new Notice(i18n.t('notices.errorSavingSettings'));
         } finally {
             this.isUpdatingSettings = false;
+        }
+    }
+
+    /**
+     * 通知所有增量阅读视图刷新UI（用于语言切换）
+     */
+    notifyViewsRefreshUI(): void {
+        try {
+            // 获取所有打开的增量阅读视图
+            const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_INCREMENTAL_READING);
+
+            leaves.forEach(leaf => {
+                const view = leaf.view as any;
+                if (view && typeof view.refreshUI === 'function') {
+                    view.refreshUI();
+                    console.log('已通知增量阅读视图刷新UI');
+                }
+            });
+        } catch (error) {
+            console.error('通知视图刷新UI时出错:', error);
         }
     }
 
@@ -143,7 +169,7 @@ export default class IncrementalReadingPlugin extends Plugin {
     private addCommands(): void {
         this.addCommand({
             id: 'start-incremental-reading',
-            name: 'Start Incremental Reading',
+            name: i18n.t('commands.startReading'),
             callback: () => {
                 this.activateView();
             }
@@ -151,7 +177,7 @@ export default class IncrementalReadingPlugin extends Plugin {
 
         this.addCommand({
             id: 'open-random-document',
-            name: 'Open Random Document',
+            name: i18n.t('commands.openRandom'),
             callback: () => {
                 this.openRandomDocument();
             }
@@ -159,17 +185,17 @@ export default class IncrementalReadingPlugin extends Plugin {
 
         this.addCommand({
             id: 'add-to-roaming',
-            name: '添加至漫游',
+            name: i18n.t('commands.addToRoaming'),
             callback: async () => {
                 const activeFile = this.app.workspace.getActiveFile();
                 if (!activeFile) {
-                    new Notice('没有打开的文档');
+                    new Notice(i18n.t('notices.noActiveFile'));
                     return;
                 }
 
                 try {
                     if (activeFile.extension !== 'md') {
-                        new Notice(`只能添加Markdown文档到漫游列表 "${activeFile.basename}"`);
+                        new Notice(i18n.t('notices.onlyMarkdownFiles'));
                         return;
                     }
 
@@ -181,35 +207,35 @@ export default class IncrementalReadingPlugin extends Plugin {
                     await this.updateDocumentMetrics(activeFile, defaultMetrics);
 
                     await this.saveSettings();
-                    new Notice(`已将 "${activeFile.basename}" 加入漫游`);
+                    new Notice(i18n.t('notices.addedToRoaming', { filename: activeFile.basename }));
                 } catch (error) {
                     console.error('加入漫游失败:', error);
-                    new Notice('加入漫游失败');
+                    new Notice(i18n.t('notices.errorSavingSettings'));
                 }
             }
         });
 
         this.addCommand({
             id: 'add-folder-to-roaming',
-            name: '添加文件夹到漫游',
+            name: i18n.t('commands.addFolder'),
             callback: async () => {
                 // 这里可以添加文件夹选择对话框
-                new Notice('请使用界面的"添加文件夹"按钮');
+                new Notice(i18n.t('view.actionBar.addFolder'));
             }
         });
 
         this.addCommand({
             id: 'add-multiple-files-to-roaming',
-            name: '多选文件到漫游',
+            name: i18n.t('commands.addMultiple'),
             callback: async () => {
                 // 这里可以添加多选文件对话框
-                new Notice('请使用界面的"多选文件"按钮');
+                new Notice(i18n.t('view.actionBar.multiSelect'));
             }
         });
 
         this.addCommand({
             id: 'reset-visited-documents',
-            name: 'Clear Reading History',
+            name: i18n.t('commands.clearHistory'),
             callback: async () => {
                 this.settings.roamingDocs = [];
                 for (const [path] of Object.entries(this.settings.documentMetrics)) {
@@ -217,7 +243,7 @@ export default class IncrementalReadingPlugin extends Plugin {
                     this.settings.documentMetrics[path].lastVisited = 0;
                 }
                 await this.saveSettings();
-                new Notice('漫游历史已清除');
+                new Notice(i18n.t('notices.historyCleared'));
             }
         });
     }
@@ -227,14 +253,14 @@ export default class IncrementalReadingPlugin extends Plugin {
             const randomFile = this.fileManagementService.getRandomUnvisitedFile();
 
             if (!randomFile) {
-                new Notice('No unvisited documents found');
+                new Notice(i18n.t('view.actionBar.noDocuments'));
                 return;
             }
 
             await this.app.workspace.getLeaf().openFile(randomFile);
         } catch (error) {
             console.error('Error opening random document:', error);
-            new Notice('Error opening random document');
+            new Notice(i18n.t('notices.documentOpenFailed'));
         }
     }
 
@@ -252,7 +278,7 @@ export default class IncrementalReadingPlugin extends Plugin {
             await this.saveSettings();
         } catch (error) {
             console.error('Error updating document metrics:', error);
-            new Notice('Error updating document metrics');
+            new Notice(i18n.t('notices.errorSavingSettings'));
         }
     }
 
@@ -295,10 +321,10 @@ export default class IncrementalReadingPlugin extends Plugin {
         try {
             const addedCount = await this.fileManagementService.addFoldersToRoaming(folderPaths);
             await this.saveSettings();
-            new Notice(`成功添加 ${addedCount} 个文件到漫游列表`);
+            new Notice(i18n.t('notices.filesAdded', { count: addedCount }));
         } catch (error) {
             console.error('添加文件夹失败:', error);
-            new Notice('添加文件夹失败');
+            new Notice(i18n.t('notices.errorSavingSettings'));
         }
     }
 
@@ -306,10 +332,10 @@ export default class IncrementalReadingPlugin extends Plugin {
         try {
             const addedCount = await this.fileManagementService.addMultipleFilesToRoaming(files);
             await this.saveSettings();
-            new Notice(`成功添加 ${addedCount} 个文件到漫游列表`);
+            new Notice(i18n.t('notices.filesAdded', { count: addedCount }));
         } catch (error) {
             console.error('添加文件失败:', error);
-            new Notice('添加文件失败');
+            new Notice(i18n.t('notices.errorSavingSettings'));
         }
     }
 }
@@ -329,7 +355,33 @@ class IncrementalReadingSettingTab extends PluginSettingTab {
         containerEl.addClass('incremental-reading-settings');
         containerEl.addClass('incremental-reading-plugin-root'); // Add root scope class
 
-        containerEl.createEl('h2', { text: '增量阅读 插件设置' });
+        containerEl.createEl('h2', { text: i18n.t('settings.title') });
+
+        // 通用设置
+        containerEl.createEl('h3', { text: i18n.t('settings.general.title') });
+
+        // 语言设置
+        new Setting(containerEl)
+            .setName(i18n.t('settings.general.language'))
+            .setDesc(i18n.t('settings.general.languageDesc'))
+            .addDropdown(dropdown => {
+                const languages = i18n.getAvailableLanguages();
+                languages.forEach(lang => {
+                    dropdown.addOption(lang.code, lang.name);
+                });
+                dropdown
+                    .setValue(this.plugin.settings.language || 'en')
+                    .onChange(async (value) => {
+                        this.plugin.settings.language = value;
+                        i18n.setLanguage(value);
+                        await this.plugin.saveSettings();
+                        // 刷新设置页面以应用新语言
+                        this.display();
+                        // 通知视图刷新UI（完全重建）
+                        this.plugin.notifyViewsRefreshUI();
+                        new Notice(i18n.t('notices.settingsSaved'));
+                    });
+            });
 
         // 自定义指标设置
         const customMetricsSettings = new CustomMetricsSettings(containerEl, this.plugin);

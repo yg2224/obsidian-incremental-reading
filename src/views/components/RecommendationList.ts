@@ -2,6 +2,7 @@ import { TFile, Notice } from 'obsidian';
 import IncrementalReadingPlugin from '../../main';
 import { SharedUtils } from '../../utils/SharedUtils';
 import { DocumentMetricsModal } from '../../components/Modal';
+import { i18n } from '../../i18n';
 
 /**
  * 智能推荐列表组件
@@ -36,11 +37,11 @@ export class RecommendationList {
         this.container.empty();
 
         const recommendationsSection = this.container.createEl('div', { cls: 'recommendations-section' });
-        recommendationsSection.createEl('h3', { text: '🧠 智能推荐' });
+        recommendationsSection.createEl('h3', { text: '🧠 ' + i18n.t('recommendations.title') });
 
         if (recommendations.length === 0) {
             recommendationsSection.createEl('p', {
-                text: '暂无推荐文档，请添加更多文档到漫游列表',
+                text: i18n.t('recommendations.emptyMessage'),
                 cls: 'empty-message'
             });
             return;
@@ -58,28 +59,31 @@ export class RecommendationList {
 
         const refreshBtn = buttonContainer.createEl('button', {
             cls: 'refresh-recommendations-btn',
-            text: '🔄 刷新推荐'
+            text: '🔄 ' + i18n.t('recommendations.refreshButton')
         });
         refreshBtn.onclick = () => this.refresh();
 
         const smartJumpBtn = buttonContainer.createEl('button', {
             cls: 'smart-jump-btn',
-            text: '🧠 跳转至最高相似度'
+            text: '🧠 ' + i18n.t('recommendations.smartJumpButton')
         });
         smartJumpBtn.onclick = async () => {
             try {
                 const recommendations = await this.plugin.recommendationService.getRecommendations();
                 if (recommendations.length === 0) {
-                    new Notice('暂无推荐文档');
+                    new Notice(i18n.t('recommendations.emptyMessage'));
                     return;
                 }
                 const topRecommendation = recommendations[0];
                 const similarity = (topRecommendation.score * 100).toFixed(1);
                 await this.onOpenDocument(topRecommendation.file);
-                new Notice(`🧠 智能推荐：${topRecommendation.file.basename} (相似度: ${similarity}%)`);
+                new Notice(i18n.t('recommendations.smartJumpNotice', {
+                    filename: topRecommendation.file.basename,
+                    similarity: similarity
+                }));
             } catch (error) {
                 console.error('智能跳转失败:', error);
-                new Notice('智能跳转失败，请重试');
+                new Notice(i18n.t('recommendations.smartJumpFailed'));
             }
         };
     }
@@ -89,11 +93,11 @@ export class RecommendationList {
         this.cachedRecommendations = recommendations;
 
         const recommendationsSection = this.container.createEl('div', { cls: 'recommendations-section' });
-        recommendationsSection.createEl('h3', { text: '🧠 智能推荐' });
+        recommendationsSection.createEl('h3', { text: '🧠 ' + i18n.t('recommendations.title') });
 
         if (recommendations.length === 0) {
             recommendationsSection.createEl('p', {
-                text: '暂无推荐文档，请添加更多文档到漫游列表',
+                text: i18n.t('recommendations.emptyMessage'),
                 cls: 'empty-message'
             });
             return;
@@ -111,28 +115,31 @@ export class RecommendationList {
 
         const refreshBtn = buttonContainer.createEl('button', {
             cls: 'refresh-recommendations-btn',
-            text: '🔄 刷新推荐'
+            text: '🔄 ' + i18n.t('recommendations.refreshButton')
         });
         refreshBtn.onclick = () => this.refresh();
 
         const smartJumpBtn = buttonContainer.createEl('button', {
             cls: 'smart-jump-btn',
-            text: '🧠 跳转至最高相似度'
+            text: '🧠 ' + i18n.t('recommendations.smartJumpButton')
         });
         smartJumpBtn.onclick = async () => {
             try {
                 const recommendations = await this.plugin.recommendationService.getRecommendations();
                 if (recommendations.length === 0) {
-                    new Notice('暂无推荐文档');
+                    new Notice(i18n.t('recommendations.emptyMessage'));
                     return;
                 }
                 const topRecommendation = recommendations[0];
                 const similarity = (topRecommendation.score * 100).toFixed(1);
                 await this.onOpenDocument(topRecommendation.file);
-                new Notice(`🧠 智能推荐：${topRecommendation.file.basename} (相似度: ${similarity}%)`);
+                new Notice(i18n.t('recommendations.smartJumpNotice', {
+                    filename: topRecommendation.file.basename,
+                    similarity: similarity
+                }));
             } catch (error) {
                 console.error('智能跳转失败:', error);
-                new Notice('智能跳转失败，请重试');
+                new Notice(i18n.t('recommendations.smartJumpFailed'));
             }
         };
     }
@@ -153,9 +160,6 @@ export class RecommendationList {
         fileName.textContent = file.basename;
         fileName.title = file.path;
 
-        // Similarity score - removed random generation
-        // The similarity score will be shown when using renderWithScores method
-
         // Metrics display
         const metricsInfo = recItem.createEl('div', { cls: 'metrics-info' });
 
@@ -164,7 +168,7 @@ export class RecommendationList {
 
         // Priority
         const priorityEl = metricsInfo.createEl('span', { cls: 'priority' });
-        priorityEl.textContent = `Priority: ${calculatedPriority.toFixed(1)}`;
+        priorityEl.textContent = `${i18n.t('recommendations.priorityLabel')}: ${calculatedPriority.toFixed(1)}`;
         priorityEl.style.color = SharedUtils.getPriorityColor(calculatedPriority);
 
         // Custom metrics
@@ -176,13 +180,13 @@ export class RecommendationList {
 
         // Visit count
         const visitEl = metricsInfo.createEl('span', { cls: 'visit-count' });
-        visitEl.textContent = `访问: ${metrics.visitCount || 0}次`;
+        visitEl.textContent = `${i18n.t('recommendations.visitCountLabel')}: ${metrics.visitCount || 0}`;
 
         // Quick actions
         const actions = recItem.createEl('div', { cls: 'quick-actions' });
 
         // Open button
-        const openBtn = actions.createEl('button', { text: '打开' });
+        const openBtn = actions.createEl('button', { text: i18n.t('recommendations.openButton') });
         openBtn.onclick = () => this.onOpenDocument(file);
 
         return recItem;
@@ -208,14 +212,14 @@ export class RecommendationList {
         const similarityInfo = recItem.createEl('div', { cls: 'similarity-info' });
 
         const similarityEl = similarityInfo.createEl('span', { cls: 'similarity-score-large' });
-        similarityEl.textContent = `相似度: ${(rec.score * 100).toFixed(1)}%`;
+        similarityEl.textContent = `${i18n.t('recommendations.similarity')}: ${(rec.score * 100).toFixed(1)}%`;
         similarityEl.style.color = this.getSimilarityColor(rec.score);
 
         // Quick actions
         const actions = recItem.createEl('div', { cls: 'quick-actions' });
 
         // Open button
-        const openBtn = actions.createEl('button', { text: '打开' });
+        const openBtn = actions.createEl('button', { text: i18n.t('recommendations.openButton') });
         openBtn.onclick = () => this.onOpenDocument(rec.file);
 
         return recItem;
@@ -260,7 +264,7 @@ export class RecommendationList {
                 const priorityEl = fileItem.querySelector('.priority');
                 if (priorityEl) {
                     const calculatedPriority = SharedUtils.calculatePriority(metrics, this.plugin.settings.metricWeights, this.plugin.settings.customMetrics);
-                    priorityEl.textContent = `Priority: ${calculatedPriority.toFixed(1)}`;
+                    priorityEl.textContent = `${i18n.t('recommendations.priorityLabel')}: ${calculatedPriority.toFixed(1)}`;
                     priorityEl.setAttribute('style', `color: ${SharedUtils.getPriorityColor(calculatedPriority)}`);
                 }
             }

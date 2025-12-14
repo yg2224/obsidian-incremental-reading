@@ -1,3 +1,5 @@
+import { i18n } from '../../i18n';
+
 /**
  * 导航标签组件 - 处理不同视图之间的切换
  */
@@ -29,9 +31,10 @@ export class NavigationTabs {
         this.tabSlider = tabContainer.createEl('div', { cls: 'tab-slider' });
 
         const tabs = [
-            { id: 'metrics', label: '文档指标', icon: '📊' },
-            { id: 'recommendations', label: '智能推荐', icon: '🧠' },
-            { id: 'ranking', label: '漫游排行', icon: '🏆' }
+            { id: 'metrics', label: i18n.t('tabs.metrics'), icon: '📊' },
+            { id: 'recommendations', label: i18n.t('tabs.recommendations'), icon: '🧠' },
+            { id: 'ranking', label: i18n.t('tabs.ranking'), icon: '🏆' },
+            { id: 'visualization', label: i18n.t('tabs.visualization'), icon: '📈' }
         ];
 
         // Create tab buttons
@@ -109,5 +112,14 @@ export class NavigationTabs {
         if (tabIndex !== -1) {
             this.switchToTab(tabId, tabIndex);
         }
+    }
+
+    /**
+     * 刷新标签文本（语言切换时使用）
+     */
+    public refresh(): void {
+        // Re-create the navigation with updated translations
+        this.container.empty();
+        this.create();
     }
 }

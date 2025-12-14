@@ -1,5 +1,6 @@
 import { Setting } from 'obsidian';
 import IncrementalReadingPlugin from '../main';
+import { i18n } from '../i18n';
 
 /**
  * 智能推荐设置组件
@@ -14,12 +15,12 @@ export class RecommendationSettings {
     }
 
     public render(): void {
-        this.containerEl.createEl('h3', { text: '推荐设置' });
+        this.containerEl.createEl('h3', { text: i18n.t('settings.recommendation.title') });
 
         // 最近浏览锚点数量
         new Setting(this.containerEl)
-            .setName('最近浏览锚点数量')
-            .setDesc('智能推荐时使用的最近浏览文档数量（作为推荐基准）')
+            .setName(i18n.t('settings.recommendation.recentCount'))
+            .setDesc(i18n.t('settings.recommendation.recentCountDesc'))
             .addSlider(slider => slider
                 .setLimits(1, 20, 1)
                 .setValue(this.plugin.settings.recommendationSettings.recentCount)
@@ -31,8 +32,8 @@ export class RecommendationSettings {
 
         // 高频访问锚点数量
         new Setting(this.containerEl)
-            .setName('高频访问锚点数量')
-            .setDesc('智能推荐时使用的漫游次数最多的文档数量（作为推荐基准）')
+            .setName(i18n.t('settings.recommendation.topCount'))
+            .setDesc(i18n.t('settings.recommendation.topCountDesc'))
             .addSlider(slider => slider
                 .setLimits(1, 20, 1)
                 .setValue(this.plugin.settings.recommendationSettings.topCount)
@@ -44,8 +45,8 @@ export class RecommendationSettings {
 
         // 推荐结果数量
         new Setting(this.containerEl)
-            .setName('推荐结果数量')
-            .setDesc('智能推荐算法返回的推荐文档数量')
+            .setName(i18n.t('settings.recommendation.topK'))
+            .setDesc(i18n.t('settings.recommendation.topKDesc'))
             .addSlider(slider => slider
                 .setLimits(5, 50, 1)
                 .setValue(this.plugin.settings.recommendationSettings.topK)
@@ -57,8 +58,8 @@ export class RecommendationSettings {
 
         // 最大候选文档数
         new Setting(this.containerEl)
-            .setName('最大候选文档数')
-            .setDesc('智能推荐算法考虑的最大文档数量（影响性能和推荐质量）')
+            .setName(i18n.t('settings.recommendation.maxCandidates'))
+            .setDesc(i18n.t('settings.recommendation.maxCandidatesDesc'))
             .addSlider(slider => slider
                 .setLimits(50, 500, 10)
                 .setValue(this.plugin.settings.maxCandidates)
@@ -70,8 +71,8 @@ export class RecommendationSettings {
 
         // 文档段落采样数量
         new Setting(this.containerEl)
-            .setName('文档段落采样数量')
-            .setDesc('智能推荐时从每个文档采样的段落数量（包含标题+头/中/尾段落）')
+            .setName(i18n.t('settings.recommendation.maxParagraphs'))
+            .setDesc(i18n.t('settings.recommendation.maxParagraphsDesc'))
             .addSlider(slider => slider
                 .setLimits(3, 10, 1)
                 .setValue(this.plugin.settings.recommendationSettings.maxParagraphs)

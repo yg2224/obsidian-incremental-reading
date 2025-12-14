@@ -2,6 +2,7 @@ import { ItemView, WorkspaceLeaf, TFile, Notice } from 'obsidian';
 import IncrementalReadingPlugin from '../main';
 import { DocumentMetrics, CustomMetric } from '../models/Settings';
 import { DocumentMetricsModal } from '../components/Modal';
+import { i18n } from '../i18n';
 
 // 导入组件
 import { ActionBar } from './components/ActionBar';
@@ -9,6 +10,7 @@ import { DocumentMetricsDisplay } from './components/DocumentMetrics';
 import { NavigationTabs } from './components/NavigationTabs';
 import { RankingList } from './components/RankingList';
 import { RecommendationList } from './components/RecommendationList';
+import { PriorityVisualization } from './components/PriorityVisualization';
 
 export const VIEW_TYPE_INCREMENTAL_READING = 'incremental-reading-view';
 
@@ -19,6 +21,8 @@ export class IncrementalReadingView extends ItemView {
     plugin: IncrementalReadingPlugin;
     private currentFile: TFile | null = null;
     private currentMetrics: DocumentMetrics | null = null;
+    private lastProcessedFile: string | null = null;
+    private lastProcessedTime: number = 0;
 
     // 状态元素
     private statusText: HTMLElement | null = null;
@@ -29,6 +33,7 @@ export class IncrementalReadingView extends ItemView {
     private navigationTabs: NavigationTabs | null = null;
     private rankingList: RankingList | null = null;
     private recommendationList: RecommendationList | null = null;
+    private priorityVisualization: PriorityVisualization | null = null;
 
     // 视图状态
     private currentActiveTab: string = 'metrics';
@@ -43,7 +48,7 @@ export class IncrementalReadingView extends ItemView {
     }
 
     getDisplayText(): string {
-        return 'Incremental Reading';
+        return i18n.t('view.title');
     }
 
     getIcon(): string {
@@ -52,6 +57,21 @@ export class IncrementalReadingView extends ItemView {
 
     async onOpen(): Promise<void> {
         this.createView();
+
+        // 添加文件切换监听器
+        this.registerEvent(
+            this.app.workspace.on('file-open', (file) => {
+                this.onFileOpen(file);
+            })
+        );
+
+        // 添加活动叶子变化监听器（仅更新UI，不增加计数）
+        this.registerEvent(
+            this.app.workspace.on('active-leaf-change', () => {
+                // 只更新按钮状态，不调用 onFileOpen 避免重复计数
+                this.actionBar?.updateButtonStates();
+            })
+        );
     }
 
     async onClose(): Promise<void> {
@@ -69,13 +89,6 @@ export class IncrementalReadingView extends ItemView {
 
         this.addStyles();
 
-        // 监听文件变化
-        this.registerEvent(
-            this.app.workspace.on('file-open', (file) => {
-                this.onFileOpen(file);
-            })
-        );
-
         // 初始数据加载
         this.refreshData();
 
@@ -83,22 +96,33 @@ export class IncrementalReadingView extends ItemView {
         setTimeout(() => {
             this.switchToTab('metrics', 0);
         }, 100);
+
+        // 立即更新按钮状态（基于当前活动文件）
+        setTimeout(() => {
+            const activeFile = this.app.workspace.getActiveFile();
+            if (activeFile) {
+                this.onFileOpen(activeFile);
+            } else {
+                // 即使没有活动文件，也要更新按钮状态
+                this.actionBar?.updateButtonStates();
+            }
+        }, 150);
     }
 
     private createHeroSection(container: HTMLElement): void {
         const heroSection = container.createEl('div', { cls: 'hero-section' });
 
         // 主标题
-        heroSection.createEl('h1', { cls: 'main-title', text: '漫游式渐进阅读' });
+        heroSection.createEl('h1', { cls: 'main-title', text: i18n.t('view.title') });
 
         // 诗意副标题
         const subtitle = heroSection.createEl('p', { cls: 'poetic-subtitle' });
-        subtitle.innerHTML = '"展卷乃无言的情意：以<span class="chance">等待漫游...</span>的机遇，<br>穿越星辰遇见你，三秋霜雪印马蹄。"';
+        subtitle.innerHTML = i18n.t('view.subtitle');
 
-        // 状态文本
+        // 状态徽章
         const docCount = this.getVisitedDocumentCount();
         this.statusText = heroSection.createEl('div', { cls: 'status-text' });
-        this.statusText.textContent = `${docCount} 篇漫游文档${docCount === 0 ? ' (无漫游文档)' : ''}`;
+        this.statusText.innerHTML = `<span>📚</span><span>${i18n.t('view.statusTemplate', { count: docCount.toString() })}</span>`;
 
         // 操作栏
         this.actionBar = new ActionBar(heroSection, this.plugin, {
@@ -106,7 +130,8 @@ export class IncrementalReadingView extends ItemView {
             onGetSmartRecommendations: () => this.getSmartRecommendations(),
             onRefreshData: () => this.refreshData(),
             onRandomRoaming: () => this.randomRoaming(),
-            onAddCurrentToRoaming: () => this.addCurrentToRoaming()
+            onAddCurrentToRoaming: () => this.addCurrentToRoaming(),
+            onRemoveCurrentFromRoaming: () => this.removeCurrentFromRoaming()
         });
     }
 
@@ -125,6 +150,7 @@ export class IncrementalReadingView extends ItemView {
         this.createMetricsSection(content);
         this.createRecommendationsSection(content);
         this.createRankingSection(content);
+        this.createVisualizationSection(content);
 
         // 初始隐藏所有部分
         this.hideAllSections();
@@ -145,7 +171,7 @@ export class IncrementalReadingView extends ItemView {
             );
             this.documentMetricsDisplay.render();
         } else {
-            metricsSection.createEl('p', { text: '请先打开一个Markdown文档', cls: 'empty-message' });
+            metricsSection.createEl('p', { text: i18n.t('metrics.noFileOpen'), cls: 'empty-message' });
         }
     }
 
@@ -167,6 +193,16 @@ export class IncrementalReadingView extends ItemView {
         });
     }
 
+    private createVisualizationSection(container: HTMLElement): void {
+        const visualizationSection = container.createEl('div', { cls: 'visualization-section', attr: { 'data-section': 'visualization' } });
+
+        this.priorityVisualization = new PriorityVisualization(
+            visualizationSection,
+            this.plugin,
+            (file) => this.openDocument(file)
+        );
+    }
+
     private async switchToTab(tabId: string, index: number): Promise<void> {
         this.currentActiveTab = tabId;
         this.hideAllSections();
@@ -185,6 +221,9 @@ export class IncrementalReadingView extends ItemView {
                 break;
             case 'ranking':
                 this.updateRankingSection();
+                break;
+            case 'visualization':
+                this.updateVisualizationSection();
                 break;
         }
     }
@@ -231,6 +270,12 @@ export class IncrementalReadingView extends ItemView {
         }
     }
 
+    private updateVisualizationSection(): void {
+        if (this.priorityVisualization) {
+            this.priorityVisualization.refresh();
+        }
+    }
+
     // 业务逻辑方法
     private async onFileOpen(file: TFile | null): Promise<void> {
         if (!file) return;
@@ -238,14 +283,38 @@ export class IncrementalReadingView extends ItemView {
         try {
             console.log(`文件切换到: ${file.path} (当前标签: ${this.currentActiveTab})`);
 
+            // 防抖：避免短时间内重复处理同一文件（3秒内）
+            const now = Date.now();
+            if (this.lastProcessedFile === file.path && now - this.lastProcessedTime < 3000) {
+                console.log('跳过重复的文件打开事件（防抖）');
+                // 仍然更新UI，但不增加计数
+                this.currentFile = file;
+                this.currentMetrics = this.plugin.getDocumentMetrics(file);
+
+                if (this.currentActiveTab === 'metrics') {
+                    this.updateMetricsSection();
+                }
+                this.actionBar?.updateButtonStates();
+                return;
+            }
+
             this.currentFile = file;
             this.currentMetrics = this.plugin.getDocumentMetrics(file);
 
-            // 更新访问统计
-            await this.plugin.updateDocumentMetrics(file, {
-                lastVisited: Date.now(),
-                visitCount: (this.currentMetrics?.visitCount || 0) + 1
-            });
+            // 只为漫游文档更新访问统计
+            if (this.plugin.settings.roamingDocs.includes(file.path)) {
+                await this.plugin.updateDocumentMetrics(file, {
+                    lastVisited: Date.now(),
+                    visitCount: (this.currentMetrics?.visitCount || 0) + 1
+                });
+
+                // 重新获取更新后的指标
+                this.currentMetrics = this.plugin.getDocumentMetrics(file);
+
+                // 记录最后处理的文件和时间
+                this.lastProcessedFile = file.path;
+                this.lastProcessedTime = now;
+            }
 
             // 如果当前在指标标签页，更新显示
             if (this.currentActiveTab === 'metrics') {
@@ -257,7 +326,7 @@ export class IncrementalReadingView extends ItemView {
 
         } catch (error) {
             console.error('文件切换处理失败:', error);
-            new Notice('文件切换时出现错误');
+            new Notice(i18n.t('notices.fileSwitchError'));
         }
     }
 
@@ -266,7 +335,7 @@ export class IncrementalReadingView extends ItemView {
             const validRoamingFiles = this.plugin.getValidRoamingFiles();
 
             if (validRoamingFiles.length === 0) {
-                new Notice('暂无漫游文档，请先添加文档到漫游列表');
+                new Notice(i18n.t('view.actionBar.noDocuments'));
                 return;
             }
 
@@ -299,12 +368,15 @@ export class IncrementalReadingView extends ItemView {
                 const selectedWeight = weightedFiles.find(item => item.file.path === selectedFile.path)?.weight || 0.1;
                 const selectionProbability = (selectedWeight / totalWeight * 100);
 
-                new Notice(`已选择：${selectedFile.basename} (选择概率: ${selectionProbability.toFixed(1)}%)`);
+                new Notice(i18n.t('notices.selectionProbability', {
+                    filename: selectedFile.basename,
+                    probability: selectionProbability.toFixed(1)
+                }));
             }
 
         } catch (error) {
             console.error('继续漫游失败:', error);
-            new Notice('继续漫游失败');
+            new Notice(i18n.t('notices.continueFailed'));
         }
     }
 
@@ -314,7 +386,7 @@ export class IncrementalReadingView extends ItemView {
             const recommendations = await this.plugin.recommendationService.getRecommendations();
 
             if (recommendations.length === 0) {
-                new Notice('暂无推荐文档，请添加更多文档到漫游列表');
+                new Notice(i18n.t('recommendations.emptyMessage'));
                 return;
             }
 
@@ -326,11 +398,14 @@ export class IncrementalReadingView extends ItemView {
             await this.openDocument(topRecommendation.file);
 
             // Show notification with similarity info
-            new Notice(`🧠 智能推荐：${topRecommendation.file.basename} (相似度: ${similarity}%)`);
+            new Notice(i18n.t('recommendations.smartJumpNotice', {
+                filename: topRecommendation.file.basename,
+                similarity: similarity
+            }));
 
         } catch (error) {
             console.error('智能推荐失败:', error);
-            new Notice('智能推荐失败，请重试');
+            new Notice(i18n.t('notices.smartRecommendationFailed'));
         }
     }
 
@@ -342,13 +417,41 @@ export class IncrementalReadingView extends ItemView {
         this.updateMetricsSection();
         await this.updateRecommendationsSection();
         this.updateRankingSection();
+        this.updateVisualizationSection();
         this.actionBar?.updateButtonStates();
+    }
+
+    /**
+     * 刷新整个视图UI（用于语言切换）
+     */
+    public refreshUI(): void {
+        console.log('开始刷新UI...');
+
+        // 保存当前激活的标签页
+        const currentTab = this.currentActiveTab;
+        console.log(`当前激活标签: ${currentTab}`);
+
+        // 完全重建视图
+        this.createView();
+
+        // 恢复之前激活的标签页并刷新数据
+        setTimeout(() => {
+            console.log(`恢复标签页: ${currentTab}`);
+            const tabIndex = currentTab === 'metrics' ? 0 :
+                            currentTab === 'recommendations' ? 1 :
+                            currentTab === 'ranking' ? 2 :
+                            currentTab === 'visualization' ? 3 : 0;
+            this.switchToTab(currentTab, tabIndex);
+
+            // 确保数据也被刷新
+            this.refreshData();
+        }, 200);
     }
 
     private updateStatusText(): void {
         if (this.statusText) {
             const docCount = this.getVisitedDocumentCount();
-            this.statusText.textContent = `${docCount} 篇漫游文档${docCount === 0 ? ' (无漫游文档)' : ''}`;
+            this.statusText.innerHTML = `<span>📚</span><span>${i18n.t('view.statusTemplate', { count: docCount.toString() })}</span>`;
         }
     }
 
@@ -358,7 +461,7 @@ export class IncrementalReadingView extends ItemView {
             const roamingFiles = this.plugin.getValidRoamingFiles();
 
             if (roamingFiles.length === 0) {
-                new Notice('暂无漫游文档，请先添加文档到漫游列表');
+                new Notice(i18n.t('view.actionBar.noDocuments'));
                 return;
             }
 
@@ -367,29 +470,29 @@ export class IncrementalReadingView extends ItemView {
             const randomFile = roamingFiles[randomIndex];
 
             await this.openDocument(randomFile);
-            new Notice(`🎲 随机漫游：${randomFile.basename}`);
+            new Notice(i18n.t('notices.randomRoaming', { filename: randomFile.basename }));
 
         } catch (error) {
             console.error('随机漫游失败:', error);
-            new Notice('随机漫游失败');
+            new Notice(i18n.t('notices.randomRoamingFailed'));
         }
     }
 
     private async addCurrentToRoaming(): Promise<void> {
         const activeFile = this.app.workspace.getActiveFile();
         if (!activeFile) {
-            new Notice('没有打开的文档');
+            new Notice(i18n.t('notices.noActiveFile'));
             return;
         }
 
         try {
             if (activeFile.extension !== 'md') {
-                new Notice(`只能添加Markdown文档到漫游列表 "${activeFile.basename}"`);
+                new Notice(i18n.t('notices.onlyMarkdownFiles'));
                 return;
             }
 
             if (this.plugin.settings.roamingDocs.includes(activeFile.path)) {
-                new Notice(`"${activeFile.basename}" 已在漫游列表中`);
+                new Notice(i18n.t('view.actionBar.alreadyInRoaming'));
                 return;
             }
 
@@ -400,13 +503,38 @@ export class IncrementalReadingView extends ItemView {
             await this.plugin.updateDocumentMetrics(activeFile, defaultMetrics);
 
             await this.plugin.saveSettings();
-            new Notice(`✅ 已将 "${activeFile.basename}" 加入漫游列表`);
+            new Notice(i18n.t('notices.addedToRoaming', { filename: activeFile.basename }));
 
             this.refreshData();
+            // 立即更新按钮状态
+            this.actionBar?.updateButtonStates();
 
         } catch (error) {
             console.error('加入漫游失败:', error);
-            new Notice('加入漫游失败');
+            new Notice(i18n.t('notices.errorSavingSettings'));
+        }
+    }
+
+    private async removeCurrentFromRoaming(): Promise<void> {
+        const activeFile = this.app.workspace.getActiveFile();
+        if (!activeFile) {
+            new Notice(i18n.t('notices.noActiveFile'));
+            return;
+        }
+
+        try {
+            const index = this.plugin.settings.roamingDocs.indexOf(activeFile.path);
+            if (index > -1) {
+                this.plugin.settings.roamingDocs.splice(index, 1);
+                await this.plugin.saveSettings();
+                new Notice(i18n.t('notices.removedFromRoaming', { filename: activeFile.basename }));
+                this.refreshData();
+                // 立即更新按钮状态
+                this.actionBar?.updateButtonStates();
+            }
+        } catch (error) {
+            console.error('移除漫游失败:', error);
+            new Notice(i18n.t('notices.errorSavingSettings'));
         }
     }
 
@@ -415,7 +543,7 @@ export class IncrementalReadingView extends ItemView {
             await this.app.workspace.getLeaf().openFile(file);
         } catch (error) {
             console.error('打开文档失败:', error);
-            new Notice('打开文档失败');
+            new Notice(i18n.t('notices.documentOpenFailed'));
         }
     }
 
@@ -428,7 +556,7 @@ export class IncrementalReadingView extends ItemView {
                 this.plugin.settings.customMetrics,
                 async (updatedMetrics) => {
                     await this.plugin.updateDocumentMetrics(file, updatedMetrics);
-                    new Notice(`文档 "${file.basename}" 的得分已更新`);
+                    new Notice(i18n.t('notices.settingsSaved'));
                     this.refreshData();
                 },
                 async (realTimeMetrics) => {
@@ -439,7 +567,7 @@ export class IncrementalReadingView extends ItemView {
             modal.open();
         } catch (error) {
             console.error('编辑文档得分失败:', error);
-            new Notice('编辑文档得分失败');
+            new Notice(i18n.t('notices.editMetricsFailed'));
         }
     }
 
@@ -476,5 +604,6 @@ export class IncrementalReadingView extends ItemView {
         this.navigationTabs = null;
         this.rankingList = null;
         this.recommendationList = null;
+        this.priorityVisualization = null;
     }
 }

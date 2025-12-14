@@ -1,5 +1,6 @@
 import { Setting, Notice } from 'obsidian';
 import IncrementalReadingPlugin from '../main';
+import { i18n } from '../i18n';
 
 /**
  * 数据管理设置组件
@@ -14,17 +15,17 @@ export class DataManagementSettings {
     }
 
     public render(): void {
-        this.containerEl.createEl('h3', { text: '数据管理' });
+        this.containerEl.createEl('h3', { text: i18n.t('settings.dataManagement.title') });
 
         // 清除漫游历史
         new Setting(this.containerEl)
-            .setName('清除漫游历史')
-            .setDesc('清除所有漫游历史记录和访问次数（此操作不可撤销，请谨慎操作）')
+            .setName(i18n.t('settings.dataManagement.clearHistory'))
+            .setDesc(i18n.t('settings.dataManagement.clearHistoryDesc'))
             .addButton(button => button
-                .setButtonText('🗑️ 清除所有历史')
+                .setButtonText('🗑️ ' + i18n.t('settings.dataManagement.clearButton'))
                 .onClick(async () => {
                     // 确认对话框
-                    if (confirm('确定要清除所有漫游历史吗？\n这将清空漫游列表并重置所有文档的访问次数。\n\n此操作不可撤销！')) {
+                    if (confirm(i18n.t('settings.dataManagement.clearConfirm'))) {
                         this.plugin.settings.roamingDocs = [];
                         // 重置所有访问次数为0
                         for (const [path] of Object.entries(this.plugin.settings.documentMetrics)) {
@@ -32,7 +33,7 @@ export class DataManagementSettings {
                             this.plugin.settings.documentMetrics[path].lastVisited = 0;
                         }
                         await this.plugin.saveSettings();
-                        new Notice('✅ 所有漫游历史已清除');
+                        new Notice(i18n.t('notices.historyCleared'));
                     }
                 }));
     }

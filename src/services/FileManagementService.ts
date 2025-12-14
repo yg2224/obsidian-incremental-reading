@@ -57,6 +57,12 @@ export class FileManagementService {
 
                     if (!this.settings.roamingDocs.includes(file.path)) {
                         this.settings.roamingDocs.push(file.path);
+
+                        // 为文件创建默认指标（如果不存在）
+                        if (!this.settings.documentMetrics[file.path]) {
+                            this.settings.documentMetrics[file.path] = this.createDefaultMetricsForFile(file) as DocumentMetrics;
+                        }
+
                         addedCount++;
                     }
                 }
@@ -78,6 +84,12 @@ export class FileManagementService {
         for (const file of files) {
             if (!this.settings.roamingDocs.includes(file.path)) {
                 this.settings.roamingDocs.push(file.path);
+
+                // 为文件创建默认指标（如果不存在）
+                if (!this.settings.documentMetrics[file.path]) {
+                    this.settings.documentMetrics[file.path] = this.createDefaultMetricsForFile(file) as DocumentMetrics;
+                }
+
                 addedCount++;
             }
         }

@@ -369,11 +369,477 @@ var MultiFileSelectionModal = class extends import_obsidian.Modal {
   }
 };
 
+// src/i18n/translations.ts
+var translations = {
+  en: {
+    common: {
+      ok: "OK",
+      cancel: "Cancel",
+      save: "Save",
+      delete: "Delete",
+      edit: "Edit",
+      add: "Add",
+      remove: "Remove",
+      confirm: "Confirm",
+      close: "Close",
+      reset: "Reset",
+      search: "Search",
+      loading: "Loading...",
+      error: "Error",
+      success: "Success",
+      warning: "Warning"
+    },
+    view: {
+      title: "Incremental Reading",
+      subtitle: `"Unfold the scroll of silent affection: With the <span class="chance">chance of waiting and roaming...</span><br>Through stars we meet, three autumns' frost prints on the hooves."`,
+      statusTemplate: "Roaming through {count} documents",
+      noDocuments: "No documents in roaming list",
+      openDocument: "Open Document",
+      actionBar: {
+        continue: "Continue Reading",
+        smartRecommend: "Smart Recommendations",
+        refresh: "Refresh Data",
+        random: "Random Roaming",
+        addCurrent: "Add to Roaming",
+        addFolder: "Add Folder",
+        multiSelect: "Add Multiple Files",
+        noDocuments: "No roaming documents yet",
+        alreadyInRoaming: "Already in roaming",
+        smartTooltip: "Jump to the most similar document"
+      },
+      nonRoaming: {
+        title: "This document is not in your roaming list yet",
+        description: "Add it to unlock custom metrics, priority tuning, and smart recommendations.",
+        benefits: [
+          "Set custom metric scores",
+          "Fine-tune document priority",
+          "Receive intelligent recommendations",
+          "Appear in ranking insights"
+        ],
+        action: "Add to Roaming List"
+      }
+    },
+    tabs: {
+      metrics: "Document Metrics",
+      ranking: "Priority Ranking",
+      recommendations: "Smart Recommendations",
+      visualization: "Priority Visualization"
+    },
+    metrics: {
+      title: "Current Document Metrics",
+      importance: "Importance",
+      urgency: "Urgency",
+      completion: "Completion",
+      lastVisited: "Last Visited",
+      visitCount: "Visit Count",
+      totalScore: "Total Score",
+      updateMetrics: "Update Metrics",
+      noFileOpen: "No file is currently open",
+      currentDocument: "Current Document",
+      priorityLabel: "Priority",
+      customMetricsTitle: "Custom Metrics",
+      visitStatsTitle: "Visit Statistics",
+      visitCountLabel: "Visit Count",
+      lastVisitedLabel: "Last Visited",
+      neverVisited: "Never visited",
+      weightBreakdown: "Weight Breakdown",
+      totalLabel: "Total"
+    },
+    ranking: {
+      title: "Document Priority Ranking",
+      emptyMessage: "No documents in roaming list",
+      score: "Score",
+      visits: "Visits",
+      lastVisit: "Last Visit",
+      priorityToggle: "By Priority",
+      visitsToggle: "By Visits",
+      refreshButton: "Refresh Ranking",
+      openButton: "Open"
+    },
+    recommendations: {
+      title: "Intelligent Document Recommendations",
+      emptyMessage: "No recommendations available",
+      similarity: "Similarity",
+      openRecommended: "Open Recommended",
+      refreshing: "Refreshing recommendations...",
+      refreshButton: "Refresh Recommendations",
+      smartJumpButton: "Jump to Top Match",
+      smartJumpFailed: "Smart jump failed, please try again",
+      smartJumpNotice: "\u{1F9E0} Smart recommendation: {filename} (similarity {similarity}%)",
+      priorityLabel: "Priority",
+      visitCountLabel: "Visits",
+      openButton: "Open"
+    },
+    visualization: {
+      title: "Priority Visualization",
+      xAxis: "Document Rank (by priority)",
+      yAxis: "Priority Score",
+      refresh: "Refresh",
+      emptyMessage: "No documents to visualize"
+    },
+    actions: {
+      addFile: "Add Current File",
+      addFolder: "Add Folder",
+      addMultiple: "Add Multiple Files",
+      removeFromRoaming: "Remove from Roaming",
+      clearHistory: "Clear History",
+      refresh: "Refresh"
+    },
+    settings: {
+      title: "Incremental Reading Settings",
+      general: {
+        title: "General Settings",
+        language: "Language",
+        languageDesc: "Select the interface language"
+      },
+      customMetrics: {
+        title: "Custom Metrics",
+        description: "Define your own evaluation metrics (1-10 indicators). Weights are automatically normalized.",
+        addMetric: "Add Metric",
+        metricName: "Metric Name",
+        metricWeight: "Weight",
+        removeMetric: "Remove",
+        minMetricsWarning: "At least one metric is required",
+        maxMetricsWarning: "Maximum 10 metrics allowed"
+      },
+      recommendation: {
+        title: "Recommendation Settings",
+        description: "Configure intelligent recommendation algorithm parameters",
+        recentCount: "Recent Documents Count",
+        recentCountDesc: "Number of recently visited documents to use as reference",
+        topCount: "Top Priority Count",
+        topCountDesc: "Number of high-priority documents to use as reference",
+        topK: "Recommendation Count",
+        topKDesc: "Number of recommendations to display",
+        maxCandidates: "Max Candidates",
+        maxCandidatesDesc: "Maximum number of documents to analyze",
+        maxParagraphs: "Max Paragraphs",
+        maxParagraphsDesc: "Maximum paragraphs to analyze per document"
+      },
+      filter: {
+        title: "Filter Settings",
+        description: "Configure document filtering rules",
+        excludeVisited: "Exclude Visited Documents",
+        excludeVisitedDesc: "Do not recommend documents you've already visited",
+        excludedPaths: "Excluded Paths",
+        excludedPathsDesc: "Path patterns to exclude (one per line, supports wildcards)",
+        excludedPathsPlaceholder: "Templates/**\nArchive/**"
+      },
+      dataManagement: {
+        title: "Data Management",
+        description: "Manage your reading history and settings data",
+        clearHistory: "Clear Reading History",
+        clearHistoryDesc: "Remove all documents from roaming list and reset visit counts",
+        clearButton: "Clear History",
+        clearConfirm: "Are you sure you want to clear all reading history?",
+        exportData: "Export Data",
+        exportDataDesc: "Export all settings and metrics to a JSON file",
+        exportButton: "Export",
+        importData: "Import Data",
+        importDataDesc: "Import settings and metrics from a JSON file",
+        importButton: "Import"
+      }
+    },
+    notices: {
+      addedToRoaming: 'Added "{filename}" to roaming',
+      removedFromRoaming: 'Removed "{filename}" from roaming',
+      historyCleared: "Reading history cleared",
+      onlyMarkdownFiles: "Only Markdown files can be added to roaming list",
+      noActiveFile: "No active file",
+      filesAdded: "Successfully added {count} files to roaming list",
+      noFilesAdded: "No files were added",
+      settingsSaved: "Settings saved",
+      errorSavingSettings: "Error saving settings",
+      errorLoadingSettings: "Error loading settings, using defaults",
+      dataExported: "Data exported successfully",
+      dataImported: "Data imported successfully",
+      invalidData: "Invalid data format",
+      continueFailed: "Continue reading failed",
+      randomRoaming: "\u{1F3B2} Random roaming: {filename}",
+      randomRoamingFailed: "Random roaming failed",
+      selectionProbability: "Selected: {filename} (probability: {probability}%)",
+      documentOpenFailed: "Failed to open document",
+      editMetricsFailed: "Failed to edit document metrics",
+      fileSwitchError: "Error switching files",
+      smartRecommendationFailed: "Smart recommendation failed, please try again"
+    },
+    commands: {
+      startReading: "Start Incremental Reading",
+      openRandom: "Open Random Document",
+      addToRoaming: "Add to Roaming",
+      addFolder: "Add Folder to Roaming",
+      addMultiple: "Add Multiple Files to Roaming",
+      clearHistory: "Clear Reading History"
+    }
+  },
+  zh: {
+    common: {
+      ok: "\u786E\u5B9A",
+      cancel: "\u53D6\u6D88",
+      save: "\u4FDD\u5B58",
+      delete: "\u5220\u9664",
+      edit: "\u7F16\u8F91",
+      add: "\u6DFB\u52A0",
+      remove: "\u79FB\u9664",
+      confirm: "\u786E\u8BA4",
+      close: "\u5173\u95ED",
+      reset: "\u91CD\u7F6E",
+      search: "\u641C\u7D22",
+      loading: "\u52A0\u8F7D\u4E2D...",
+      error: "\u9519\u8BEF",
+      success: "\u6210\u529F",
+      warning: "\u8B66\u544A"
+    },
+    view: {
+      title: "\u6F2B\u6E38\u5F0F\u6E10\u8FDB\u9605\u8BFB",
+      subtitle: '"\u5C55\u5377\u4E43\u65E0\u8A00\u7684\u60C5\u610F\uFF1A\u4EE5<span class="chance">\u7B49\u5F85\u6F2B\u6E38...</span>\u7684\u673A\u9047\uFF0C<br>\u7A7F\u8D8A\u661F\u8FB0\u9047\u89C1\u4F60\uFF0C\u4E09\u79CB\u971C\u96EA\u5370\u9A6C\u8E44\u3002"',
+      statusTemplate: "\u5DF2\u6F2B\u6E38 {count} \u4E2A\u6587\u6863",
+      noDocuments: "\u6F2B\u6E38\u5217\u8868\u4E3A\u7A7A",
+      openDocument: "\u6253\u5F00\u6587\u6863",
+      actionBar: {
+        continue: "\u7EE7\u7EED\u9605\u8BFB",
+        smartRecommend: "\u667A\u80FD\u63A8\u8350",
+        refresh: "\u5237\u65B0\u6570\u636E",
+        random: "\u968F\u673A\u6F2B\u6E38",
+        addCurrent: "\u52A0\u5165\u6F2B\u6E38",
+        addFolder: "\u6DFB\u52A0\u6587\u4EF6\u5939",
+        multiSelect: "\u6279\u91CF\u6DFB\u52A0",
+        noDocuments: "\u6682\u65E0\u6F2B\u6E38\u6587\u6863",
+        alreadyInRoaming: "\u5DF2\u5728\u6F2B\u6E38\u5217\u8868",
+        smartTooltip: "\u8DF3\u8F6C\u5230\u6700\u76F8\u4F3C\u7684\u6587\u6863"
+      },
+      nonRoaming: {
+        title: "\u6B64\u6587\u6863\u5C1A\u672A\u52A0\u5165\u6F2B\u6E38\u5217\u8868",
+        description: "\u5C06\u5176\u6DFB\u52A0\u5230\u6F2B\u6E38\u5217\u8868\uFF0C\u89E3\u9501\u81EA\u5B9A\u4E49\u6307\u6807\u3001\u4F18\u5148\u7EA7\u8C03\u6574\u548C\u667A\u80FD\u63A8\u8350\u529F\u80FD\u3002",
+        benefits: [
+          "\u8BBE\u7F6E\u81EA\u5B9A\u4E49\u6307\u6807\u8BC4\u5206",
+          "\u8C03\u6574\u6587\u6863\u4F18\u5148\u7EA7",
+          "\u83B7\u5F97\u667A\u80FD\u63A8\u8350",
+          "\u51FA\u73B0\u5728\u6392\u884C\u699C\u4E2D"
+        ],
+        action: "\u6DFB\u52A0\u5230\u6F2B\u6E38\u5217\u8868"
+      }
+    },
+    tabs: {
+      metrics: "\u6587\u6863\u6307\u6807",
+      ranking: "\u4F18\u5148\u7EA7\u6392\u884C",
+      recommendations: "\u667A\u80FD\u63A8\u8350",
+      visualization: "\u4F18\u5148\u7EA7\u53EF\u89C6\u5316"
+    },
+    metrics: {
+      title: "\u5F53\u524D\u6587\u6863\u6307\u6807",
+      importance: "\u91CD\u8981\u6027",
+      urgency: "\u7D27\u6025\u5EA6",
+      completion: "\u5B8C\u6210\u5EA6",
+      lastVisited: "\u6700\u540E\u8BBF\u95EE",
+      visitCount: "\u8BBF\u95EE\u6B21\u6570",
+      totalScore: "\u7EFC\u5408\u8BC4\u5206",
+      updateMetrics: "\u66F4\u65B0\u6307\u6807",
+      noFileOpen: "\u5F53\u524D\u6CA1\u6709\u6253\u5F00\u7684\u6587\u4EF6",
+      currentDocument: "\u5F53\u524D\u6587\u6863",
+      priorityLabel: "\u4F18\u5148\u7EA7",
+      customMetricsTitle: "\u81EA\u5B9A\u4E49\u6307\u6807",
+      visitStatsTitle: "\u8BBF\u95EE\u7EDF\u8BA1",
+      visitCountLabel: "\u8BBF\u95EE\u6B21\u6570",
+      lastVisitedLabel: "\u6700\u540E\u8BBF\u95EE",
+      neverVisited: "\u4ECE\u672A\u8BBF\u95EE",
+      weightBreakdown: "\u6743\u91CD\u5206\u89E3",
+      totalLabel: "\u603B\u8BA1"
+    },
+    ranking: {
+      title: "\u6587\u6863\u4F18\u5148\u7EA7\u6392\u884C",
+      emptyMessage: "\u6F2B\u6E38\u5217\u8868\u4E3A\u7A7A",
+      score: "\u8BC4\u5206",
+      visits: "\u8BBF\u95EE",
+      lastVisit: "\u6700\u540E\u8BBF\u95EE",
+      priorityToggle: "\u6309\u4F18\u5148\u7EA7",
+      visitsToggle: "\u6309\u8BBF\u95EE\u91CF",
+      refreshButton: "\u5237\u65B0\u6392\u884C",
+      openButton: "\u6253\u5F00"
+    },
+    recommendations: {
+      title: "\u667A\u80FD\u6587\u6863\u63A8\u8350",
+      emptyMessage: "\u6682\u65E0\u63A8\u8350",
+      similarity: "\u76F8\u4F3C\u5EA6",
+      openRecommended: "\u6253\u5F00\u63A8\u8350",
+      refreshing: "\u6B63\u5728\u5237\u65B0\u63A8\u8350...",
+      refreshButton: "\u5237\u65B0\u63A8\u8350",
+      smartJumpButton: "\u8DF3\u8F6C\u5230\u6700\u4F73\u5339\u914D",
+      smartJumpFailed: "\u667A\u80FD\u8DF3\u8F6C\u5931\u8D25\uFF0C\u8BF7\u91CD\u8BD5",
+      smartJumpNotice: "\u{1F9E0} \u667A\u80FD\u63A8\u8350\uFF1A{filename}\uFF08\u76F8\u4F3C\u5EA6 {similarity}%\uFF09",
+      priorityLabel: "\u4F18\u5148\u7EA7",
+      visitCountLabel: "\u8BBF\u95EE\u91CF",
+      openButton: "\u6253\u5F00"
+    },
+    visualization: {
+      title: "\u4F18\u5148\u7EA7\u53EF\u89C6\u5316",
+      xAxis: "\u6587\u6863\u6392\u540D\uFF08\u6309\u4F18\u5148\u7EA7\uFF09",
+      yAxis: "\u4F18\u5148\u7EA7\u5206\u6570",
+      refresh: "\u5237\u65B0",
+      emptyMessage: "\u6CA1\u6709\u53EF\u89C6\u5316\u7684\u6587\u6863"
+    },
+    actions: {
+      addFile: "\u52A0\u5165\u5F53\u524D\u6587\u6863",
+      addFolder: "\u6DFB\u52A0\u6587\u4EF6\u5939",
+      addMultiple: "\u6279\u91CF\u6DFB\u52A0",
+      removeFromRoaming: "\u79FB\u51FA\u6F2B\u6E38",
+      clearHistory: "\u6E05\u9664\u5386\u53F2",
+      refresh: "\u5237\u65B0"
+    },
+    settings: {
+      title: "\u589E\u91CF\u9605\u8BFB \u63D2\u4EF6\u8BBE\u7F6E",
+      general: {
+        title: "\u901A\u7528\u8BBE\u7F6E",
+        language: "\u754C\u9762\u8BED\u8A00",
+        languageDesc: "\u9009\u62E9\u754C\u9762\u663E\u793A\u8BED\u8A00"
+      },
+      customMetrics: {
+        title: "\u81EA\u5B9A\u4E49\u6307\u6807",
+        description: "\u81EA\u5B9A\u4E49\u8BC4\u4F30\u6307\u6807\uFF081-10\u4E2A\uFF09\uFF0C\u6743\u91CD\u4F1A\u81EA\u52A8\u6807\u51C6\u5316",
+        addMetric: "\u6DFB\u52A0\u6307\u6807",
+        metricName: "\u6307\u6807\u540D\u79F0",
+        metricWeight: "\u6743\u91CD",
+        removeMetric: "\u5220\u9664",
+        minMetricsWarning: "\u81F3\u5C11\u9700\u8981\u4E00\u4E2A\u6307\u6807",
+        maxMetricsWarning: "\u6700\u591A\u53EA\u80FD\u6DFB\u52A010\u4E2A\u6307\u6807"
+      },
+      recommendation: {
+        title: "\u63A8\u8350\u8BBE\u7F6E",
+        description: "\u914D\u7F6E\u667A\u80FD\u63A8\u8350\u7B97\u6CD5\u53C2\u6570",
+        recentCount: "\u6700\u8FD1\u6587\u6863\u6570",
+        recentCountDesc: "\u7528\u4F5C\u53C2\u8003\u7684\u6700\u8FD1\u8BBF\u95EE\u6587\u6863\u6570\u91CF",
+        topCount: "\u9AD8\u4F18\u5148\u7EA7\u6587\u6863\u6570",
+        topCountDesc: "\u7528\u4F5C\u53C2\u8003\u7684\u9AD8\u4F18\u5148\u7EA7\u6587\u6863\u6570\u91CF",
+        topK: "\u63A8\u8350\u6570\u91CF",
+        topKDesc: "\u663E\u793A\u7684\u63A8\u8350\u6587\u6863\u6570\u91CF",
+        maxCandidates: "\u6700\u5927\u5019\u9009\u6570",
+        maxCandidatesDesc: "\u5206\u6790\u7684\u6700\u5927\u6587\u6863\u6570\u91CF",
+        maxParagraphs: "\u6700\u5927\u6BB5\u843D\u6570",
+        maxParagraphsDesc: "\u6BCF\u4E2A\u6587\u6863\u5206\u6790\u7684\u6700\u5927\u6BB5\u843D\u6570"
+      },
+      filter: {
+        title: "\u8FC7\u6EE4\u8BBE\u7F6E",
+        description: "\u914D\u7F6E\u6587\u6863\u8FC7\u6EE4\u89C4\u5219",
+        excludeVisited: "\u6392\u9664\u5DF2\u8BBF\u95EE\u6587\u6863",
+        excludeVisitedDesc: "\u4E0D\u63A8\u8350\u5DF2\u7ECF\u8BBF\u95EE\u8FC7\u7684\u6587\u6863",
+        excludedPaths: "\u6392\u9664\u8DEF\u5F84",
+        excludedPathsDesc: "\u8981\u6392\u9664\u7684\u8DEF\u5F84\u6A21\u5F0F\uFF08\u6BCF\u884C\u4E00\u4E2A\uFF0C\u652F\u6301\u901A\u914D\u7B26\uFF09",
+        excludedPathsPlaceholder: "Templates/**\nArchive/**"
+      },
+      dataManagement: {
+        title: "\u6570\u636E\u7BA1\u7406",
+        description: "\u7BA1\u7406\u4F60\u7684\u9605\u8BFB\u5386\u53F2\u548C\u8BBE\u7F6E\u6570\u636E",
+        clearHistory: "\u6E05\u9664\u9605\u8BFB\u5386\u53F2",
+        clearHistoryDesc: "\u4ECE\u6F2B\u6E38\u5217\u8868\u4E2D\u79FB\u9664\u6240\u6709\u6587\u6863\u5E76\u91CD\u7F6E\u8BBF\u95EE\u8BA1\u6570",
+        clearButton: "\u6E05\u9664\u5386\u53F2",
+        clearConfirm: "\u786E\u5B9A\u8981\u6E05\u9664\u6240\u6709\u9605\u8BFB\u5386\u53F2\u5417\uFF1F",
+        exportData: "\u5BFC\u51FA\u6570\u636E",
+        exportDataDesc: "\u5C06\u6240\u6709\u8BBE\u7F6E\u548C\u6307\u6807\u5BFC\u51FA\u5230JSON\u6587\u4EF6",
+        exportButton: "\u5BFC\u51FA",
+        importData: "\u5BFC\u5165\u6570\u636E",
+        importDataDesc: "\u4ECEJSON\u6587\u4EF6\u5BFC\u5165\u8BBE\u7F6E\u548C\u6307\u6807",
+        importButton: "\u5BFC\u5165"
+      }
+    },
+    notices: {
+      addedToRoaming: '\u5DF2\u5C06 "{filename}" \u52A0\u5165\u6F2B\u6E38',
+      removedFromRoaming: '\u5DF2\u5C06 "{filename}" \u79FB\u51FA\u6F2B\u6E38',
+      historyCleared: "\u9605\u8BFB\u5386\u53F2\u5DF2\u6E05\u9664",
+      onlyMarkdownFiles: "\u53EA\u80FD\u6DFB\u52A0Markdown\u6587\u6863\u5230\u6F2B\u6E38\u5217\u8868",
+      noActiveFile: "\u6CA1\u6709\u6253\u5F00\u7684\u6587\u6863",
+      filesAdded: "\u6210\u529F\u6DFB\u52A0 {count} \u4E2A\u6587\u4EF6\u5230\u6F2B\u6E38\u5217\u8868",
+      noFilesAdded: "\u6CA1\u6709\u6587\u4EF6\u88AB\u6DFB\u52A0",
+      settingsSaved: "\u8BBE\u7F6E\u5DF2\u4FDD\u5B58",
+      errorSavingSettings: "\u4FDD\u5B58\u8BBE\u7F6E\u65F6\u51FA\u9519",
+      errorLoadingSettings: "\u52A0\u8F7D\u8BBE\u7F6E\u65F6\u51FA\u9519\uFF0C\u4F7F\u7528\u9ED8\u8BA4\u8BBE\u7F6E",
+      dataExported: "\u6570\u636E\u5BFC\u51FA\u6210\u529F",
+      dataImported: "\u6570\u636E\u5BFC\u5165\u6210\u529F",
+      invalidData: "\u65E0\u6548\u7684\u6570\u636E\u683C\u5F0F",
+      continueFailed: "\u7EE7\u7EED\u6F2B\u6E38\u5931\u8D25",
+      randomRoaming: "\u{1F3B2} \u968F\u673A\u6F2B\u6E38\uFF1A{filename}",
+      randomRoamingFailed: "\u968F\u673A\u6F2B\u6E38\u5931\u8D25",
+      selectionProbability: "\u5DF2\u9009\u62E9\uFF1A{filename}\uFF08\u9009\u62E9\u6982\u7387\uFF1A{probability}%\uFF09",
+      documentOpenFailed: "\u6253\u5F00\u6587\u6863\u5931\u8D25",
+      editMetricsFailed: "\u7F16\u8F91\u6587\u6863\u5F97\u5206\u5931\u8D25",
+      fileSwitchError: "\u6587\u4EF6\u5207\u6362\u65F6\u51FA\u73B0\u9519\u8BEF",
+      smartRecommendationFailed: "\u667A\u80FD\u63A8\u8350\u5931\u8D25\uFF0C\u8BF7\u91CD\u8BD5"
+    },
+    commands: {
+      startReading: "\u5F00\u59CB\u589E\u91CF\u9605\u8BFB",
+      openRandom: "\u6253\u5F00\u968F\u673A\u6587\u6863",
+      addToRoaming: "\u6DFB\u52A0\u81F3\u6F2B\u6E38",
+      addFolder: "\u6DFB\u52A0\u6587\u4EF6\u5939\u5230\u6F2B\u6E38",
+      addMultiple: "\u6279\u91CF\u6DFB\u52A0\u6587\u4EF6\u5230\u6F2B\u6E38",
+      clearHistory: "\u6E05\u9664\u9605\u8BFB\u5386\u53F2"
+    }
+  }
+};
+
+// src/i18n/i18n.ts
+var I18n = class {
+  constructor() {
+    this.currentLanguage = "en";
+    this.translations = translations;
+  }
+  static getInstance() {
+    if (!I18n.instance) {
+      I18n.instance = new I18n();
+    }
+    return I18n.instance;
+  }
+  setLanguage(language) {
+    if (this.translations[language]) {
+      this.currentLanguage = language;
+    } else {
+      console.warn(`Language ${language} not found, falling back to English`);
+      this.currentLanguage = "en";
+    }
+  }
+  getLanguage() {
+    return this.currentLanguage;
+  }
+  t(key, replacements) {
+    const keys = key.split(".");
+    let value = this.translations[this.currentLanguage];
+    for (const k of keys) {
+      if (value && typeof value === "object" && k in value) {
+        value = value[k];
+      } else {
+        console.warn(`Translation key not found: ${key}`);
+        return key;
+      }
+    }
+    if (typeof value !== "string") {
+      console.warn(`Translation value is not a string: ${key}`);
+      return key;
+    }
+    if (replacements) {
+      Object.keys(replacements).forEach((replaceKey) => {
+        value = value.replace(new RegExp(`\\{${replaceKey}\\}`, "g"), String(replacements[replaceKey]));
+      });
+    }
+    return value;
+  }
+  // Convenience method to get the entire translation object
+  getTranslation() {
+    return this.translations[this.currentLanguage];
+  }
+  // Get available languages
+  getAvailableLanguages() {
+    return [
+      { code: "en", name: "English" },
+      { code: "zh", name: "\u4E2D\u6587" }
+    ];
+  }
+};
+var i18n = I18n.getInstance();
+
 // src/views/components/ActionBar.ts
 var ActionBar = class {
   constructor(container, plugin, callbacks) {
     this.continueBtn = null;
     this.addRoamingBtn = null;
+    this.removeRoamingBtn = null;
     this.container = container;
     this.plugin = plugin;
     this.onContinueReading = callbacks.onContinueReading;
@@ -381,47 +847,38 @@ var ActionBar = class {
     this.onRefreshData = callbacks.onRefreshData;
     this.onRandomRoaming = callbacks.onRandomRoaming;
     this.onAddCurrentToRoaming = callbacks.onAddCurrentToRoaming;
+    this.onRemoveCurrentFromRoaming = callbacks.onRemoveCurrentFromRoaming;
     this.create();
   }
   create() {
     const actionBar = this.container.createEl("div", { cls: "action-bar" });
-    this.continueBtn = actionBar.createEl("button", {
-      cls: "btn primary",
-      text: "\u7EE7\u7EED\u6F2B\u6E38"
-    });
+    this.continueBtn = actionBar.createEl("button", { cls: "btn primary" });
+    this.continueBtn.textContent = i18n.t("view.actionBar.continue");
     this.continueBtn.onclick = () => this.onContinueReading();
     this.updateContinueButtonState();
-    const recommendBtn = actionBar.createEl("button", {
-      cls: "btn",
-      text: "\u{1F9E0} \u667A\u80FD\u63A8\u8350"
-    });
-    recommendBtn.title = "\u8DF3\u8F6C\u5230\u76F8\u4F3C\u5EA6\u6700\u9AD8\u7684\u6587\u6863";
+    const recommendBtn = actionBar.createEl("button", { cls: "btn" });
+    recommendBtn.innerHTML = `<span>\u{1F9E0}</span><span>${i18n.t("view.actionBar.smartRecommend")}</span>`;
+    recommendBtn.title = i18n.t("view.actionBar.smartTooltip");
     recommendBtn.onclick = () => this.onGetSmartRecommendations();
-    const refreshDataBtn = actionBar.createEl("button", {
-      cls: "btn",
-      text: "\u72B6\u6001\u66F4\u65B0"
-    });
+    const refreshDataBtn = actionBar.createEl("button", { cls: "btn" });
+    refreshDataBtn.innerHTML = `<span>\u{1F504}</span><span>${i18n.t("view.actionBar.refresh")}</span>`;
     refreshDataBtn.onclick = () => this.onRefreshData();
-    const randomRoamBtn = actionBar.createEl("button", {
-      cls: "btn",
-      text: "\u968F\u673A\u6F2B\u6E38"
-    });
+    const randomRoamBtn = actionBar.createEl("button", { cls: "btn" });
+    randomRoamBtn.innerHTML = `<span>\u{1F3B2}</span><span>${i18n.t("view.actionBar.random")}</span>`;
     randomRoamBtn.onclick = () => this.onRandomRoaming();
-    this.addRoamingBtn = actionBar.createEl("button", {
-      cls: "btn",
-      text: "\u52A0\u5165\u6F2B\u6E38"
-    });
+    this.addRoamingBtn = actionBar.createEl("button", { cls: "btn" });
+    this.addRoamingBtn.innerHTML = `<span>\u2795</span><span>${i18n.t("view.actionBar.addCurrent")}</span>`;
     this.addRoamingBtn.onclick = () => this.onAddCurrentToRoaming();
     this.updateAddRoamingButtonState();
-    const addFolderBtn = actionBar.createEl("button", {
-      cls: "btn",
-      text: "\u6DFB\u52A0\u6587\u4EF6\u5939"
-    });
+    this.removeRoamingBtn = actionBar.createEl("button", { cls: "btn" });
+    this.removeRoamingBtn.innerHTML = `<span>\u2796</span><span>${i18n.t("actions.removeFromRoaming")}</span>`;
+    this.removeRoamingBtn.onclick = () => this.onRemoveCurrentFromRoaming();
+    this.updateRemoveRoamingButtonState();
+    const addFolderBtn = actionBar.createEl("button", { cls: "btn primary" });
+    addFolderBtn.innerHTML = `<span>\u{1F4C1}</span><span>${i18n.t("view.actionBar.addFolder")}</span>`;
     addFolderBtn.onclick = () => this.addFolderToRoaming();
-    const multiSelectBtn = actionBar.createEl("button", {
-      cls: "btn",
-      text: "\u591A\u9009\u6587\u4EF6"
-    });
+    const multiSelectBtn = actionBar.createEl("button", { cls: "btn primary" });
+    multiSelectBtn.innerHTML = `<span>\u{1F4C4}</span><span>${i18n.t("view.actionBar.multiSelect")}</span>`;
     multiSelectBtn.onclick = () => this.multiSelectFilesToRoaming();
   }
   addFolderToRoaming() {
@@ -444,15 +901,33 @@ var ActionBar = class {
     const validRoamingFiles = this.plugin.getValidRoamingFiles();
     const hasValidFiles = validRoamingFiles.length > 0;
     this.continueBtn.disabled = !hasValidFiles;
-    this.continueBtn.textContent = hasValidFiles ? "\u7EE7\u7EED\u6F2B\u6E38" : "\u6682\u65E0\u6F2B\u6E38\u6587\u6863";
+    this.continueBtn.textContent = hasValidFiles ? i18n.t("view.actionBar.continue") : i18n.t("view.actionBar.noDocuments");
   }
   updateAddRoamingButtonState() {
     if (!this.addRoamingBtn)
       return;
     const activeFile = this.plugin.app.workspace.getActiveFile();
     const isInRoaming = activeFile && this.plugin.settings.roamingDocs.includes(activeFile.path);
-    this.addRoamingBtn.disabled = isInRoaming;
-    this.addRoamingBtn.textContent = isInRoaming ? "\u5DF2\u5728\u6F2B\u6E38\u4E2D" : "\u52A0\u5165\u6F2B\u6E38";
+    if (isInRoaming) {
+      this.addRoamingBtn.style.display = "none";
+    } else {
+      this.addRoamingBtn.style.display = "flex";
+      this.addRoamingBtn.disabled = !activeFile;
+      this.addRoamingBtn.innerHTML = activeFile ? `<span>\u2795</span><span>${i18n.t("view.actionBar.addCurrent")}</span>` : `<span>\u2795</span><span>${i18n.t("view.actionBar.noDocuments")}</span>`;
+    }
+  }
+  updateRemoveRoamingButtonState() {
+    if (!this.removeRoamingBtn)
+      return;
+    const activeFile = this.plugin.app.workspace.getActiveFile();
+    const isInRoaming = activeFile && this.plugin.settings.roamingDocs.includes(activeFile.path);
+    if (isInRoaming) {
+      this.removeRoamingBtn.style.display = "flex";
+      this.removeRoamingBtn.disabled = false;
+      this.removeRoamingBtn.innerHTML = `<span>\u2796</span><span>${i18n.t("actions.removeFromRoaming")}</span>`;
+    } else {
+      this.removeRoamingBtn.style.display = "none";
+    }
   }
   /**
    * 更新按钮状态（当文件变化时调用）
@@ -460,6 +935,7 @@ var ActionBar = class {
   updateButtonStates() {
     this.updateContinueButtonState();
     this.updateAddRoamingButtonState();
+    this.updateRemoveRoamingButtonState();
   }
 };
 
@@ -729,16 +1205,11 @@ var DocumentMetricsDisplay = class {
     const promptSection = metricsContent.createEl("div", { cls: "non-roaming-prompt" });
     const header = promptSection.createEl("div", { cls: "prompt-header" });
     header.createEl("span", { cls: "prompt-icon", text: "\u{1F4CB}" });
-    header.createEl("h3", { cls: "prompt-title", text: "\u6B64\u6587\u6863\u5C1A\u672A\u52A0\u5165\u6F2B\u6E38\u5217\u8868" });
+    header.createEl("h3", { cls: "prompt-title", text: i18n.t("view.nonRoaming.title") });
     const description = promptSection.createEl("p", { cls: "prompt-description" });
-    description.textContent = "\u52A0\u5165\u6F2B\u6E38\u5217\u8868\u540E\uFF0C\u60A8\u5C31\u53EF\u4EE5\u4E3A\u6B64\u6587\u6863\u8BBE\u7F6E\u81EA\u5B9A\u4E49\u6307\u6807\u3001\u8C03\u6574\u4F18\u5148\u7EA7\uFF0C\u5E76\u4EAB\u53D7\u667A\u80FD\u63A8\u8350\u529F\u80FD\u3002";
+    description.textContent = i18n.t("view.nonRoaming.description");
     const benefitsList = promptSection.createEl("ul", { cls: "benefits-list" });
-    const benefits = [
-      "\u{1F4CA} \u8BBE\u7F6E\u81EA\u5B9A\u4E49\u6307\u6807\u8BC4\u5206",
-      "\u{1F3AF} \u8C03\u6574\u6587\u6863\u4F18\u5148\u7EA7",
-      "\u{1F9E0} \u83B7\u5F97\u667A\u80FD\u63A8\u8350",
-      "\u{1F4C8} \u53C2\u4E0E\u6392\u884C\u699C\u7EDF\u8BA1"
-    ];
+    const benefits = i18n.t("view.nonRoaming.benefits");
     benefits.forEach((benefit) => {
       const li = benefitsList.createEl("li");
       li.textContent = benefit;
@@ -746,12 +1217,12 @@ var DocumentMetricsDisplay = class {
     const actionSection = promptSection.createEl("div", { cls: "prompt-action" });
     const addButton = actionSection.createEl("button", {
       cls: "add-to-roaming-btn",
-      text: "+ \u52A0\u5165\u6F2B\u6E38\u5217\u8868"
+      text: "+ " + i18n.t("view.nonRoaming.action")
     });
     addButton.onclick = async () => {
       try {
         if (this.file.extension !== "md") {
-          new import_obsidian2.Notice(`\u53EA\u80FD\u6DFB\u52A0Markdown\u6587\u6863\u5230\u6F2B\u6E38\u5217\u8868`);
+          new import_obsidian2.Notice(i18n.t("notices.onlyMarkdownFiles"));
           return;
         }
         if (!this.plugin.settings.roamingDocs.includes(this.file.path)) {
@@ -760,14 +1231,14 @@ var DocumentMetricsDisplay = class {
           const defaultMetrics = fileService.createDefaultMetricsForFile(this.file);
           await this.plugin.updateDocumentMetrics(this.file, defaultMetrics);
           await this.plugin.saveSettings();
-          new import_obsidian2.Notice(`\u2705 \u5DF2\u5C06 "${this.file.basename}" \u52A0\u5165\u6F2B\u6E38\u5217\u8868`);
+          new import_obsidian2.Notice(i18n.t("notices.addedToRoaming", { filename: this.file.basename }));
           this.container.empty();
           this.render();
           this.onMetricsUpdated();
         }
       } catch (error) {
         console.error("\u52A0\u5165\u6F2B\u6E38\u5931\u8D25:", error);
-        new import_obsidian2.Notice("\u52A0\u5165\u6F2B\u6E38\u5931\u8D25");
+        new import_obsidian2.Notice(i18n.t("notices.errorSavingSettings"));
       }
     };
   }
@@ -825,12 +1296,12 @@ var DocumentMetricsDisplay = class {
     }
     const totalScore = this.calculatePriority(this.metrics);
     const totalItem = breakdown.createEl("div", { cls: "breakdown-item total" });
-    totalItem.createEl("span", { cls: "breakdown-label", text: "\u603B\u5206:" });
+    totalItem.createEl("span", { cls: "breakdown-label", text: i18n.t("metrics.totalLabel") + ":" });
     totalItem.createEl("span", { cls: "breakdown-score total-score", text: totalScore.toFixed(2) });
   }
   createPrioritySection(metricsContent) {
     const prioritySection = metricsContent.createEl("div", { cls: "priority-section" });
-    prioritySection.createEl("div", { cls: "priority-label", text: "\u4F18\u5148\u7EA7" });
+    prioritySection.createEl("div", { cls: "priority-label", text: i18n.t("metrics.priorityLabel") });
     const calculatedPriority = this.calculatePriority(this.metrics);
     const priorityValue = prioritySection.createEl("div", {
       cls: "priority-value",
@@ -841,7 +1312,7 @@ var DocumentMetricsDisplay = class {
   }
   createCustomMetricsSection(metricsContent) {
     const customMetricsSection = metricsContent.createEl("div", { cls: "custom-metrics-section" });
-    customMetricsSection.createEl("h4", { text: "\u81EA\u5B9A\u4E49\u6307\u6807" });
+    customMetricsSection.createEl("h4", { text: i18n.t("metrics.customMetricsTitle") });
     const metricsList = customMetricsSection.createEl("div", { cls: "metrics-list" });
     for (const metric of this.plugin.settings.customMetrics) {
       const metricItem = metricsList.createEl("div", { cls: "metric-item" });
@@ -933,13 +1404,13 @@ var DocumentMetricsDisplay = class {
   }
   createVisitStatsSection(metricsContent) {
     const visitSection = metricsContent.createEl("div", { cls: "visit-section" });
-    visitSection.createEl("h4", { text: "\u8BBF\u95EE\u7EDF\u8BA1" });
+    visitSection.createEl("h4", { text: i18n.t("metrics.visitStatsTitle") });
     const visitStats = visitSection.createEl("div", { cls: "visit-stats" });
     const visitCount = visitStats.createEl("div", { cls: "visit-stat" });
-    visitCount.createEl("span", { cls: "stat-label", text: "\u8BBF\u95EE\u6B21\u6570: " });
+    visitCount.createEl("span", { cls: "stat-label", text: i18n.t("metrics.visitCountLabel") + ": " });
     visitCount.createEl("span", { cls: "stat-value", text: this.metrics.visitCount.toString() });
     const lastVisited = visitStats.createEl("div", { cls: "visit-stat" });
-    lastVisited.createEl("span", { cls: "stat-label", text: "\u6700\u540E\u8BBF\u95EE: " });
+    lastVisited.createEl("span", { cls: "stat-label", text: i18n.t("metrics.lastVisitedLabel") + ": " });
     if (this.metrics.lastVisited) {
       const lastVisitedDate = new Date(this.metrics.lastVisited);
       lastVisited.createEl("span", {
@@ -947,11 +1418,11 @@ var DocumentMetricsDisplay = class {
         text: lastVisitedDate.toLocaleString()
       });
     } else {
-      lastVisited.createEl("span", { cls: "stat-value", text: "\u4ECE\u672A\u8BBF\u95EE" });
+      lastVisited.createEl("span", { cls: "stat-value", text: i18n.t("metrics.neverVisited") });
     }
   }
   createWeightBreakdown(breakdown) {
-    breakdown.createEl("h5", { text: "\u6743\u91CD\u5206\u6790" });
+    breakdown.createEl("h5", { text: i18n.t("metrics.weightBreakdown") });
     const breakdownList = breakdown.createEl("div", { cls: "breakdown-list" });
     this.createWeightBreakdownContent(breakdownList);
   }
@@ -1004,9 +1475,10 @@ var NavigationTabs = class {
     const tabContainer = navSection.createEl("div", { cls: "tabs-wrapper" });
     this.tabSlider = tabContainer.createEl("div", { cls: "tab-slider" });
     const tabs = [
-      { id: "metrics", label: "\u6587\u6863\u6307\u6807", icon: "\u{1F4CA}" },
-      { id: "recommendations", label: "\u667A\u80FD\u63A8\u8350", icon: "\u{1F9E0}" },
-      { id: "ranking", label: "\u6F2B\u6E38\u6392\u884C", icon: "\u{1F3C6}" }
+      { id: "metrics", label: i18n.t("tabs.metrics"), icon: "\u{1F4CA}" },
+      { id: "recommendations", label: i18n.t("tabs.recommendations"), icon: "\u{1F9E0}" },
+      { id: "ranking", label: i18n.t("tabs.ranking"), icon: "\u{1F3C6}" },
+      { id: "visualization", label: i18n.t("tabs.visualization"), icon: "\u{1F4C8}" }
     ];
     this.tabButtons = [];
     tabs.forEach((tab, index) => {
@@ -1065,6 +1537,13 @@ var NavigationTabs = class {
       this.switchToTab(tabId, tabIndex);
     }
   }
+  /**
+   * 刷新标签文本（语言切换时使用）
+   */
+  refresh() {
+    this.container.empty();
+    this.create();
+  }
 };
 
 // src/views/components/RankingList.ts
@@ -1080,23 +1559,23 @@ var RankingList = class {
     this.container.empty();
     const rankingSection = this.container.createEl("div", { cls: "ranking-section" });
     const headerContainer = rankingSection.createEl("div", { cls: "ranking-header" });
-    const title = headerContainer.createEl("h3", { text: "\u{1F3C6} \u6587\u6863\u6392\u884C\u699C" });
+    const title = headerContainer.createEl("h3", { text: "\u{1F3C6} " + i18n.t("ranking.title") });
     const toggleContainer = headerContainer.createEl("div", { cls: "ranking-toggle" });
     const priorityBtn = toggleContainer.createEl("button", {
       cls: `toggle-btn ${this.currentRankingType === "priority" ? "active" : ""}`,
-      text: "\u4F18\u5148\u7EA7\u6392\u884C"
+      text: i18n.t("ranking.priorityToggle")
     });
     priorityBtn.onclick = () => this.switchRankingType("priority");
     const visitsBtn = toggleContainer.createEl("button", {
       cls: `toggle-btn ${this.currentRankingType === "visits" ? "active" : ""}`,
-      text: "\u8BBF\u95EE\u6B21\u6570\u6392\u884C"
+      text: i18n.t("ranking.visitsToggle")
     });
     visitsBtn.onclick = () => this.switchRankingType("visits");
     const rankingList = rankingSection.createEl("div", { cls: "ranking-list" });
     const rankedDocuments = this.currentRankingType === "priority" ? this.getDocumentsByPriority() : this.getDocumentsByVisits();
     if (rankedDocuments.length === 0) {
       rankingList.createEl("p", {
-        text: "\u6682\u65E0\u6F2B\u6E38\u6587\u6863\uFF0C\u8BF7\u5148\u6DFB\u52A0\u6587\u6863\u5230\u6F2B\u6E38\u5217\u8868",
+        text: i18n.t("ranking.emptyMessage"),
         cls: "empty-message"
       });
       return;
@@ -1108,7 +1587,7 @@ var RankingList = class {
     });
     const refreshBtn = rankingSection.createEl("button", {
       cls: "refresh-ranking-btn",
-      text: "\u{1F504} \u5237\u65B0\u6392\u884C\u699C"
+      text: "\u{1F504} " + i18n.t("ranking.refreshButton")
     });
     refreshBtn.onclick = () => this.render();
   }
@@ -1155,18 +1634,18 @@ var RankingList = class {
     const scoreInfo = item.createEl("div", { cls: "score-info" });
     const mainScoreEl = scoreInfo.createEl("span", { cls: "main-score" });
     if (this.currentRankingType === "priority") {
-      mainScoreEl.textContent = `\u4F18\u5148\u7EA7: ${score.toFixed(1)}`;
+      mainScoreEl.textContent = `${i18n.t("metrics.priorityLabel")}: ${score.toFixed(1)}`;
       mainScoreEl.style.color = SharedUtils.getPriorityColor(score);
     } else {
-      mainScoreEl.textContent = `\u8BBF\u95EE\u6B21\u6570: ${score}\u6B21`;
+      mainScoreEl.textContent = `${i18n.t("ranking.visits")}: ${score}`;
       mainScoreEl.style.color = this.getVisitCountColor(score);
     }
     const actions = item.createEl("div", { cls: "actions" });
     const openBtn = actions.createEl("button", {
       cls: "open-btn",
-      text: "\u{1F4D6} \u6253\u5F00"
+      text: "\u{1F4D6} " + i18n.t("ranking.openButton")
     });
-    openBtn.title = "\u6253\u5F00\u6587\u6863";
+    openBtn.title = i18n.t("view.openDocument");
     openBtn.onclick = () => this.onOpenDocument(file);
     return item;
   }
@@ -1202,10 +1681,10 @@ var RecommendationList = class {
   render(recommendations) {
     this.container.empty();
     const recommendationsSection = this.container.createEl("div", { cls: "recommendations-section" });
-    recommendationsSection.createEl("h3", { text: "\u{1F9E0} \u667A\u80FD\u63A8\u8350" });
+    recommendationsSection.createEl("h3", { text: "\u{1F9E0} " + i18n.t("recommendations.title") });
     if (recommendations.length === 0) {
       recommendationsSection.createEl("p", {
-        text: "\u6682\u65E0\u63A8\u8350\u6587\u6863\uFF0C\u8BF7\u6DFB\u52A0\u66F4\u591A\u6587\u6863\u5230\u6F2B\u6E38\u5217\u8868",
+        text: i18n.t("recommendations.emptyMessage"),
         cls: "empty-message"
       });
       return;
@@ -1218,27 +1697,30 @@ var RecommendationList = class {
     const buttonContainer = recommendationsSection.createEl("div", { cls: "recommendation-buttons" });
     const refreshBtn = buttonContainer.createEl("button", {
       cls: "refresh-recommendations-btn",
-      text: "\u{1F504} \u5237\u65B0\u63A8\u8350"
+      text: "\u{1F504} " + i18n.t("recommendations.refreshButton")
     });
     refreshBtn.onclick = () => this.refresh();
     const smartJumpBtn = buttonContainer.createEl("button", {
       cls: "smart-jump-btn",
-      text: "\u{1F9E0} \u8DF3\u8F6C\u81F3\u6700\u9AD8\u76F8\u4F3C\u5EA6"
+      text: "\u{1F9E0} " + i18n.t("recommendations.smartJumpButton")
     });
     smartJumpBtn.onclick = async () => {
       try {
         const recommendations2 = await this.plugin.recommendationService.getRecommendations();
         if (recommendations2.length === 0) {
-          new import_obsidian3.Notice("\u6682\u65E0\u63A8\u8350\u6587\u6863");
+          new import_obsidian3.Notice(i18n.t("recommendations.emptyMessage"));
           return;
         }
         const topRecommendation = recommendations2[0];
         const similarity = (topRecommendation.score * 100).toFixed(1);
         await this.onOpenDocument(topRecommendation.file);
-        new import_obsidian3.Notice(`\u{1F9E0} \u667A\u80FD\u63A8\u8350\uFF1A${topRecommendation.file.basename} (\u76F8\u4F3C\u5EA6: ${similarity}%)`);
+        new import_obsidian3.Notice(i18n.t("recommendations.smartJumpNotice", {
+          filename: topRecommendation.file.basename,
+          similarity
+        }));
       } catch (error) {
         console.error("\u667A\u80FD\u8DF3\u8F6C\u5931\u8D25:", error);
-        new import_obsidian3.Notice("\u667A\u80FD\u8DF3\u8F6C\u5931\u8D25\uFF0C\u8BF7\u91CD\u8BD5");
+        new import_obsidian3.Notice(i18n.t("recommendations.smartJumpFailed"));
       }
     };
   }
@@ -1246,10 +1728,10 @@ var RecommendationList = class {
     this.container.empty();
     this.cachedRecommendations = recommendations;
     const recommendationsSection = this.container.createEl("div", { cls: "recommendations-section" });
-    recommendationsSection.createEl("h3", { text: "\u{1F9E0} \u667A\u80FD\u63A8\u8350" });
+    recommendationsSection.createEl("h3", { text: "\u{1F9E0} " + i18n.t("recommendations.title") });
     if (recommendations.length === 0) {
       recommendationsSection.createEl("p", {
-        text: "\u6682\u65E0\u63A8\u8350\u6587\u6863\uFF0C\u8BF7\u6DFB\u52A0\u66F4\u591A\u6587\u6863\u5230\u6F2B\u6E38\u5217\u8868",
+        text: i18n.t("recommendations.emptyMessage"),
         cls: "empty-message"
       });
       return;
@@ -1262,27 +1744,30 @@ var RecommendationList = class {
     const buttonContainer = recommendationsSection.createEl("div", { cls: "recommendation-buttons" });
     const refreshBtn = buttonContainer.createEl("button", {
       cls: "refresh-recommendations-btn",
-      text: "\u{1F504} \u5237\u65B0\u63A8\u8350"
+      text: "\u{1F504} " + i18n.t("recommendations.refreshButton")
     });
     refreshBtn.onclick = () => this.refresh();
     const smartJumpBtn = buttonContainer.createEl("button", {
       cls: "smart-jump-btn",
-      text: "\u{1F9E0} \u8DF3\u8F6C\u81F3\u6700\u9AD8\u76F8\u4F3C\u5EA6"
+      text: "\u{1F9E0} " + i18n.t("recommendations.smartJumpButton")
     });
     smartJumpBtn.onclick = async () => {
       try {
         const recommendations2 = await this.plugin.recommendationService.getRecommendations();
         if (recommendations2.length === 0) {
-          new import_obsidian3.Notice("\u6682\u65E0\u63A8\u8350\u6587\u6863");
+          new import_obsidian3.Notice(i18n.t("recommendations.emptyMessage"));
           return;
         }
         const topRecommendation = recommendations2[0];
         const similarity = (topRecommendation.score * 100).toFixed(1);
         await this.onOpenDocument(topRecommendation.file);
-        new import_obsidian3.Notice(`\u{1F9E0} \u667A\u80FD\u63A8\u8350\uFF1A${topRecommendation.file.basename} (\u76F8\u4F3C\u5EA6: ${similarity}%)`);
+        new import_obsidian3.Notice(i18n.t("recommendations.smartJumpNotice", {
+          filename: topRecommendation.file.basename,
+          similarity
+        }));
       } catch (error) {
         console.error("\u667A\u80FD\u8DF3\u8F6C\u5931\u8D25:", error);
-        new import_obsidian3.Notice("\u667A\u80FD\u8DF3\u8F6C\u5931\u8D25\uFF0C\u8BF7\u91CD\u8BD5");
+        new import_obsidian3.Notice(i18n.t("recommendations.smartJumpFailed"));
       }
     };
   }
@@ -1300,7 +1785,7 @@ var RecommendationList = class {
     const metrics = this.plugin.getDocumentMetrics(file);
     const calculatedPriority = SharedUtils.calculatePriority(metrics, this.plugin.settings.metricWeights, this.plugin.settings.customMetrics);
     const priorityEl = metricsInfo.createEl("span", { cls: "priority" });
-    priorityEl.textContent = `Priority: ${calculatedPriority.toFixed(1)}`;
+    priorityEl.textContent = `${i18n.t("recommendations.priorityLabel")}: ${calculatedPriority.toFixed(1)}`;
     priorityEl.style.color = SharedUtils.getPriorityColor(calculatedPriority);
     for (const metric of this.plugin.settings.customMetrics.slice(0, 2)) {
       const metricEl = metricsInfo.createEl("span", { cls: "metric" });
@@ -1308,9 +1793,9 @@ var RecommendationList = class {
       metricEl.textContent = `${metric.name}: ${metricValue.toFixed(1)}`;
     }
     const visitEl = metricsInfo.createEl("span", { cls: "visit-count" });
-    visitEl.textContent = `\u8BBF\u95EE: ${metrics.visitCount || 0}\u6B21`;
+    visitEl.textContent = `${i18n.t("recommendations.visitCountLabel")}: ${metrics.visitCount || 0}`;
     const actions = recItem.createEl("div", { cls: "quick-actions" });
-    const openBtn = actions.createEl("button", { text: "\u6253\u5F00" });
+    const openBtn = actions.createEl("button", { text: i18n.t("recommendations.openButton") });
     openBtn.onclick = () => this.onOpenDocument(file);
     return recItem;
   }
@@ -1326,10 +1811,10 @@ var RecommendationList = class {
     fileName.title = rec.file.path;
     const similarityInfo = recItem.createEl("div", { cls: "similarity-info" });
     const similarityEl = similarityInfo.createEl("span", { cls: "similarity-score-large" });
-    similarityEl.textContent = `\u76F8\u4F3C\u5EA6: ${(rec.score * 100).toFixed(1)}%`;
+    similarityEl.textContent = `${i18n.t("recommendations.similarity")}: ${(rec.score * 100).toFixed(1)}%`;
     similarityEl.style.color = this.getSimilarityColor(rec.score);
     const actions = recItem.createEl("div", { cls: "quick-actions" });
-    const openBtn = actions.createEl("button", { text: "\u6253\u5F00" });
+    const openBtn = actions.createEl("button", { text: i18n.t("recommendations.openButton") });
     openBtn.onclick = () => this.onOpenDocument(rec.file);
     return recItem;
   }
@@ -1367,11 +1852,282 @@ var RecommendationList = class {
         const priorityEl = fileItem.querySelector(".priority");
         if (priorityEl) {
           const calculatedPriority = SharedUtils.calculatePriority(metrics, this.plugin.settings.metricWeights, this.plugin.settings.customMetrics);
-          priorityEl.textContent = `Priority: ${calculatedPriority.toFixed(1)}`;
+          priorityEl.textContent = `${i18n.t("recommendations.priorityLabel")}: ${calculatedPriority.toFixed(1)}`;
           priorityEl.setAttribute("style", `color: ${SharedUtils.getPriorityColor(calculatedPriority)}`);
         }
       }
     }
+  }
+};
+
+// src/views/components/PriorityVisualization.ts
+var PriorityVisualization = class {
+  constructor(container, plugin, onOpenDocument) {
+    this.canvas = null;
+    this.ctx = null;
+    this.hoveredPoint = null;
+    this.container = container;
+    this.plugin = plugin;
+    this.onOpenDocument = onOpenDocument;
+    this.render();
+  }
+  render() {
+    this.container.empty();
+    const vizSection = this.container.createEl("div", { cls: "priority-visualization-section" });
+    const header = vizSection.createEl("div", { cls: "viz-header" });
+    header.createEl("h3", { text: "\u{1F4CA} " + i18n.t("visualization.title") });
+    const refreshBtn = header.createEl("button", {
+      cls: "viz-refresh-btn",
+      text: "\u{1F504} " + i18n.t("visualization.refresh")
+    });
+    refreshBtn.onclick = () => this.render();
+    const canvasContainer = vizSection.createEl("div", { cls: "viz-canvas-container" });
+    this.canvas = canvasContainer.createEl("canvas", { cls: "priority-viz-canvas" });
+    this.ctx = this.canvas.getContext("2d");
+    const width = canvasContainer.clientWidth || 800;
+    const height = 400;
+    this.canvas.width = width;
+    this.canvas.height = height;
+    this.drawChart();
+    this.canvas.addEventListener("mousemove", (e) => this.handleMouseMove(e));
+    this.canvas.addEventListener("click", (e) => this.handleClick(e));
+    this.canvas.addEventListener("mouseleave", () => {
+      this.hoveredPoint = null;
+      this.drawChart();
+    });
+  }
+  drawChart() {
+    if (!this.ctx || !this.canvas)
+      return;
+    const files = this.plugin.getValidRoamingFiles();
+    if (files.length === 0) {
+      this.drawEmptyState();
+      return;
+    }
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    const dataPoints = files.map((file) => {
+      const metrics = this.plugin.getDocumentMetrics(file);
+      const priority = SharedUtils.calculatePriority(
+        metrics,
+        this.plugin.settings.metricWeights,
+        this.plugin.settings.customMetrics
+      );
+      return { file, priority };
+    }).sort((a, b) => b.priority - a.priority);
+    const padding = { top: 40, right: 40, bottom: 60, left: 60 };
+    const chartWidth = this.canvas.width - padding.left - padding.right;
+    const chartHeight = this.canvas.height - padding.top - padding.bottom;
+    const maxPriority = Math.max(...dataPoints.map((d) => d.priority));
+    const minPriority = Math.min(...dataPoints.map((d) => d.priority));
+    const priorityRange = maxPriority - minPriority || 1;
+    this.drawGrid(padding, chartWidth, chartHeight, maxPriority, minPriority);
+    this.drawAxes(padding, chartWidth, chartHeight, dataPoints.length, maxPriority, minPriority);
+    dataPoints.forEach((point, index) => {
+      const x = padding.left + index / Math.max(1, dataPoints.length - 1) * chartWidth;
+      const y = padding.top + chartHeight - (point.priority - minPriority) / priorityRange * chartHeight;
+      this.drawPoint(x, y, point, index);
+    });
+    if (this.hoveredPoint) {
+      this.drawTooltip(this.hoveredPoint);
+    }
+  }
+  drawGrid(padding, width, height, maxPriority, minPriority) {
+    if (!this.ctx)
+      return;
+    this.ctx.strokeStyle = "#e0e0e0";
+    this.ctx.lineWidth = 1;
+    for (let i = 0; i <= 5; i++) {
+      const y = padding.top + i / 5 * height;
+      this.ctx.beginPath();
+      this.ctx.moveTo(padding.left, y);
+      this.ctx.lineTo(padding.left + width, y);
+      this.ctx.stroke();
+    }
+    for (let i = 0; i <= 10; i++) {
+      const x = padding.left + i / 10 * width;
+      this.ctx.beginPath();
+      this.ctx.moveTo(x, padding.top);
+      this.ctx.lineTo(x, padding.top + height);
+      this.ctx.stroke();
+    }
+  }
+  drawAxes(padding, width, height, fileCount, maxPriority, minPriority) {
+    if (!this.ctx)
+      return;
+    this.ctx.strokeStyle = "#333";
+    this.ctx.lineWidth = 2;
+    this.ctx.font = "12px sans-serif";
+    this.ctx.fillStyle = "#333";
+    this.ctx.beginPath();
+    this.ctx.moveTo(padding.left, padding.top);
+    this.ctx.lineTo(padding.left, padding.top + height);
+    this.ctx.stroke();
+    this.ctx.beginPath();
+    this.ctx.moveTo(padding.left, padding.top + height);
+    this.ctx.lineTo(padding.left + width, padding.top + height);
+    this.ctx.stroke();
+    this.ctx.textAlign = "right";
+    this.ctx.textBaseline = "middle";
+    for (let i = 0; i <= 5; i++) {
+      const value = maxPriority - i / 5 * (maxPriority - minPriority);
+      const y = padding.top + i / 5 * height;
+      this.ctx.fillText(value.toFixed(0), padding.left - 10, y);
+    }
+    this.ctx.save();
+    this.ctx.translate(20, padding.top + height / 2);
+    this.ctx.rotate(-Math.PI / 2);
+    this.ctx.textAlign = "center";
+    this.ctx.fillStyle = "#8e44ad";
+    this.ctx.font = "bold 14px sans-serif";
+    this.ctx.fillText(i18n.t("visualization.yAxis"), 0, 0);
+    this.ctx.restore();
+    this.ctx.textAlign = "center";
+    this.ctx.textBaseline = "top";
+    const step = Math.ceil(fileCount / 10);
+    for (let i = 0; i < fileCount; i += step) {
+      const x = padding.left + i / Math.max(1, fileCount - 1) * width;
+      this.ctx.fillText(`#${i + 1}`, x, padding.top + height + 10);
+    }
+    this.ctx.fillStyle = "#8e44ad";
+    this.ctx.font = "bold 14px sans-serif";
+    this.ctx.fillText(i18n.t("visualization.xAxis"), padding.left + width / 2, padding.top + height + 40);
+  }
+  drawPoint(x, y, point, index) {
+    var _a;
+    if (!this.ctx)
+      return;
+    const isHovered = ((_a = this.hoveredPoint) == null ? void 0 : _a.file.path) === point.file.path;
+    const radius = isHovered ? 8 : 5;
+    this.ctx.beginPath();
+    this.ctx.arc(x, y, radius, 0, 2 * Math.PI);
+    const color = this.getPriorityColor(point.priority);
+    this.ctx.fillStyle = color;
+    this.ctx.fill();
+    this.ctx.strokeStyle = isHovered ? "#732d91" : "#fff";
+    this.ctx.lineWidth = isHovered ? 3 : 2;
+    this.ctx.stroke();
+    if (!isHovered) {
+    }
+  }
+  drawTooltip(point) {
+    if (!this.ctx || !this.canvas)
+      return;
+    const padding = 10;
+    const lineHeight = 18;
+    const fileName = point.file.basename;
+    const priorityText = `${i18n.t("metrics.priorityLabel")}: ${point.priority.toFixed(1)}`;
+    this.ctx.font = "12px sans-serif";
+    const fileNameWidth = this.ctx.measureText(fileName).width;
+    const priorityWidth = this.ctx.measureText(priorityText).width;
+    const tooltipWidth = Math.max(fileNameWidth, priorityWidth) + padding * 2;
+    const tooltipHeight = lineHeight * 2 + padding * 2;
+    let tooltipX = point.x + 10;
+    let tooltipY = point.y - tooltipHeight - 10;
+    if (tooltipX + tooltipWidth > this.canvas.width) {
+      tooltipX = point.x - tooltipWidth - 10;
+    }
+    if (tooltipY < 0) {
+      tooltipY = point.y + 10;
+    }
+    this.ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
+    this.ctx.strokeStyle = "#8e44ad";
+    this.ctx.lineWidth = 2;
+    const radius = 8;
+    this.ctx.beginPath();
+    this.ctx.moveTo(tooltipX + radius, tooltipY);
+    this.ctx.lineTo(tooltipX + tooltipWidth - radius, tooltipY);
+    this.ctx.arcTo(tooltipX + tooltipWidth, tooltipY, tooltipX + tooltipWidth, tooltipY + radius, radius);
+    this.ctx.lineTo(tooltipX + tooltipWidth, tooltipY + tooltipHeight - radius);
+    this.ctx.arcTo(tooltipX + tooltipWidth, tooltipY + tooltipHeight, tooltipX + tooltipWidth - radius, tooltipY + tooltipHeight, radius);
+    this.ctx.lineTo(tooltipX + radius, tooltipY + tooltipHeight);
+    this.ctx.arcTo(tooltipX, tooltipY + tooltipHeight, tooltipX, tooltipY + tooltipHeight - radius, radius);
+    this.ctx.lineTo(tooltipX, tooltipY + radius);
+    this.ctx.arcTo(tooltipX, tooltipY, tooltipX + radius, tooltipY, radius);
+    this.ctx.closePath();
+    this.ctx.fill();
+    this.ctx.stroke();
+    this.ctx.fillStyle = "#2c3e50";
+    this.ctx.textAlign = "left";
+    this.ctx.textBaseline = "top";
+    this.ctx.font = "bold 12px sans-serif";
+    this.ctx.fillText(fileName, tooltipX + padding, tooltipY + padding);
+    this.ctx.font = "12px sans-serif";
+    this.ctx.fillStyle = "#8e44ad";
+    this.ctx.fillText(priorityText, tooltipX + padding, tooltipY + padding + lineHeight);
+  }
+  getPriorityColor(priority) {
+    if (priority >= 80)
+      return "#dc3545";
+    if (priority >= 60)
+      return "#fd7e14";
+    if (priority >= 40)
+      return "#ffc107";
+    if (priority >= 20)
+      return "#28a745";
+    return "#6c757d";
+  }
+  drawEmptyState() {
+    if (!this.ctx || !this.canvas)
+      return;
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillStyle = "#7f8c8d";
+    this.ctx.font = "16px sans-serif";
+    this.ctx.textAlign = "center";
+    this.ctx.textBaseline = "middle";
+    this.ctx.fillText(
+      i18n.t("visualization.emptyMessage"),
+      this.canvas.width / 2,
+      this.canvas.height / 2
+    );
+  }
+  handleMouseMove(event) {
+    if (!this.canvas)
+      return;
+    const rect = this.canvas.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+    const files = this.plugin.getValidRoamingFiles();
+    if (files.length === 0)
+      return;
+    const dataPoints = files.map((file) => {
+      const metrics = this.plugin.getDocumentMetrics(file);
+      const priority = SharedUtils.calculatePriority(
+        metrics,
+        this.plugin.settings.metricWeights,
+        this.plugin.settings.customMetrics
+      );
+      return { file, priority };
+    }).sort((a, b) => b.priority - a.priority);
+    const padding = { top: 40, right: 40, bottom: 60, left: 60 };
+    const chartWidth = this.canvas.width - padding.left - padding.right;
+    const chartHeight = this.canvas.height - padding.top - padding.bottom;
+    const maxPriority = Math.max(...dataPoints.map((d) => d.priority));
+    const minPriority = Math.min(...dataPoints.map((d) => d.priority));
+    const priorityRange = maxPriority - minPriority || 1;
+    let foundPoint = null;
+    for (let i = 0; i < dataPoints.length; i++) {
+      const point = dataPoints[i];
+      const x = padding.left + i / Math.max(1, dataPoints.length - 1) * chartWidth;
+      const y = padding.top + chartHeight - (point.priority - minPriority) / priorityRange * chartHeight;
+      const distance = Math.sqrt((mouseX - x) ** 2 + (mouseY - y) ** 2);
+      if (distance < 10) {
+        foundPoint = { file: point.file, x, y, priority: point.priority };
+        break;
+      }
+    }
+    if (foundPoint !== this.hoveredPoint) {
+      this.hoveredPoint = foundPoint;
+      this.canvas.style.cursor = foundPoint ? "pointer" : "default";
+      this.drawChart();
+    }
+  }
+  handleClick(event) {
+    if (this.hoveredPoint) {
+      this.onOpenDocument(this.hoveredPoint.file);
+    }
+  }
+  refresh() {
+    this.render();
   }
 };
 
@@ -1382,6 +2138,8 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
     super(leaf);
     this.currentFile = null;
     this.currentMetrics = null;
+    this.lastProcessedFile = null;
+    this.lastProcessedTime = 0;
     // 状态元素
     this.statusText = null;
     // 组件实例
@@ -1390,6 +2148,7 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
     this.navigationTabs = null;
     this.rankingList = null;
     this.recommendationList = null;
+    this.priorityVisualization = null;
     // 视图状态
     this.currentActiveTab = "metrics";
     this.plugin = plugin;
@@ -1398,13 +2157,24 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
     return VIEW_TYPE_INCREMENTAL_READING;
   }
   getDisplayText() {
-    return "Incremental Reading";
+    return i18n.t("view.title");
   }
   getIcon() {
     return "book-open";
   }
   async onOpen() {
     this.createView();
+    this.registerEvent(
+      this.app.workspace.on("file-open", (file) => {
+        this.onFileOpen(file);
+      })
+    );
+    this.registerEvent(
+      this.app.workspace.on("active-leaf-change", () => {
+        var _a;
+        (_a = this.actionBar) == null ? void 0 : _a.updateButtonStates();
+      })
+    );
   }
   async onClose() {
     this.cleanup();
@@ -1417,30 +2187,35 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
     this.createSlidingNavigation(container);
     this.createContentArea(container);
     this.addStyles();
-    this.registerEvent(
-      this.app.workspace.on("file-open", (file) => {
-        this.onFileOpen(file);
-      })
-    );
     this.refreshData();
     setTimeout(() => {
       this.switchToTab("metrics", 0);
     }, 100);
+    setTimeout(() => {
+      var _a;
+      const activeFile = this.app.workspace.getActiveFile();
+      if (activeFile) {
+        this.onFileOpen(activeFile);
+      } else {
+        (_a = this.actionBar) == null ? void 0 : _a.updateButtonStates();
+      }
+    }, 150);
   }
   createHeroSection(container) {
     const heroSection = container.createEl("div", { cls: "hero-section" });
-    heroSection.createEl("h1", { cls: "main-title", text: "\u6F2B\u6E38\u5F0F\u6E10\u8FDB\u9605\u8BFB" });
+    heroSection.createEl("h1", { cls: "main-title", text: i18n.t("view.title") });
     const subtitle = heroSection.createEl("p", { cls: "poetic-subtitle" });
-    subtitle.innerHTML = '"\u5C55\u5377\u4E43\u65E0\u8A00\u7684\u60C5\u610F\uFF1A\u4EE5<span class="chance">\u7B49\u5F85\u6F2B\u6E38...</span>\u7684\u673A\u9047\uFF0C<br>\u7A7F\u8D8A\u661F\u8FB0\u9047\u89C1\u4F60\uFF0C\u4E09\u79CB\u971C\u96EA\u5370\u9A6C\u8E44\u3002"';
+    subtitle.innerHTML = i18n.t("view.subtitle");
     const docCount = this.getVisitedDocumentCount();
     this.statusText = heroSection.createEl("div", { cls: "status-text" });
-    this.statusText.textContent = `${docCount} \u7BC7\u6F2B\u6E38\u6587\u6863${docCount === 0 ? " (\u65E0\u6F2B\u6E38\u6587\u6863)" : ""}`;
+    this.statusText.innerHTML = `<span>\u{1F4DA}</span><span>${i18n.t("view.statusTemplate", { count: docCount.toString() })}</span>`;
     this.actionBar = new ActionBar(heroSection, this.plugin, {
       onContinueReading: () => this.continueReading(),
       onGetSmartRecommendations: () => this.getSmartRecommendations(),
       onRefreshData: () => this.refreshData(),
       onRandomRoaming: () => this.randomRoaming(),
-      onAddCurrentToRoaming: () => this.addCurrentToRoaming()
+      onAddCurrentToRoaming: () => this.addCurrentToRoaming(),
+      onRemoveCurrentFromRoaming: () => this.removeCurrentFromRoaming()
     });
   }
   createSlidingNavigation(container) {
@@ -1455,6 +2230,7 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
     this.createMetricsSection(content);
     this.createRecommendationsSection(content);
     this.createRankingSection(content);
+    this.createVisualizationSection(content);
     this.hideAllSections();
   }
   createMetricsSection(container) {
@@ -1472,7 +2248,7 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
       );
       this.documentMetricsDisplay.render();
     } else {
-      metricsSection.createEl("p", { text: "\u8BF7\u5148\u6253\u5F00\u4E00\u4E2AMarkdown\u6587\u6863", cls: "empty-message" });
+      metricsSection.createEl("p", { text: i18n.t("metrics.noFileOpen"), cls: "empty-message" });
     }
   }
   createRecommendationsSection(container) {
@@ -1493,6 +2269,14 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
       // 空实现，保留接口兼容性
     });
   }
+  createVisualizationSection(container) {
+    const visualizationSection = container.createEl("div", { cls: "visualization-section", attr: { "data-section": "visualization" } });
+    this.priorityVisualization = new PriorityVisualization(
+      visualizationSection,
+      this.plugin,
+      (file) => this.openDocument(file)
+    );
+  }
   async switchToTab(tabId, index) {
     var _a;
     this.currentActiveTab = tabId;
@@ -1508,6 +2292,9 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
         break;
       case "ranking":
         this.updateRankingSection();
+        break;
+      case "visualization":
+        this.updateVisualizationSection();
         break;
     }
   }
@@ -1547,26 +2334,47 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
       this.rankingList.refresh();
     }
   }
+  updateVisualizationSection() {
+    if (this.priorityVisualization) {
+      this.priorityVisualization.refresh();
+    }
+  }
   // 业务逻辑方法
   async onFileOpen(file) {
-    var _a, _b;
+    var _a, _b, _c;
     if (!file)
       return;
     try {
       console.log(`\u6587\u4EF6\u5207\u6362\u5230: ${file.path} (\u5F53\u524D\u6807\u7B7E: ${this.currentActiveTab})`);
+      const now = Date.now();
+      if (this.lastProcessedFile === file.path && now - this.lastProcessedTime < 3e3) {
+        console.log("\u8DF3\u8FC7\u91CD\u590D\u7684\u6587\u4EF6\u6253\u5F00\u4E8B\u4EF6\uFF08\u9632\u6296\uFF09");
+        this.currentFile = file;
+        this.currentMetrics = this.plugin.getDocumentMetrics(file);
+        if (this.currentActiveTab === "metrics") {
+          this.updateMetricsSection();
+        }
+        (_a = this.actionBar) == null ? void 0 : _a.updateButtonStates();
+        return;
+      }
       this.currentFile = file;
       this.currentMetrics = this.plugin.getDocumentMetrics(file);
-      await this.plugin.updateDocumentMetrics(file, {
-        lastVisited: Date.now(),
-        visitCount: (((_a = this.currentMetrics) == null ? void 0 : _a.visitCount) || 0) + 1
-      });
+      if (this.plugin.settings.roamingDocs.includes(file.path)) {
+        await this.plugin.updateDocumentMetrics(file, {
+          lastVisited: Date.now(),
+          visitCount: (((_b = this.currentMetrics) == null ? void 0 : _b.visitCount) || 0) + 1
+        });
+        this.currentMetrics = this.plugin.getDocumentMetrics(file);
+        this.lastProcessedFile = file.path;
+        this.lastProcessedTime = now;
+      }
       if (this.currentActiveTab === "metrics") {
         this.updateMetricsSection();
       }
-      (_b = this.actionBar) == null ? void 0 : _b.updateButtonStates();
+      (_c = this.actionBar) == null ? void 0 : _c.updateButtonStates();
     } catch (error) {
       console.error("\u6587\u4EF6\u5207\u6362\u5904\u7406\u5931\u8D25:", error);
-      new import_obsidian4.Notice("\u6587\u4EF6\u5207\u6362\u65F6\u51FA\u73B0\u9519\u8BEF");
+      new import_obsidian4.Notice(i18n.t("notices.fileSwitchError"));
     }
   }
   async continueReading() {
@@ -1574,7 +2382,7 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
     try {
       const validRoamingFiles = this.plugin.getValidRoamingFiles();
       if (validRoamingFiles.length === 0) {
-        new import_obsidian4.Notice("\u6682\u65E0\u6F2B\u6E38\u6587\u6863\uFF0C\u8BF7\u5148\u6DFB\u52A0\u6587\u6863\u5230\u6F2B\u6E38\u5217\u8868");
+        new import_obsidian4.Notice(i18n.t("view.actionBar.noDocuments"));
         return;
       }
       const weightedFiles = validRoamingFiles.map((file) => {
@@ -1596,27 +2404,33 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
         await this.openDocument(selectedFile);
         const selectedWeight = ((_a = weightedFiles.find((item) => item.file.path === selectedFile.path)) == null ? void 0 : _a.weight) || 0.1;
         const selectionProbability = selectedWeight / totalWeight * 100;
-        new import_obsidian4.Notice(`\u5DF2\u9009\u62E9\uFF1A${selectedFile.basename} (\u9009\u62E9\u6982\u7387: ${selectionProbability.toFixed(1)}%)`);
+        new import_obsidian4.Notice(i18n.t("notices.selectionProbability", {
+          filename: selectedFile.basename,
+          probability: selectionProbability.toFixed(1)
+        }));
       }
     } catch (error) {
       console.error("\u7EE7\u7EED\u6F2B\u6E38\u5931\u8D25:", error);
-      new import_obsidian4.Notice("\u7EE7\u7EED\u6F2B\u6E38\u5931\u8D25");
+      new import_obsidian4.Notice(i18n.t("notices.continueFailed"));
     }
   }
   async getSmartRecommendations() {
     try {
       const recommendations = await this.plugin.recommendationService.getRecommendations();
       if (recommendations.length === 0) {
-        new import_obsidian4.Notice("\u6682\u65E0\u63A8\u8350\u6587\u6863\uFF0C\u8BF7\u6DFB\u52A0\u66F4\u591A\u6587\u6863\u5230\u6F2B\u6E38\u5217\u8868");
+        new import_obsidian4.Notice(i18n.t("recommendations.emptyMessage"));
         return;
       }
       const topRecommendation = recommendations[0];
       const similarity = (topRecommendation.score * 100).toFixed(1);
       await this.openDocument(topRecommendation.file);
-      new import_obsidian4.Notice(`\u{1F9E0} \u667A\u80FD\u63A8\u8350\uFF1A${topRecommendation.file.basename} (\u76F8\u4F3C\u5EA6: ${similarity}%)`);
+      new import_obsidian4.Notice(i18n.t("recommendations.smartJumpNotice", {
+        filename: topRecommendation.file.basename,
+        similarity
+      }));
     } catch (error) {
       console.error("\u667A\u80FD\u63A8\u8350\u5931\u8D25:", error);
-      new import_obsidian4.Notice("\u667A\u80FD\u63A8\u8350\u5931\u8D25\uFF0C\u8BF7\u91CD\u8BD5");
+      new import_obsidian4.Notice(i18n.t("notices.smartRecommendationFailed"));
     }
   }
   async refreshData() {
@@ -1625,43 +2439,60 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
     this.updateMetricsSection();
     await this.updateRecommendationsSection();
     this.updateRankingSection();
+    this.updateVisualizationSection();
     (_a = this.actionBar) == null ? void 0 : _a.updateButtonStates();
+  }
+  /**
+   * 刷新整个视图UI（用于语言切换）
+   */
+  refreshUI() {
+    console.log("\u5F00\u59CB\u5237\u65B0UI...");
+    const currentTab = this.currentActiveTab;
+    console.log(`\u5F53\u524D\u6FC0\u6D3B\u6807\u7B7E: ${currentTab}`);
+    this.createView();
+    setTimeout(() => {
+      console.log(`\u6062\u590D\u6807\u7B7E\u9875: ${currentTab}`);
+      const tabIndex = currentTab === "metrics" ? 0 : currentTab === "recommendations" ? 1 : currentTab === "ranking" ? 2 : currentTab === "visualization" ? 3 : 0;
+      this.switchToTab(currentTab, tabIndex);
+      this.refreshData();
+    }, 200);
   }
   updateStatusText() {
     if (this.statusText) {
       const docCount = this.getVisitedDocumentCount();
-      this.statusText.textContent = `${docCount} \u7BC7\u6F2B\u6E38\u6587\u6863${docCount === 0 ? " (\u65E0\u6F2B\u6E38\u6587\u6863)" : ""}`;
+      this.statusText.innerHTML = `<span>\u{1F4DA}</span><span>${i18n.t("view.statusTemplate", { count: docCount.toString() })}</span>`;
     }
   }
   async randomRoaming() {
     try {
       const roamingFiles = this.plugin.getValidRoamingFiles();
       if (roamingFiles.length === 0) {
-        new import_obsidian4.Notice("\u6682\u65E0\u6F2B\u6E38\u6587\u6863\uFF0C\u8BF7\u5148\u6DFB\u52A0\u6587\u6863\u5230\u6F2B\u6E38\u5217\u8868");
+        new import_obsidian4.Notice(i18n.t("view.actionBar.noDocuments"));
         return;
       }
       const randomIndex = Math.floor(Math.random() * roamingFiles.length);
       const randomFile = roamingFiles[randomIndex];
       await this.openDocument(randomFile);
-      new import_obsidian4.Notice(`\u{1F3B2} \u968F\u673A\u6F2B\u6E38\uFF1A${randomFile.basename}`);
+      new import_obsidian4.Notice(i18n.t("notices.randomRoaming", { filename: randomFile.basename }));
     } catch (error) {
       console.error("\u968F\u673A\u6F2B\u6E38\u5931\u8D25:", error);
-      new import_obsidian4.Notice("\u968F\u673A\u6F2B\u6E38\u5931\u8D25");
+      new import_obsidian4.Notice(i18n.t("notices.randomRoamingFailed"));
     }
   }
   async addCurrentToRoaming() {
+    var _a;
     const activeFile = this.app.workspace.getActiveFile();
     if (!activeFile) {
-      new import_obsidian4.Notice("\u6CA1\u6709\u6253\u5F00\u7684\u6587\u6863");
+      new import_obsidian4.Notice(i18n.t("notices.noActiveFile"));
       return;
     }
     try {
       if (activeFile.extension !== "md") {
-        new import_obsidian4.Notice(`\u53EA\u80FD\u6DFB\u52A0Markdown\u6587\u6863\u5230\u6F2B\u6E38\u5217\u8868 "${activeFile.basename}"`);
+        new import_obsidian4.Notice(i18n.t("notices.onlyMarkdownFiles"));
         return;
       }
       if (this.plugin.settings.roamingDocs.includes(activeFile.path)) {
-        new import_obsidian4.Notice(`"${activeFile.basename}" \u5DF2\u5728\u6F2B\u6E38\u5217\u8868\u4E2D`);
+        new import_obsidian4.Notice(i18n.t("view.actionBar.alreadyInRoaming"));
         return;
       }
       this.plugin.settings.roamingDocs.push(activeFile.path);
@@ -1669,11 +2500,33 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
       const defaultMetrics = fileService.createDefaultMetricsForFile(activeFile);
       await this.plugin.updateDocumentMetrics(activeFile, defaultMetrics);
       await this.plugin.saveSettings();
-      new import_obsidian4.Notice(`\u2705 \u5DF2\u5C06 "${activeFile.basename}" \u52A0\u5165\u6F2B\u6E38\u5217\u8868`);
+      new import_obsidian4.Notice(i18n.t("notices.addedToRoaming", { filename: activeFile.basename }));
       this.refreshData();
+      (_a = this.actionBar) == null ? void 0 : _a.updateButtonStates();
     } catch (error) {
       console.error("\u52A0\u5165\u6F2B\u6E38\u5931\u8D25:", error);
-      new import_obsidian4.Notice("\u52A0\u5165\u6F2B\u6E38\u5931\u8D25");
+      new import_obsidian4.Notice(i18n.t("notices.errorSavingSettings"));
+    }
+  }
+  async removeCurrentFromRoaming() {
+    var _a;
+    const activeFile = this.app.workspace.getActiveFile();
+    if (!activeFile) {
+      new import_obsidian4.Notice(i18n.t("notices.noActiveFile"));
+      return;
+    }
+    try {
+      const index = this.plugin.settings.roamingDocs.indexOf(activeFile.path);
+      if (index > -1) {
+        this.plugin.settings.roamingDocs.splice(index, 1);
+        await this.plugin.saveSettings();
+        new import_obsidian4.Notice(i18n.t("notices.removedFromRoaming", { filename: activeFile.basename }));
+        this.refreshData();
+        (_a = this.actionBar) == null ? void 0 : _a.updateButtonStates();
+      }
+    } catch (error) {
+      console.error("\u79FB\u9664\u6F2B\u6E38\u5931\u8D25:", error);
+      new import_obsidian4.Notice(i18n.t("notices.errorSavingSettings"));
     }
   }
   async openDocument(file) {
@@ -1681,7 +2534,7 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
       await this.app.workspace.getLeaf().openFile(file);
     } catch (error) {
       console.error("\u6253\u5F00\u6587\u6863\u5931\u8D25:", error);
-      new import_obsidian4.Notice("\u6253\u5F00\u6587\u6863\u5931\u8D25");
+      new import_obsidian4.Notice(i18n.t("notices.documentOpenFailed"));
     }
   }
   async editDocumentMetrics(file, currentMetrics) {
@@ -1693,7 +2546,7 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
         this.plugin.settings.customMetrics,
         async (updatedMetrics) => {
           await this.plugin.updateDocumentMetrics(file, updatedMetrics);
-          new import_obsidian4.Notice(`\u6587\u6863 "${file.basename}" \u7684\u5F97\u5206\u5DF2\u66F4\u65B0`);
+          new import_obsidian4.Notice(i18n.t("notices.settingsSaved"));
           this.refreshData();
         },
         async (realTimeMetrics) => {
@@ -1703,7 +2556,7 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
       modal.open();
     } catch (error) {
       console.error("\u7F16\u8F91\u6587\u6863\u5F97\u5206\u5931\u8D25:", error);
-      new import_obsidian4.Notice("\u7F16\u8F91\u6587\u6863\u5F97\u5206\u5931\u8D25");
+      new import_obsidian4.Notice(i18n.t("notices.editMetricsFailed"));
     }
   }
   async updateDocumentMetricsRealTime(file, realTimeMetrics) {
@@ -1731,6 +2584,7 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
     this.navigationTabs = null;
     this.rankingList = null;
     this.recommendationList = null;
+    this.priorityVisualization = null;
   }
 };
 
@@ -2051,8 +2905,9 @@ var RecommendationService = class {
       const freq1 = this.calculateWordFrequency(tokens1);
       const freq2 = this.calculateWordFrequency(tokens2);
       const similarity = this.cosineSimilarityFromFreq(freq1, freq2);
-      console.log(`\u6700\u7EC8\u76F8\u4F3C\u5EA6: ${similarity.toFixed(4)}`);
-      return similarity;
+      const validSimilarity = !isFinite(similarity) || isNaN(similarity) ? 0 : Math.max(0, Math.min(1, similarity));
+      console.log(`\u6700\u7EC8\u76F8\u4F3C\u5EA6: ${validSimilarity.toFixed(4)}`);
+      return validSimilarity;
     } catch (error) {
       console.error(`\u8BA1\u7B97\u6587\u672C\u76F8\u4F3C\u5EA6\u5931\u8D25:`, error);
       return 0;
@@ -2109,6 +2964,9 @@ var RecommendationService = class {
    */
   cosineSimilarityFromFreq(freq1, freq2) {
     const allWords = /* @__PURE__ */ new Set([...freq1.keys(), ...freq2.keys()]);
+    if (allWords.size === 0) {
+      return 0;
+    }
     let dotProduct = 0;
     let magnitude1 = 0;
     let magnitude2 = 0;
@@ -2121,9 +2979,14 @@ var RecommendationService = class {
     }
     magnitude1 = Math.sqrt(magnitude1);
     magnitude2 = Math.sqrt(magnitude2);
-    if (magnitude1 === 0 || magnitude2 === 0)
+    if (magnitude1 === 0 || magnitude2 === 0 || !isFinite(magnitude1) || !isFinite(magnitude2)) {
       return 0;
-    return dotProduct / (magnitude1 * magnitude2);
+    }
+    const similarity = dotProduct / (magnitude1 * magnitude2);
+    if (!isFinite(similarity) || isNaN(similarity)) {
+      return 0;
+    }
+    return Math.max(0, Math.min(1, similarity));
   }
   /**
    * Calculate TF-IDF similarity scores between candidates and anchors
@@ -2579,6 +3442,9 @@ var FileManagementService = class {
           }
           if (!this.settings.roamingDocs.includes(file.path)) {
             this.settings.roamingDocs.push(file.path);
+            if (!this.settings.documentMetrics[file.path]) {
+              this.settings.documentMetrics[file.path] = this.createDefaultMetricsForFile(file);
+            }
             addedCount++;
           }
         }
@@ -2597,6 +3463,9 @@ var FileManagementService = class {
     for (const file of files) {
       if (!this.settings.roamingDocs.includes(file.path)) {
         this.settings.roamingDocs.push(file.path);
+        if (!this.settings.documentMetrics[file.path]) {
+          this.settings.documentMetrics[file.path] = this.createDefaultMetricsForFile(file);
+        }
         addedCount++;
       }
     }
@@ -2803,19 +3672,19 @@ var CustomMetricsSettings = class {
     } else {
       this.contentEl.empty();
     }
-    this.contentEl.createEl("h3", { text: "\u{1F4CA} \u81EA\u5B9A\u4E49\u6307\u6807\u8BBE\u7F6E" });
+    this.contentEl.createEl("h3", { text: "\u{1F4CA} " + i18n.t("settings.customMetrics.title") });
     this.createMetricManagementHeader();
     this.createCustomMetricsList();
   }
   createMetricManagementHeader() {
-    new import_obsidian6.Setting(this.contentEl).setName("\u81EA\u5B9A\u4E49\u6307\u6807\u7BA1\u7406").setDesc("\u81EA\u5B9A\u4E49\u6307\u6807\u7528\u4E8E\u8BC4\u4F30\u6587\u6863\u4F18\u5148\u7EA7\u3002\u60A8\u53EF\u4EE5\u6DFB\u52A0\u3001\u5220\u9664\u548C\u91CD\u547D\u540D\u6307\u6807\uFF0C\u4EE5\u53CA\u8C03\u6574\u6BCF\u4E2A\u6307\u6807\u7684\u6743\u91CD\u3002").addButton((button) => button.setButtonText("+ \u6DFB\u52A0\u65B0\u6307\u6807").setCta().onClick(() => this.addNewMetric()));
+    new import_obsidian6.Setting(this.contentEl).setName(i18n.t("settings.customMetrics.title")).setDesc(i18n.t("settings.customMetrics.description")).addButton((button) => button.setButtonText("+ " + i18n.t("settings.customMetrics.addMetric")).setCta().onClick(() => this.addNewMetric()));
   }
   createCustomMetricsList() {
     var _a;
     const metricsContainer = this.contentEl.createEl("div", { cls: "custom-metrics-container" });
-    metricsContainer.createEl("h4", { text: "\u81EA\u5B9A\u4E49\u6307\u6807" });
+    metricsContainer.createEl("h4", { text: i18n.t("settings.customMetrics.title") });
     metricsContainer.createEl("p", {
-      text: "\u81EA\u5B9A\u4E49\u6307\u6807\u7528\u4E8E\u8BC4\u4F30\u6587\u6863\u4F18\u5148\u7EA7\u3002\u60A8\u53EF\u4EE5\u6DFB\u52A0\u3001\u5220\u9664\u548C\u91CD\u547D\u540D\u6307\u6807\uFF0C\u4EE5\u53CA\u8C03\u6574\u6BCF\u4E2A\u6307\u6807\u7684\u6743\u91CD\u3002",
+      text: i18n.t("settings.customMetrics.description"),
       cls: "setting-item-description"
     });
     const metricsList = metricsContainer.createEl("div", { cls: "metrics-list" });
@@ -2825,9 +3694,9 @@ var CustomMetricsSettings = class {
   }
   createMetricSetting(container, metric, index) {
     const metricItem = container.createEl("div", { cls: "metric-setting-item" });
-    const titleSetting = new import_obsidian6.Setting(metricItem).setName(`\u81EA\u5B9A\u4E49\u6307\u6807 ${index + 1}`).setDesc(`\u6307\u6807\u540D\u79F0: ${metric.name}`).addButton((button) => button.setButtonText("\u5220\u9664").setWarning().onClick(() => this.deleteMetric(index)));
-    new import_obsidian6.Setting(metricItem).setName("\u6307\u6807\u540D\u79F0").setDesc("\u6307\u6807\u7684\u663E\u793A\u540D\u79F0\uFF0C\u5C06\u7528\u4E8E\u754C\u9762\u663E\u793A").addText((text) => text.setPlaceholder("\u4F8B\u5982\uFF1A\u91CD\u8981\u6027").setValue(metric.name).onChange(async (value) => {
-      const newName = value || `\u6307\u6807\u540D\u79F0${index + 1}`;
+    const titleSetting = new import_obsidian6.Setting(metricItem).setName(`${i18n.t("settings.customMetrics.title")} ${index + 1}`).setDesc(`${i18n.t("settings.customMetrics.metricName")}: ${metric.name}`).addButton((button) => button.setButtonText(i18n.t("settings.customMetrics.removeMetric")).setWarning().onClick(() => this.deleteMetric(index)));
+    new import_obsidian6.Setting(metricItem).setName(i18n.t("settings.customMetrics.metricName")).setDesc(i18n.t("settings.customMetrics.description")).addText((text) => text.setPlaceholder(i18n.t("settings.customMetrics.metricName")).setValue(metric.name).onChange(async (value) => {
+      const newName = value || `${i18n.t("settings.customMetrics.metricName")}${index + 1}`;
       const oldId = this.plugin.settings.customMetrics[index].id;
       const newId = this.generateMetricId(newName);
       this.plugin.settings.customMetrics[index].name = newName;
@@ -2838,7 +3707,7 @@ var CustomMetricsSettings = class {
       await this.saveSettings();
       this.refresh();
     }));
-    new import_obsidian6.Setting(metricItem).setName("\u6743\u91CD").setDesc("\u8BE5\u6307\u6807\u5728\u603B\u8BC4\u5206\u4E2D\u7684\u6743\u91CD\u767E\u5206\u6BD4\uFF08\u6240\u6709\u6307\u6807\u6743\u91CD\u5C06\u81EA\u52A8\u5F52\u4E00\u5316\u4E3A100%\uFF09").addSlider((slider) => slider.setLimits(0, 100, 1).setValue(metric.weight).setDynamicTooltip().onChange(async (value) => {
+    new import_obsidian6.Setting(metricItem).setName(i18n.t("settings.customMetrics.metricWeight")).setDesc(i18n.t("settings.customMetrics.description")).addSlider((slider) => slider.setLimits(0, 100, 1).setValue(metric.weight).setDynamicTooltip().onChange(async (value) => {
       this.plugin.settings.customMetrics[index].weight = Math.floor(value);
       await this.normalizeMetricWeights();
       await this.saveSettings();
@@ -2852,13 +3721,13 @@ var CustomMetricsSettings = class {
     var _a;
     const currentCount = ((_a = this.plugin.settings.customMetrics) == null ? void 0 : _a.length) || 0;
     if (currentCount >= 10) {
-      new import_obsidian6.Notice("\u6700\u591A\u652F\u630110\u4E2A\u81EA\u5B9A\u4E49\u6307\u6807");
+      new import_obsidian6.Notice(i18n.t("settings.customMetrics.maxMetricsWarning"));
       return;
     }
     try {
       const newMetric = {
-        id: this.generateMetricId(`\u81EA\u5B9A\u4E49\u6307\u6807${currentCount + 1}`),
-        name: `\u81EA\u5B9A\u4E49\u6307\u6807${currentCount + 1}`,
+        id: this.generateMetricId(`${i18n.t("settings.customMetrics.metricName")}${currentCount + 1}`),
+        name: `${i18n.t("settings.customMetrics.metricName")}${currentCount + 1}`,
         weight: Math.floor(100 / (currentCount + 1))
       };
       this.plugin.settings.customMetrics.push(newMetric);
@@ -2866,10 +3735,10 @@ var CustomMetricsSettings = class {
       await this.addDefaultValuesForNewMetrics(currentCount, currentCount + 1);
       await this.saveSettings();
       this.refresh();
-      new import_obsidian6.Notice("\u2705 \u5DF2\u6DFB\u52A0\u65B0\u6307\u6807");
+      new import_obsidian6.Notice(i18n.t("notices.settingsSaved"));
     } catch (error) {
       console.error("\u6DFB\u52A0\u6307\u6807\u5931\u8D25:", error);
-      new import_obsidian6.Notice("\u6DFB\u52A0\u6307\u6807\u5931\u8D25");
+      new import_obsidian6.Notice(i18n.t("notices.errorSavingSettings"));
     }
   }
   /**
@@ -2940,12 +3809,12 @@ var CustomMetricsSettings = class {
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             `;
       content.innerHTML = `
-                <h3 style="margin-top: 0; color: var(--text-normal);">\u786E\u8BA4\u5220\u9664</h3>
-                <p style="color: var(--text-normal);">\u786E\u5B9A\u8981\u5220\u9664\u6307\u6807"${metricName}"\u5417\uFF1F</p>
-                <p class="warning" style="color: var(--text-error); font-weight: bold;">\u26A0\uFE0F \u6B64\u64CD\u4F5C\u5C06\u5220\u9664\u6240\u6709\u6587\u6863\u4E2D\u8BE5\u6307\u6807\u7684\u8BC4\u5206\u6570\u636E\uFF0C\u4E14\u65E0\u6CD5\u6062\u590D\uFF01</p>
+                <h3 style="margin-top: 0; color: var(--text-normal);">${i18n.t("common.confirm")}</h3>
+                <p style="color: var(--text-normal);">${i18n.t("settings.customMetrics.removeMetric")} "${metricName}"?</p>
+                <p class="warning" style="color: var(--text-error); font-weight: bold;">\u26A0\uFE0F ${i18n.t("settings.dataManagement.clearConfirm")}</p>
                 <div class="modal-buttons" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-                    <button class="cancel-btn" style="padding: 8px 16px; border: 1px solid var(--background-modifier-border); background-color: var(--interactive-normal); color: var(--text-normal); border-radius: 4px; cursor: pointer;">\u53D6\u6D88</button>
-                    <button class="confirm-btn" style="padding: 8px 16px; border: none; background-color: var(--interactive-destructive); color: var(--text-on-accent); border-radius: 4px; cursor: pointer;">\u5220\u9664</button>
+                    <button class="cancel-btn" style="padding: 8px 16px; border: 1px solid var(--background-modifier-border); background-color: var(--interactive-normal); color: var(--text-normal); border-radius: 4px; cursor: pointer;">${i18n.t("common.cancel")}</button>
+                    <button class="confirm-btn" style="padding: 8px 16px; border: none; background-color: var(--interactive-destructive); color: var(--text-on-accent); border-radius: 4px; cursor: pointer;">${i18n.t("common.delete")}</button>
                 </div>
             `;
       modal.appendChild(content);
@@ -3069,11 +3938,11 @@ var CustomMetricsSettings = class {
       }
       if (updatedCount > 0) {
         await this.plugin.saveSettings();
-        new import_obsidian6.Notice(`\u2705 \u5DF2\u4E3A ${updatedCount} \u4E2A\u73B0\u6709\u6587\u6863\u6DFB\u52A0\u65B0\u6307\u6807\u7684\u9ED8\u8BA4\u503C\uFF085.0\u5206\uFF09`);
+        new import_obsidian6.Notice(i18n.t("notices.settingsSaved"));
       }
     } catch (error) {
       console.error("\u4E3A\u65B0\u6307\u6807\u6DFB\u52A0\u9ED8\u8BA4\u503C\u5931\u8D25:", error);
-      new import_obsidian6.Notice("\u4E3A\u65B0\u6307\u6807\u6DFB\u52A0\u9ED8\u8BA4\u503C\u65F6\u51FA\u73B0\u9519\u8BEF");
+      new import_obsidian6.Notice(i18n.t("notices.errorSavingSettings"));
     }
   }
   async normalizeMetricWeights() {
@@ -3144,24 +4013,24 @@ var RecommendationSettings = class {
     this.plugin = plugin;
   }
   render() {
-    this.containerEl.createEl("h3", { text: "\u63A8\u8350\u8BBE\u7F6E" });
-    new import_obsidian7.Setting(this.containerEl).setName("\u6700\u8FD1\u6D4F\u89C8\u951A\u70B9\u6570\u91CF").setDesc("\u667A\u80FD\u63A8\u8350\u65F6\u4F7F\u7528\u7684\u6700\u8FD1\u6D4F\u89C8\u6587\u6863\u6570\u91CF\uFF08\u4F5C\u4E3A\u63A8\u8350\u57FA\u51C6\uFF09").addSlider((slider) => slider.setLimits(1, 20, 1).setValue(this.plugin.settings.recommendationSettings.recentCount).setDynamicTooltip().onChange(async (value) => {
+    this.containerEl.createEl("h3", { text: i18n.t("settings.recommendation.title") });
+    new import_obsidian7.Setting(this.containerEl).setName(i18n.t("settings.recommendation.recentCount")).setDesc(i18n.t("settings.recommendation.recentCountDesc")).addSlider((slider) => slider.setLimits(1, 20, 1).setValue(this.plugin.settings.recommendationSettings.recentCount).setDynamicTooltip().onChange(async (value) => {
       this.plugin.settings.recommendationSettings.recentCount = Math.floor(value);
       await this.plugin.saveSettings();
     }));
-    new import_obsidian7.Setting(this.containerEl).setName("\u9AD8\u9891\u8BBF\u95EE\u951A\u70B9\u6570\u91CF").setDesc("\u667A\u80FD\u63A8\u8350\u65F6\u4F7F\u7528\u7684\u6F2B\u6E38\u6B21\u6570\u6700\u591A\u7684\u6587\u6863\u6570\u91CF\uFF08\u4F5C\u4E3A\u63A8\u8350\u57FA\u51C6\uFF09").addSlider((slider) => slider.setLimits(1, 20, 1).setValue(this.plugin.settings.recommendationSettings.topCount).setDynamicTooltip().onChange(async (value) => {
+    new import_obsidian7.Setting(this.containerEl).setName(i18n.t("settings.recommendation.topCount")).setDesc(i18n.t("settings.recommendation.topCountDesc")).addSlider((slider) => slider.setLimits(1, 20, 1).setValue(this.plugin.settings.recommendationSettings.topCount).setDynamicTooltip().onChange(async (value) => {
       this.plugin.settings.recommendationSettings.topCount = Math.floor(value);
       await this.plugin.saveSettings();
     }));
-    new import_obsidian7.Setting(this.containerEl).setName("\u63A8\u8350\u7ED3\u679C\u6570\u91CF").setDesc("\u667A\u80FD\u63A8\u8350\u7B97\u6CD5\u8FD4\u56DE\u7684\u63A8\u8350\u6587\u6863\u6570\u91CF").addSlider((slider) => slider.setLimits(5, 50, 1).setValue(this.plugin.settings.recommendationSettings.topK).setDynamicTooltip().onChange(async (value) => {
+    new import_obsidian7.Setting(this.containerEl).setName(i18n.t("settings.recommendation.topK")).setDesc(i18n.t("settings.recommendation.topKDesc")).addSlider((slider) => slider.setLimits(5, 50, 1).setValue(this.plugin.settings.recommendationSettings.topK).setDynamicTooltip().onChange(async (value) => {
       this.plugin.settings.recommendationSettings.topK = Math.floor(value);
       await this.plugin.saveSettings();
     }));
-    new import_obsidian7.Setting(this.containerEl).setName("\u6700\u5927\u5019\u9009\u6587\u6863\u6570").setDesc("\u667A\u80FD\u63A8\u8350\u7B97\u6CD5\u8003\u8651\u7684\u6700\u5927\u6587\u6863\u6570\u91CF\uFF08\u5F71\u54CD\u6027\u80FD\u548C\u63A8\u8350\u8D28\u91CF\uFF09").addSlider((slider) => slider.setLimits(50, 500, 10).setValue(this.plugin.settings.maxCandidates).setDynamicTooltip().onChange(async (value) => {
+    new import_obsidian7.Setting(this.containerEl).setName(i18n.t("settings.recommendation.maxCandidates")).setDesc(i18n.t("settings.recommendation.maxCandidatesDesc")).addSlider((slider) => slider.setLimits(50, 500, 10).setValue(this.plugin.settings.maxCandidates).setDynamicTooltip().onChange(async (value) => {
       this.plugin.settings.maxCandidates = Math.floor(value);
       await this.plugin.saveSettings();
     }));
-    new import_obsidian7.Setting(this.containerEl).setName("\u6587\u6863\u6BB5\u843D\u91C7\u6837\u6570\u91CF").setDesc("\u667A\u80FD\u63A8\u8350\u65F6\u4ECE\u6BCF\u4E2A\u6587\u6863\u91C7\u6837\u7684\u6BB5\u843D\u6570\u91CF\uFF08\u5305\u542B\u6807\u9898+\u5934/\u4E2D/\u5C3E\u6BB5\u843D\uFF09").addSlider((slider) => slider.setLimits(3, 10, 1).setValue(this.plugin.settings.recommendationSettings.maxParagraphs).setDynamicTooltip().onChange(async (value) => {
+    new import_obsidian7.Setting(this.containerEl).setName(i18n.t("settings.recommendation.maxParagraphs")).setDesc(i18n.t("settings.recommendation.maxParagraphsDesc")).addSlider((slider) => slider.setLimits(3, 10, 1).setValue(this.plugin.settings.recommendationSettings.maxParagraphs).setDynamicTooltip().onChange(async (value) => {
       this.plugin.settings.recommendationSettings.maxParagraphs = Math.floor(value);
       await this.plugin.saveSettings();
     }));
@@ -3176,8 +4045,8 @@ var FilterSettings = class {
     this.plugin = plugin;
   }
   render() {
-    this.containerEl.createEl("h3", { text: "\u8FC7\u6EE4\u8BBE\u7F6E" });
-    new import_obsidian8.Setting(this.containerEl).setName("\u6392\u9664\u8DEF\u5F84").setDesc("\u8981\u4ECE\u6F2B\u6E38\u4E2D\u6392\u9664\u7684\u6587\u4EF6\u5939\u8DEF\u5F84\uFF08\u6BCF\u884C\u4E00\u4E2A\uFF0C\u652F\u6301*\u901A\u914D\u7B26\u5339\u914D\uFF09").addTextArea((text) => text.setPlaceholder("\u793A\u4F8B\uFF1A\nTemplates/*\nArchive/**\n.obsidian/**\n**/*.excalidraw").setValue(this.plugin.settings.excludedPaths.join("\n")).onChange(async (value) => {
+    this.containerEl.createEl("h3", { text: i18n.t("settings.filter.title") });
+    new import_obsidian8.Setting(this.containerEl).setName(i18n.t("settings.filter.excludedPaths")).setDesc(i18n.t("settings.filter.excludedPathsDesc")).addTextArea((text) => text.setPlaceholder(i18n.t("settings.filter.excludedPathsPlaceholder")).setValue(this.plugin.settings.excludedPaths.join("\n")).onChange(async (value) => {
       this.plugin.settings.excludedPaths = value.split("\n").filter((p) => p.trim());
       await this.plugin.saveSettings();
     }));
@@ -3192,16 +4061,16 @@ var DataManagementSettings = class {
     this.plugin = plugin;
   }
   render() {
-    this.containerEl.createEl("h3", { text: "\u6570\u636E\u7BA1\u7406" });
-    new import_obsidian9.Setting(this.containerEl).setName("\u6E05\u9664\u6F2B\u6E38\u5386\u53F2").setDesc("\u6E05\u9664\u6240\u6709\u6F2B\u6E38\u5386\u53F2\u8BB0\u5F55\u548C\u8BBF\u95EE\u6B21\u6570\uFF08\u6B64\u64CD\u4F5C\u4E0D\u53EF\u64A4\u9500\uFF0C\u8BF7\u8C28\u614E\u64CD\u4F5C\uFF09").addButton((button) => button.setButtonText("\u{1F5D1}\uFE0F \u6E05\u9664\u6240\u6709\u5386\u53F2").onClick(async () => {
-      if (confirm("\u786E\u5B9A\u8981\u6E05\u9664\u6240\u6709\u6F2B\u6E38\u5386\u53F2\u5417\uFF1F\n\u8FD9\u5C06\u6E05\u7A7A\u6F2B\u6E38\u5217\u8868\u5E76\u91CD\u7F6E\u6240\u6709\u6587\u6863\u7684\u8BBF\u95EE\u6B21\u6570\u3002\n\n\u6B64\u64CD\u4F5C\u4E0D\u53EF\u64A4\u9500\uFF01")) {
+    this.containerEl.createEl("h3", { text: i18n.t("settings.dataManagement.title") });
+    new import_obsidian9.Setting(this.containerEl).setName(i18n.t("settings.dataManagement.clearHistory")).setDesc(i18n.t("settings.dataManagement.clearHistoryDesc")).addButton((button) => button.setButtonText("\u{1F5D1}\uFE0F " + i18n.t("settings.dataManagement.clearButton")).onClick(async () => {
+      if (confirm(i18n.t("settings.dataManagement.clearConfirm"))) {
         this.plugin.settings.roamingDocs = [];
         for (const [path] of Object.entries(this.plugin.settings.documentMetrics)) {
           this.plugin.settings.documentMetrics[path].visitCount = 0;
           this.plugin.settings.documentMetrics[path].lastVisited = 0;
         }
         await this.plugin.saveSettings();
-        new import_obsidian9.Notice("\u2705 \u6240\u6709\u6F2B\u6E38\u5386\u53F2\u5DF2\u6E05\u9664");
+        new import_obsidian9.Notice(i18n.t("notices.historyCleared"));
       }
     }));
   }
@@ -3217,6 +4086,7 @@ var IncrementalReadingPlugin = class extends import_obsidian10.Plugin {
   async onload() {
     console.log("Loading Incremental Reading plugin");
     await this.loadSettings();
+    i18n.setLanguage(this.settings.language || "en");
     this.recommendationService = new RecommendationService(this.app, this.settings);
     this.fileManagementService = new FileManagementService(this.app, this.settings);
     this.documentScoringService = new DocumentScoringService(this.settings);
@@ -3242,11 +4112,11 @@ var IncrementalReadingPlugin = class extends import_obsidian10.Plugin {
         this.settings.roamingDocs = [];
         this.settings.version = DEFAULT_SETTINGS.version;
         await this.saveData(this.settings);
-        new import_obsidian10.Notice('\u{1F389} \u6F2B\u6E38\u9605\u8BFB\u529F\u80FD\u5DF2\u5347\u7EA7\uFF01\u8BF7\u4F7F\u7528"\u52A0\u5165\u6F2B\u6E38"\u529F\u80FD\u91CD\u65B0\u6DFB\u52A0\u4F60\u60F3\u6F2B\u6E38\u7684\u6587\u6863');
+        new import_obsidian10.Notice('Plugin upgraded! Please re-add documents to roaming list using "Add to Roaming"');
       }
     } catch (error) {
       console.error("Error loading settings:", error);
-      new import_obsidian10.Notice("Error loading settings, using defaults");
+      new import_obsidian10.Notice(i18n.t("notices.errorLoadingSettings"));
       this.settings = { ...DEFAULT_SETTINGS };
     }
   }
@@ -3266,9 +4136,26 @@ var IncrementalReadingPlugin = class extends import_obsidian10.Plugin {
       this.notifyViewsRefresh();
     } catch (error) {
       console.error("Error saving settings:", error);
-      new import_obsidian10.Notice("Error saving settings");
+      new import_obsidian10.Notice(i18n.t("notices.errorSavingSettings"));
     } finally {
       this.isUpdatingSettings = false;
+    }
+  }
+  /**
+   * 通知所有增量阅读视图刷新UI（用于语言切换）
+   */
+  notifyViewsRefreshUI() {
+    try {
+      const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_INCREMENTAL_READING);
+      leaves.forEach((leaf) => {
+        const view = leaf.view;
+        if (view && typeof view.refreshUI === "function") {
+          view.refreshUI();
+          console.log("\u5DF2\u901A\u77E5\u589E\u91CF\u9605\u8BFB\u89C6\u56FE\u5237\u65B0UI");
+        }
+      });
+    } catch (error) {
+      console.error("\u901A\u77E5\u89C6\u56FE\u5237\u65B0UI\u65F6\u51FA\u9519:", error);
     }
   }
   /**
@@ -3302,30 +4189,30 @@ var IncrementalReadingPlugin = class extends import_obsidian10.Plugin {
   addCommands() {
     this.addCommand({
       id: "start-incremental-reading",
-      name: "Start Incremental Reading",
+      name: i18n.t("commands.startReading"),
       callback: () => {
         this.activateView();
       }
     });
     this.addCommand({
       id: "open-random-document",
-      name: "Open Random Document",
+      name: i18n.t("commands.openRandom"),
       callback: () => {
         this.openRandomDocument();
       }
     });
     this.addCommand({
       id: "add-to-roaming",
-      name: "\u6DFB\u52A0\u81F3\u6F2B\u6E38",
+      name: i18n.t("commands.addToRoaming"),
       callback: async () => {
         const activeFile = this.app.workspace.getActiveFile();
         if (!activeFile) {
-          new import_obsidian10.Notice("\u6CA1\u6709\u6253\u5F00\u7684\u6587\u6863");
+          new import_obsidian10.Notice(i18n.t("notices.noActiveFile"));
           return;
         }
         try {
           if (activeFile.extension !== "md") {
-            new import_obsidian10.Notice(`\u53EA\u80FD\u6DFB\u52A0Markdown\u6587\u6863\u5230\u6F2B\u6E38\u5217\u8868 "${activeFile.basename}"`);
+            new import_obsidian10.Notice(i18n.t("notices.onlyMarkdownFiles"));
             return;
           }
           if (!this.settings.roamingDocs.includes(activeFile.path)) {
@@ -3334,30 +4221,30 @@ var IncrementalReadingPlugin = class extends import_obsidian10.Plugin {
           const defaultMetrics = this.fileManagementService.createDefaultMetricsForFile(activeFile);
           await this.updateDocumentMetrics(activeFile, defaultMetrics);
           await this.saveSettings();
-          new import_obsidian10.Notice(`\u5DF2\u5C06 "${activeFile.basename}" \u52A0\u5165\u6F2B\u6E38`);
+          new import_obsidian10.Notice(i18n.t("notices.addedToRoaming", { filename: activeFile.basename }));
         } catch (error) {
           console.error("\u52A0\u5165\u6F2B\u6E38\u5931\u8D25:", error);
-          new import_obsidian10.Notice("\u52A0\u5165\u6F2B\u6E38\u5931\u8D25");
+          new import_obsidian10.Notice(i18n.t("notices.errorSavingSettings"));
         }
       }
     });
     this.addCommand({
       id: "add-folder-to-roaming",
-      name: "\u6DFB\u52A0\u6587\u4EF6\u5939\u5230\u6F2B\u6E38",
+      name: i18n.t("commands.addFolder"),
       callback: async () => {
-        new import_obsidian10.Notice('\u8BF7\u4F7F\u7528\u754C\u9762\u7684"\u6DFB\u52A0\u6587\u4EF6\u5939"\u6309\u94AE');
+        new import_obsidian10.Notice(i18n.t("view.actionBar.addFolder"));
       }
     });
     this.addCommand({
       id: "add-multiple-files-to-roaming",
-      name: "\u591A\u9009\u6587\u4EF6\u5230\u6F2B\u6E38",
+      name: i18n.t("commands.addMultiple"),
       callback: async () => {
-        new import_obsidian10.Notice('\u8BF7\u4F7F\u7528\u754C\u9762\u7684"\u591A\u9009\u6587\u4EF6"\u6309\u94AE');
+        new import_obsidian10.Notice(i18n.t("view.actionBar.multiSelect"));
       }
     });
     this.addCommand({
       id: "reset-visited-documents",
-      name: "Clear Reading History",
+      name: i18n.t("commands.clearHistory"),
       callback: async () => {
         this.settings.roamingDocs = [];
         for (const [path] of Object.entries(this.settings.documentMetrics)) {
@@ -3365,7 +4252,7 @@ var IncrementalReadingPlugin = class extends import_obsidian10.Plugin {
           this.settings.documentMetrics[path].lastVisited = 0;
         }
         await this.saveSettings();
-        new import_obsidian10.Notice("\u6F2B\u6E38\u5386\u53F2\u5DF2\u6E05\u9664");
+        new import_obsidian10.Notice(i18n.t("notices.historyCleared"));
       }
     });
   }
@@ -3373,13 +4260,13 @@ var IncrementalReadingPlugin = class extends import_obsidian10.Plugin {
     try {
       const randomFile = this.fileManagementService.getRandomUnvisitedFile();
       if (!randomFile) {
-        new import_obsidian10.Notice("No unvisited documents found");
+        new import_obsidian10.Notice(i18n.t("view.actionBar.noDocuments"));
         return;
       }
       await this.app.workspace.getLeaf().openFile(randomFile);
     } catch (error) {
       console.error("Error opening random document:", error);
-      new import_obsidian10.Notice("Error opening random document");
+      new import_obsidian10.Notice(i18n.t("notices.documentOpenFailed"));
     }
   }
   // 公共方法供视图组件使用
@@ -3394,7 +4281,7 @@ var IncrementalReadingPlugin = class extends import_obsidian10.Plugin {
       await this.saveSettings();
     } catch (error) {
       console.error("Error updating document metrics:", error);
-      new import_obsidian10.Notice("Error updating document metrics");
+      new import_obsidian10.Notice(i18n.t("notices.errorSavingSettings"));
     }
   }
   getRecommendedDocuments(limit = 10) {
@@ -3428,20 +4315,20 @@ var IncrementalReadingPlugin = class extends import_obsidian10.Plugin {
     try {
       const addedCount = await this.fileManagementService.addFoldersToRoaming(folderPaths);
       await this.saveSettings();
-      new import_obsidian10.Notice(`\u6210\u529F\u6DFB\u52A0 ${addedCount} \u4E2A\u6587\u4EF6\u5230\u6F2B\u6E38\u5217\u8868`);
+      new import_obsidian10.Notice(i18n.t("notices.filesAdded", { count: addedCount }));
     } catch (error) {
       console.error("\u6DFB\u52A0\u6587\u4EF6\u5939\u5931\u8D25:", error);
-      new import_obsidian10.Notice("\u6DFB\u52A0\u6587\u4EF6\u5939\u5931\u8D25");
+      new import_obsidian10.Notice(i18n.t("notices.errorSavingSettings"));
     }
   }
   async addMultipleFilesToRoaming(files) {
     try {
       const addedCount = await this.fileManagementService.addMultipleFilesToRoaming(files);
       await this.saveSettings();
-      new import_obsidian10.Notice(`\u6210\u529F\u6DFB\u52A0 ${addedCount} \u4E2A\u6587\u4EF6\u5230\u6F2B\u6E38\u5217\u8868`);
+      new import_obsidian10.Notice(i18n.t("notices.filesAdded", { count: addedCount }));
     } catch (error) {
       console.error("\u6DFB\u52A0\u6587\u4EF6\u5931\u8D25:", error);
-      new import_obsidian10.Notice("\u6DFB\u52A0\u6587\u4EF6\u5931\u8D25");
+      new import_obsidian10.Notice(i18n.t("notices.errorSavingSettings"));
     }
   }
 };
@@ -3456,7 +4343,22 @@ var IncrementalReadingSettingTab = class extends import_obsidian10.PluginSetting
     containerEl.addClass("setting-tab-content");
     containerEl.addClass("incremental-reading-settings");
     containerEl.addClass("incremental-reading-plugin-root");
-    containerEl.createEl("h2", { text: "\u589E\u91CF\u9605\u8BFB \u63D2\u4EF6\u8BBE\u7F6E" });
+    containerEl.createEl("h2", { text: i18n.t("settings.title") });
+    containerEl.createEl("h3", { text: i18n.t("settings.general.title") });
+    new import_obsidian10.Setting(containerEl).setName(i18n.t("settings.general.language")).setDesc(i18n.t("settings.general.languageDesc")).addDropdown((dropdown) => {
+      const languages = i18n.getAvailableLanguages();
+      languages.forEach((lang) => {
+        dropdown.addOption(lang.code, lang.name);
+      });
+      dropdown.setValue(this.plugin.settings.language || "en").onChange(async (value) => {
+        this.plugin.settings.language = value;
+        i18n.setLanguage(value);
+        await this.plugin.saveSettings();
+        this.display();
+        this.plugin.notifyViewsRefreshUI();
+        new import_obsidian10.Notice(i18n.t("notices.settingsSaved"));
+      });
+    });
     const customMetricsSettings = new CustomMetricsSettings(containerEl, this.plugin);
     customMetricsSettings.render();
     const recommendationSettings = new RecommendationSettings(containerEl, this.plugin);

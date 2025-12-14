@@ -1,5 +1,6 @@
 import { Setting } from 'obsidian';
 import IncrementalReadingPlugin from '../main';
+import { i18n } from '../i18n';
 
 /**
  * 文档过滤设置组件
@@ -14,14 +15,14 @@ export class FilterSettings {
     }
 
     public render(): void {
-        this.containerEl.createEl('h3', { text: '过滤设置' });
+        this.containerEl.createEl('h3', { text: i18n.t('settings.filter.title') });
 
         // 排除路径设置
         new Setting(this.containerEl)
-            .setName('排除路径')
-            .setDesc('要从漫游中排除的文件夹路径（每行一个，支持*通配符匹配）')
+            .setName(i18n.t('settings.filter.excludedPaths'))
+            .setDesc(i18n.t('settings.filter.excludedPathsDesc'))
             .addTextArea(text => text
-                .setPlaceholder('示例：\nTemplates/*\nArchive/**\n.obsidian/**\n**/*.excalidraw')
+                .setPlaceholder(i18n.t('settings.filter.excludedPathsPlaceholder'))
                 .setValue(this.plugin.settings.excludedPaths.join('\n'))
                 .onChange(async (value) => {
                     this.plugin.settings.excludedPaths = value.split('\n').filter(p => p.trim());

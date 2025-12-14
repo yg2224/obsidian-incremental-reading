@@ -4,7 +4,7 @@
 	"version": "2.0.0",
 	"minAppVersion": "0.15.0",
 	"description": "Enhanced incremental reading system with custom metrics, real-time ranking updates, folder/multi-file support, and intelligent document recommendations. Features fully customizable evaluation metrics (1-10 indicators with automatic weight normalization), instant ranking updates during scoring, batch file addition capabilities, and TF-IDF similarity analysis.",
-	"author": "ebAobS (enhanced by Claude)",
+	"author": "yg2224",
 	"authorUrl": "https://github.com/yg2224/obsidian-incremental-reading",
 	"fundingUrl": "https://github.com/yg2224/obsidian-incremental-reading",
 	"isDesktopOnly": false,

@@ -1,6 +1,7 @@
 import { Notice } from 'obsidian';
 import IncrementalReadingPlugin from '../../main';
 import { FolderSelectionModal, MultiFileSelectionModal } from '../../components/Modal';
+import { i18n } from '../../i18n';
 
 /**
  * 操作栏组件 - 包含主要操作按钮
@@ -10,6 +11,7 @@ export class ActionBar {
     private plugin: IncrementalReadingPlugin;
     private continueBtn: HTMLButtonElement | null = null;
     private addRoamingBtn: HTMLButtonElement | null = null;
+    private removeRoamingBtn: HTMLButtonElement | null = null;
 
     // 回调函数
     private onContinueReading: () => void;
@@ -17,6 +19,7 @@ export class ActionBar {
     private onRefreshData: () => void;
     private onRandomRoaming: () => void;
     private onAddCurrentToRoaming: () => void;
+    private onRemoveCurrentFromRoaming: () => void;
 
     constructor(
         container: HTMLElement,
@@ -27,6 +30,7 @@ export class ActionBar {
             onRefreshData: () => void;
             onRandomRoaming: () => void;
             onAddCurrentToRoaming: () => void;
+            onRemoveCurrentFromRoaming: () => void;
         }
     ) {
         this.container = container;
@@ -36,6 +40,7 @@ export class ActionBar {
         this.onRefreshData = callbacks.onRefreshData;
         this.onRandomRoaming = callbacks.onRandomRoaming;
         this.onAddCurrentToRoaming = callbacks.onAddCurrentToRoaming;
+        this.onRemoveCurrentFromRoaming = callbacks.onRemoveCurrentFromRoaming;
 
         this.create();
     }
@@ -43,56 +48,48 @@ export class ActionBar {
     private create() {
         const actionBar = this.container.createEl('div', { cls: 'action-bar' });
 
-        // Continue Reading button
-        this.continueBtn = actionBar.createEl('button', {
-            cls: 'btn primary',
-            text: '继续漫游'
-        });
+        // Continue Reading button (primary)
+        this.continueBtn = actionBar.createEl('button', { cls: 'btn primary' });
+        this.continueBtn.textContent = i18n.t('view.actionBar.continue');
         this.continueBtn.onclick = () => this.onContinueReading();
         this.updateContinueButtonState();
 
         // Smart Recommendations button
-        const recommendBtn = actionBar.createEl('button', {
-            cls: 'btn',
-            text: '🧠 智能推荐'
-        });
-        recommendBtn.title = '跳转到相似度最高的文档';
+        const recommendBtn = actionBar.createEl('button', { cls: 'btn' });
+        recommendBtn.innerHTML = `<span>🧠</span><span>${i18n.t('view.actionBar.smartRecommend')}</span>`;
+        recommendBtn.title = i18n.t('view.actionBar.smartTooltip');
         recommendBtn.onclick = () => this.onGetSmartRecommendations();
 
-        // Status Update button
-        const refreshDataBtn = actionBar.createEl('button', {
-            cls: 'btn',
-            text: '状态更新'
-        });
+        // Refresh Data button
+        const refreshDataBtn = actionBar.createEl('button', { cls: 'btn' });
+        refreshDataBtn.innerHTML = `<span>🔄</span><span>${i18n.t('view.actionBar.refresh')}</span>`;
         refreshDataBtn.onclick = () => this.onRefreshData();
 
         // Random Roaming button
-        const randomRoamBtn = actionBar.createEl('button', {
-            cls: 'btn',
-            text: '随机漫游'
-        });
+        const randomRoamBtn = actionBar.createEl('button', { cls: 'btn' });
+        randomRoamBtn.innerHTML = `<span>🎲</span><span>${i18n.t('view.actionBar.random')}</span>`;
         randomRoamBtn.onclick = () => this.onRandomRoaming();
 
         // Add to Roaming button
-        this.addRoamingBtn = actionBar.createEl('button', {
-            cls: 'btn',
-            text: '加入漫游'
-        });
+        this.addRoamingBtn = actionBar.createEl('button', { cls: 'btn' });
+        this.addRoamingBtn.innerHTML = `<span>➕</span><span>${i18n.t('view.actionBar.addCurrent')}</span>`;
         this.addRoamingBtn.onclick = () => this.onAddCurrentToRoaming();
         this.updateAddRoamingButtonState();
 
-        // Add Folder button
-        const addFolderBtn = actionBar.createEl('button', {
-            cls: 'btn',
-            text: '添加文件夹'
-        });
+        // Remove from Roaming button
+        this.removeRoamingBtn = actionBar.createEl('button', { cls: 'btn' });
+        this.removeRoamingBtn.innerHTML = `<span>➖</span><span>${i18n.t('actions.removeFromRoaming')}</span>`;
+        this.removeRoamingBtn.onclick = () => this.onRemoveCurrentFromRoaming();
+        this.updateRemoveRoamingButtonState();
+
+        // Add Folder button (primary style)
+        const addFolderBtn = actionBar.createEl('button', { cls: 'btn primary' });
+        addFolderBtn.innerHTML = `<span>📁</span><span>${i18n.t('view.actionBar.addFolder')}</span>`;
         addFolderBtn.onclick = () => this.addFolderToRoaming();
 
-        // Multi-select Files button
-        const multiSelectBtn = actionBar.createEl('button', {
-            cls: 'btn',
-            text: '多选文件'
-        });
+        // Multi-select Files button (primary style)
+        const multiSelectBtn = actionBar.createEl('button', { cls: 'btn primary' });
+        multiSelectBtn.innerHTML = `<span>📄</span><span>${i18n.t('view.actionBar.multiSelect')}</span>`;
         multiSelectBtn.onclick = () => this.multiSelectFilesToRoaming();
     }
 
@@ -119,7 +116,7 @@ export class ActionBar {
         const hasValidFiles = validRoamingFiles.length > 0;
 
         this.continueBtn.disabled = !hasValidFiles;
-        this.continueBtn.textContent = hasValidFiles ? '继续漫游' : '暂无漫游文档';
+        this.continueBtn.textContent = hasValidFiles ? i18n.t('view.actionBar.continue') : i18n.t('view.actionBar.noDocuments');
     }
 
     private updateAddRoamingButtonState() {
@@ -128,8 +125,32 @@ export class ActionBar {
         const activeFile = this.plugin.app.workspace.getActiveFile();
         const isInRoaming = activeFile && this.plugin.settings.roamingDocs.includes(activeFile.path);
 
-        this.addRoamingBtn.disabled = isInRoaming;
-        this.addRoamingBtn.textContent = isInRoaming ? '已在漫游中' : '加入漫游';
+        // 如果在漫游列表中，隐藏"加入漫游"按钮
+        if (isInRoaming) {
+            this.addRoamingBtn.style.display = 'none';
+        } else {
+            this.addRoamingBtn.style.display = 'flex';
+            this.addRoamingBtn.disabled = !activeFile;
+            this.addRoamingBtn.innerHTML = activeFile
+                ? `<span>➕</span><span>${i18n.t('view.actionBar.addCurrent')}</span>`
+                : `<span>➕</span><span>${i18n.t('view.actionBar.noDocuments')}</span>`;
+        }
+    }
+
+    private updateRemoveRoamingButtonState() {
+        if (!this.removeRoamingBtn) return;
+
+        const activeFile = this.plugin.app.workspace.getActiveFile();
+        const isInRoaming = activeFile && this.plugin.settings.roamingDocs.includes(activeFile.path);
+
+        // 如果在漫游列表中，显示"移除漫游"按钮
+        if (isInRoaming) {
+            this.removeRoamingBtn.style.display = 'flex';
+            this.removeRoamingBtn.disabled = false;
+            this.removeRoamingBtn.innerHTML = `<span>➖</span><span>${i18n.t('actions.removeFromRoaming')}</span>`;
+        } else {
+            this.removeRoamingBtn.style.display = 'none';
+        }
     }
 
     /**
@@ -138,5 +159,6 @@ export class ActionBar {
     public updateButtonStates() {
         this.updateContinueButtonState();
         this.updateAddRoamingButtonState();
+        this.updateRemoveRoamingButtonState();
     }
 }

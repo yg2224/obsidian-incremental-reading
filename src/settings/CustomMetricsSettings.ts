@@ -1,6 +1,7 @@
 import { Setting, Notice } from 'obsidian';
 import IncrementalReadingPlugin from '../main';
 import { CustomMetric } from '../models/Settings';
+import { i18n } from '../i18n';
 
 /**
  * 自定义指标设置组件
@@ -26,7 +27,7 @@ export class CustomMetricsSettings {
         }
 
         // 在内容容器中渲染
-        this.contentEl.createEl('h3', { text: '📊 自定义指标设置' });
+        this.contentEl.createEl('h3', { text: '📊 ' + i18n.t('settings.customMetrics.title') });
 
         // 指标管理说明
         this.createMetricManagementHeader();
@@ -38,10 +39,10 @@ export class CustomMetricsSettings {
     private createMetricManagementHeader(): void {
         // 添加新指标的设置项
         new Setting(this.contentEl)
-            .setName('自定义指标管理')
-            .setDesc('自定义指标用于评估文档优先级。您可以添加、删除和重命名指标，以及调整每个指标的权重。')
+            .setName(i18n.t('settings.customMetrics.title'))
+            .setDesc(i18n.t('settings.customMetrics.description'))
             .addButton(button => button
-                .setButtonText('+ 添加新指标')
+                .setButtonText('+ ' + i18n.t('settings.customMetrics.addMetric'))
                 .setCta()
                 .onClick(() => this.addNewMetric()));
     }
@@ -49,9 +50,9 @@ export class CustomMetricsSettings {
     private createCustomMetricsList(): void {
         const metricsContainer = this.contentEl.createEl('div', { cls: 'custom-metrics-container' });
 
-        metricsContainer.createEl('h4', { text: '自定义指标' });
+        metricsContainer.createEl('h4', { text: i18n.t('settings.customMetrics.title') });
         metricsContainer.createEl('p', {
-            text: '自定义指标用于评估文档优先级。您可以添加、删除和重命名指标，以及调整每个指标的权重。',
+            text: i18n.t('settings.customMetrics.description'),
             cls: 'setting-item-description'
         });
 
@@ -68,22 +69,22 @@ export class CustomMetricsSettings {
 
         // 指标标题
         const titleSetting = new Setting(metricItem)
-            .setName(`自定义指标 ${index + 1}`)
-            .setDesc(`指标名称: ${metric.name}`)
+            .setName(`${i18n.t('settings.customMetrics.title')} ${index + 1}`)
+            .setDesc(`${i18n.t('settings.customMetrics.metricName')}: ${metric.name}`)
             .addButton(button => button
-                .setButtonText('删除')
+                .setButtonText(i18n.t('settings.customMetrics.removeMetric'))
                 .setWarning()
                 .onClick(() => this.deleteMetric(index)));
 
         // 指标名称设置
         new Setting(metricItem)
-            .setName('指标名称')
-            .setDesc('指标的显示名称，将用于界面显示')
+            .setName(i18n.t('settings.customMetrics.metricName'))
+            .setDesc(i18n.t('settings.customMetrics.description'))
             .addText(text => text
-                .setPlaceholder('例如：重要性')
+                .setPlaceholder(i18n.t('settings.customMetrics.metricName'))
                 .setValue(metric.name)
                 .onChange(async (value) => {
-                    const newName = value || `指标名称${index + 1}`;
+                    const newName = value || `${i18n.t('settings.customMetrics.metricName')}${index + 1}`;
                     const oldId = this.plugin.settings.customMetrics![index].id;
                     const newId = this.generateMetricId(newName);
 
@@ -103,8 +104,8 @@ export class CustomMetricsSettings {
 
         // 指标权重设置
         new Setting(metricItem)
-            .setName('权重')
-            .setDesc('该指标在总评分中的权重百分比（所有指标权重将自动归一化为100%）')
+            .setName(i18n.t('settings.customMetrics.metricWeight'))
+            .setDesc(i18n.t('settings.customMetrics.description'))
             .addSlider(slider => slider
                 .setLimits(0, 100, 1)
                 .setValue(metric.weight)
@@ -124,14 +125,14 @@ export class CustomMetricsSettings {
         const currentCount = this.plugin.settings.customMetrics?.length || 0;
 
         if (currentCount >= 10) {
-            new Notice('最多支持10个自定义指标');
+            new Notice(i18n.t('settings.customMetrics.maxMetricsWarning'));
             return;
         }
 
         try {
             const newMetric: CustomMetric = {
-                id: this.generateMetricId(`自定义指标${currentCount + 1}`),
-                name: `自定义指标${currentCount + 1}`,
+                id: this.generateMetricId(`${i18n.t('settings.customMetrics.metricName')}${currentCount + 1}`),
+                name: `${i18n.t('settings.customMetrics.metricName')}${currentCount + 1}`,
                 weight: Math.floor(100 / (currentCount + 1))
             };
 
@@ -146,11 +147,11 @@ export class CustomMetricsSettings {
             await this.saveSettings();
             this.refresh();
 
-            new Notice('✅ 已添加新指标');
+            new Notice(i18n.t('notices.settingsSaved'));
 
         } catch (error) {
             console.error('添加指标失败:', error);
-            new Notice('添加指标失败');
+            new Notice(i18n.t('notices.errorSavingSettings'));
         }
     }
 
@@ -243,12 +244,12 @@ export class CustomMetricsSettings {
             `;
 
             content.innerHTML = `
-                <h3 style="margin-top: 0; color: var(--text-normal);">确认删除</h3>
-                <p style="color: var(--text-normal);">确定要删除指标"${metricName}"吗？</p>
-                <p class="warning" style="color: var(--text-error); font-weight: bold;">⚠️ 此操作将删除所有文档中该指标的评分数据，且无法恢复！</p>
+                <h3 style="margin-top: 0; color: var(--text-normal);">${i18n.t('common.confirm')}</h3>
+                <p style="color: var(--text-normal);">${i18n.t('settings.customMetrics.removeMetric')} "${metricName}"?</p>
+                <p class="warning" style="color: var(--text-error); font-weight: bold;">⚠️ ${i18n.t('settings.dataManagement.clearConfirm')}</p>
                 <div class="modal-buttons" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-                    <button class="cancel-btn" style="padding: 8px 16px; border: 1px solid var(--background-modifier-border); background-color: var(--interactive-normal); color: var(--text-normal); border-radius: 4px; cursor: pointer;">取消</button>
-                    <button class="confirm-btn" style="padding: 8px 16px; border: none; background-color: var(--interactive-destructive); color: var(--text-on-accent); border-radius: 4px; cursor: pointer;">删除</button>
+                    <button class="cancel-btn" style="padding: 8px 16px; border: 1px solid var(--background-modifier-border); background-color: var(--interactive-normal); color: var(--text-normal); border-radius: 4px; cursor: pointer;">${i18n.t('common.cancel')}</button>
+                    <button class="confirm-btn" style="padding: 8px 16px; border: none; background-color: var(--interactive-destructive); color: var(--text-on-accent); border-radius: 4px; cursor: pointer;">${i18n.t('common.delete')}</button>
                 </div>
             `;
 
@@ -401,12 +402,12 @@ export class CustomMetricsSettings {
 
             if (updatedCount > 0) {
                 await this.plugin.saveSettings();
-                new Notice(`✅ 已为 ${updatedCount} 个现有文档添加新指标的默认值（5.0分）`);
+                new Notice(i18n.t('notices.settingsSaved'));
             }
 
         } catch (error) {
             console.error('为新指标添加默认值失败:', error);
-            new Notice('为新指标添加默认值时出现错误');
+            new Notice(i18n.t('notices.errorSavingSettings'));
         }
     }
 

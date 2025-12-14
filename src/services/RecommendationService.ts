@@ -185,8 +185,11 @@ export class RecommendationService {
 			// 计算余弦相似度
 			const similarity = this.cosineSimilarityFromFreq(freq1, freq2);
 
-			console.log(`最终相似度: ${similarity.toFixed(4)}`);
-			return similarity;
+			// 确保返回值在 0-1 之间，并且是有效数字
+			const validSimilarity = (!isFinite(similarity) || isNaN(similarity)) ? 0 : Math.max(0, Math.min(1, similarity));
+
+			console.log(`最终相似度: ${validSimilarity.toFixed(4)}`);
+			return validSimilarity;
 		} catch (error) {
 			console.error(`计算文本相似度失败:`, error);
 			return 0;
@@ -269,6 +272,11 @@ export class RecommendationService {
 		// 获取所有唯一词汇
 		const allWords = new Set([...freq1.keys(), ...freq2.keys()]);
 
+		// 如果没有共同词汇，返回 0
+		if (allWords.size === 0) {
+			return 0;
+		}
+
 		let dotProduct = 0;
 		let magnitude1 = 0;
 		let magnitude2 = 0;
@@ -286,8 +294,19 @@ export class RecommendationService {
 		magnitude1 = Math.sqrt(magnitude1);
 		magnitude2 = Math.sqrt(magnitude2);
 
-		if (magnitude1 === 0 || magnitude2 === 0) return 0;
-		return dotProduct / (magnitude1 * magnitude2);
+		// 检查除零错误
+		if (magnitude1 === 0 || magnitude2 === 0 || !isFinite(magnitude1) || !isFinite(magnitude2)) {
+			return 0;
+		}
+
+		const similarity = dotProduct / (magnitude1 * magnitude2);
+
+		// 确保返回值在 0-1 之间，并且是有效数字
+		if (!isFinite(similarity) || isNaN(similarity)) {
+			return 0;
+		}
+
+		return Math.max(0, Math.min(1, similarity));
 	}
 
 	/**
