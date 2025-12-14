@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Obsidian](https://img.shields.io/badge/Obsidian-Plugin-7C3AED.svg)](https://obsidian.md)
-[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/yg2224/obsidian-incremental-reading/releases)
+[![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)](https://github.com/yg2224/obsidian-incremental-reading/releases)
 
 🌐 **中英文切换** | 📊 **智能指标管理** | 🧠 **AI推荐算法** | 📈 **优先级可视化** | 📁 **批量文件操作**
 
