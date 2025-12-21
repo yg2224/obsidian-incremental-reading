@@ -64,7 +64,7 @@ export class SettingsManager {
             for (let i = currentCount; i < count; i++) {
                 this.settings.customMetrics.push({
                     id: this.generateMetricId(`指标${i + 1}`),
-                    name: `指标${i + 1}`,
+                    name: { en: `Metric ${i + 1}`, zh: `指标${i + 1}` },
                     weight: Math.floor(100 / count)
                 });
             }

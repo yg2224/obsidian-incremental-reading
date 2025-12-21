@@ -22,7 +22,7 @@ export class DataManagementSettings {
             .setName(i18n.t('settings.dataManagement.clearHistory'))
             .setDesc(i18n.t('settings.dataManagement.clearHistoryDesc'))
             .addButton(button => button
-                .setButtonText('🗑️ ' + i18n.t('settings.dataManagement.clearButton'))
+                .setButtonText(i18n.t('settings.dataManagement.clearButton'))
                 .onClick(async () => {
                     // 确认对话框
                     if (confirm(i18n.t('settings.dataManagement.clearConfirm'))) {

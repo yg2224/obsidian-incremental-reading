@@ -56,40 +56,40 @@ export class ActionBar {
 
         // Smart Recommendations button
         const recommendBtn = actionBar.createEl('button', { cls: 'btn' });
-        recommendBtn.innerHTML = `<span>🧠</span><span>${i18n.t('view.actionBar.smartRecommend')}</span>`;
+        recommendBtn.textContent = i18n.t('view.actionBar.smartRecommend');
         recommendBtn.title = i18n.t('view.actionBar.smartTooltip');
         recommendBtn.onclick = () => this.onGetSmartRecommendations();
 
         // Refresh Data button
         const refreshDataBtn = actionBar.createEl('button', { cls: 'btn' });
-        refreshDataBtn.innerHTML = `<span>🔄</span><span>${i18n.t('view.actionBar.refresh')}</span>`;
+        refreshDataBtn.textContent = i18n.t('view.actionBar.refresh');
         refreshDataBtn.onclick = () => this.onRefreshData();
 
         // Random Roaming button
         const randomRoamBtn = actionBar.createEl('button', { cls: 'btn' });
-        randomRoamBtn.innerHTML = `<span>🎲</span><span>${i18n.t('view.actionBar.random')}</span>`;
+        randomRoamBtn.textContent = i18n.t('view.actionBar.random');
         randomRoamBtn.onclick = () => this.onRandomRoaming();
 
         // Add to Roaming button
         this.addRoamingBtn = actionBar.createEl('button', { cls: 'btn' });
-        this.addRoamingBtn.innerHTML = `<span>➕</span><span>${i18n.t('view.actionBar.addCurrent')}</span>`;
+        this.addRoamingBtn.textContent = i18n.t('view.actionBar.addCurrent');
         this.addRoamingBtn.onclick = () => this.onAddCurrentToRoaming();
         this.updateAddRoamingButtonState();
 
         // Remove from Roaming button
         this.removeRoamingBtn = actionBar.createEl('button', { cls: 'btn' });
-        this.removeRoamingBtn.innerHTML = `<span>➖</span><span>${i18n.t('actions.removeFromRoaming')}</span>`;
+        this.removeRoamingBtn.textContent = i18n.t('actions.removeFromRoaming');
         this.removeRoamingBtn.onclick = () => this.onRemoveCurrentFromRoaming();
         this.updateRemoveRoamingButtonState();
 
         // Add Folder button (primary style)
         const addFolderBtn = actionBar.createEl('button', { cls: 'btn primary' });
-        addFolderBtn.innerHTML = `<span>📁</span><span>${i18n.t('view.actionBar.addFolder')}</span>`;
+        addFolderBtn.textContent = i18n.t('view.actionBar.addFolder');
         addFolderBtn.onclick = () => this.addFolderToRoaming();
 
         // Multi-select Files button (primary style)
         const multiSelectBtn = actionBar.createEl('button', { cls: 'btn primary' });
-        multiSelectBtn.innerHTML = `<span>📄</span><span>${i18n.t('view.actionBar.multiSelect')}</span>`;
+        multiSelectBtn.textContent = i18n.t('view.actionBar.multiSelect');
         multiSelectBtn.onclick = () => this.multiSelectFilesToRoaming();
     }
 
@@ -131,9 +131,9 @@ export class ActionBar {
         } else {
             this.addRoamingBtn.style.display = 'flex';
             this.addRoamingBtn.disabled = !activeFile;
-            this.addRoamingBtn.innerHTML = activeFile
-                ? `<span>➕</span><span>${i18n.t('view.actionBar.addCurrent')}</span>`
-                : `<span>➕</span><span>${i18n.t('view.actionBar.noDocuments')}</span>`;
+            this.addRoamingBtn.textContent = activeFile
+                ? i18n.t('view.actionBar.addCurrent')
+                : i18n.t('view.actionBar.noDocuments');
         }
     }
 
@@ -147,7 +147,7 @@ export class ActionBar {
         if (isInRoaming) {
             this.removeRoamingBtn.style.display = 'flex';
             this.removeRoamingBtn.disabled = false;
-            this.removeRoamingBtn.innerHTML = `<span>➖</span><span>${i18n.t('actions.removeFromRoaming')}</span>`;
+            this.removeRoamingBtn.textContent = i18n.t('actions.removeFromRoaming');
         } else {
             this.removeRoamingBtn.style.display = 'none';
         }

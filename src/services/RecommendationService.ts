@@ -24,8 +24,6 @@ export class RecommendationService {
 	 */
 	async getRecommendations(excludeFile?: TFile): Promise<Array<{ file: TFile; score: number }>> {
 		try {
-			console.log('开始智能推荐算法...');
-
 			const files = this.app.vault.getMarkdownFiles();
 			// Only include documents that have been manually added to roaming
 			const roamingFiles = files.filter(file =>
@@ -34,62 +32,51 @@ export class RecommendationService {
 				this.settings.roamingDocs.includes(file.path) // Only include roaming documents
 			);
 
-			console.log(`找到 ${roamingFiles.length} 个漫游文档`);
-
 			if (roamingFiles.length === 0) {
-				console.log('没有漫游文档，返回空推荐');
 				return [];
 			}
 
 			// 获取当前文档作为参考点
 			const currentFile = excludeFile || this.app.workspace.getActiveFile();
 			if (!currentFile) {
-				console.log('没有当前文档，按优先级排序推荐漫游文档');
 				return this.getPriorityBasedRecommendations(roamingFiles);
 			}
 
-			console.log(`当前参考文档: ${currentFile.basename}`);
+			// 限制相似度计算的文档数量以提高性能
+			const maxCandidates = Math.min(roamingFiles.length, this.settings.recommendationSettings.maxCandidates);
+			const limitedRoamingFiles = roamingFiles.slice(0, maxCandidates);
 
-			// 简化逻辑：计算所有漫游文档与当前文档的文本相似度
-			const similarityScores: Array<{ file: TFile; score: number }> = [];
-
-			for (const roamingFile of roamingFiles) {
-				if (roamingFile.path === currentFile.path) continue; // 跳过当前文档
-
-				try {
-					const similarity = await this.calculateTextSimilarity(currentFile, roamingFile);
-					console.log(`${roamingFile.basename} 相似度: ${similarity.toFixed(4)}`);
-
-					if (similarity > 0) { // 只保留有相似度的文档
-						similarityScores.push({ file: roamingFile, score: similarity });
+			// 计算相似度得分（使用Promise.all并行处理以提高性能）
+			const similarityPromises = limitedRoamingFiles
+				.filter(roamingFile => roamingFile.path !== currentFile.path)
+				.map(async (roamingFile) => {
+					try {
+						const similarity = await this.calculateTextSimilarityFast(currentFile, roamingFile);
+						return { file: roamingFile, score: similarity };
+					} catch (error) {
+						return null; // 忽略错误，继续处理其他文档
 					}
-				} catch (error) {
-					console.error(`计算 ${roamingFile.basename} 相似度失败:`, error);
-				}
-			}
+				});
+
+			const similarityResults = await Promise.all(similarityPromises);
+			const similarityScores = similarityResults
+				.filter(result => result && result.score > 0) // 只保留有效结果
+				.map(result => result!);
 
 			// 按相似度排序
 			similarityScores.sort((a, b) => b.score - a.score);
-			console.log(`找到 ${similarityScores.length} 个有相似度的文档`);
 
 			// 如果没有找到相似文档，返回基于优先级的推荐
 			if (similarityScores.length === 0) {
-				console.log('没有相似文档，按优先级排序推荐');
 				return this.getPriorityBasedRecommendations(roamingFiles);
 			}
 
 			// 返回前K个最相似的文档
 			const topK = Math.min(this.settings.recommendationSettings.topK, similarityScores.length);
 			const result = similarityScores.slice(0, topK);
-			console.log(`推荐完成，返回 ${result.length} 个文档`);
 
-			// 去重逻辑 - 确保每个文档只出现一次
-			console.log(`去重前的推荐结果:`, result.map(r => ({ name: r.file.basename, path: r.file.path, score: r.score })));
-			const uniqueResults = this.deduplicateRecommendations(result);
-			console.log(`去重后的推荐结果:`, uniqueResults.map(r => ({ name: r.file.basename, path: r.file.path, score: r.score })));
-			console.log(`去重后返回 ${uniqueResults.length} 个文档`);
-
-			return uniqueResults;
+			// 简化去重逻辑 - 由于我们使用不同文件，基本不需要去重
+			return result;
 		} catch (error) {
 			console.error('智能推荐算法出错:', error);
 			return [];
@@ -150,7 +137,61 @@ export class RecommendationService {
 	}
 
 	/**
-	 * 计算两个文档之间的文本余弦相似度
+	 * 快速计算两个文档之间的文本相似度（优化版）
+	 */
+	private async calculateTextSimilarityFast(file1: TFile, file2: TFile): Promise<number> {
+		try {
+			// 检查缓存
+			const cacheKey = `${file1.path}-${file2.path}`;
+			const cached = this.vectorCache.getVector(cacheKey);
+			if (cached !== null) {
+				return cached.vector.get('similarity') || 0;
+			}
+
+			// 并行提取文本内容
+			const [content1, content2] = await Promise.all([
+				this.extractSimpleTextContent(file1),
+				this.extractSimpleTextContent(file2)
+			]);
+
+			// 快速检查
+			if (!content1 || !content2 || content1.length < 20 || content2.length < 20) {
+				return 0;
+			}
+
+			// 限制文本长度以提高性能（只使用前1000个字符）
+			const limitedContent1 = content1.substring(0, 1000);
+			const limitedContent2 = content2.substring(0, 1000);
+
+			// 简化分词和相似度计算
+			const tokens1 = this.simpleTokenize(limitedContent1);
+			const tokens2 = this.simpleTokenize(limitedContent2);
+
+			if (tokens1.length === 0 || tokens2.length === 0) {
+				return 0;
+			}
+
+			// 使用简化余弦相似度计算
+			const freq1 = this.calculateWordFrequency(tokens1);
+			const freq2 = this.calculateWordFrequency(tokens2);
+			const similarity = this.cosineSimilarityFromFreq(freq1, freq2);
+
+			// 缓存结果
+			const validSimilarity = (!isFinite(similarity) || isNaN(similarity)) ? 0 : Math.max(0, Math.min(1, similarity));
+
+			// 创建向量用于缓存
+			const similarityVector = new Map<string, number>();
+			similarityVector.set('similarity', validSimilarity);
+			this.vectorCache.setVector(cacheKey, similarityVector);
+
+			return validSimilarity;
+		} catch (error) {
+			return 0;
+		}
+	}
+
+	/**
+	 * 计算两个文档之间的文本余弦相似度（详细版）
 	 */
 	private async calculateTextSimilarity(file1: TFile, file2: TFile): Promise<number> {
 		try {

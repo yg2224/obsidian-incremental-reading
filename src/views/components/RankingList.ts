@@ -36,7 +36,7 @@ export class RankingList {
         // Create header with toggle buttons
         const headerContainer = rankingSection.createEl('div', { cls: 'ranking-header' });
 
-        const title = headerContainer.createEl('h3', { text: '🏆 ' + i18n.t('ranking.title') });
+        const title = headerContainer.createEl('h3', { text: i18n.t('ranking.title') });
 
         // Toggle buttons for ranking type
         const toggleContainer = headerContainer.createEl('div', { cls: 'ranking-toggle' });
@@ -79,7 +79,7 @@ export class RankingList {
         // Add refresh button
         const refreshBtn = rankingSection.createEl('button', {
             cls: 'refresh-ranking-btn',
-            text: '🔄 ' + i18n.t('ranking.refreshButton')
+            text: i18n.t('ranking.refreshButton')
         });
         refreshBtn.onclick = () => this.render();
     }

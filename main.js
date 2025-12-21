@@ -27,13 +27,489 @@ __export(main_exports, {
   default: () => IncrementalReadingPlugin
 });
 module.exports = __toCommonJS(main_exports);
-var import_obsidian10 = require("obsidian");
+var import_obsidian11 = require("obsidian");
 
 // src/views/IncrementalReadingView.ts
 var import_obsidian4 = require("obsidian");
 
 // src/components/Modal.ts
 var import_obsidian = require("obsidian");
+
+// src/i18n/translations.ts
+var translations = {
+  en: {
+    common: {
+      ok: "OK",
+      cancel: "Cancel",
+      save: "Save",
+      delete: "Delete",
+      edit: "Edit",
+      add: "Add",
+      remove: "Remove",
+      confirm: "Confirm",
+      close: "Close",
+      reset: "Reset",
+      search: "Search",
+      loading: "Loading...",
+      error: "Error",
+      success: "Success",
+      warning: "Warning"
+    },
+    view: {
+      title: "Incremental Reading",
+      subtitle: `"Unfold the scroll of silent affection: With the <span class="chance">chance of waiting and roaming...</span><br>Through stars we meet, three autumns' frost prints on the hooves."`,
+      statusTemplate: "Roaming through {count} documents",
+      noDocuments: "No documents in roaming list",
+      openDocument: "Open Document",
+      actionBar: {
+        continue: "Continue Reading",
+        smartRecommend: "Smart Recommendations",
+        refresh: "Refresh Data",
+        random: "Random Roaming",
+        addCurrent: "Add to Roaming",
+        addFolder: "Add Folder",
+        multiSelect: "Add Multiple Files",
+        noDocuments: "No roaming documents yet",
+        alreadyInRoaming: "Already in roaming",
+        smartTooltip: "Jump to the most similar document"
+      },
+      nonRoaming: {
+        title: "This document is not in your roaming list yet",
+        description: "Add it to unlock custom metrics, priority tuning, and smart recommendations.",
+        benefits: [
+          "Set custom metric scores",
+          "Fine-tune document priority",
+          "Receive intelligent recommendations",
+          "Appear in ranking insights"
+        ],
+        action: "Add to Roaming List"
+      }
+    },
+    tabs: {
+      metrics: "Document Metrics",
+      ranking: "Priority Ranking",
+      recommendations: "Smart Recommendations",
+      visualization: "Priority Visualization"
+    },
+    metrics: {
+      title: "Current Document Metrics",
+      importance: "Importance",
+      urgency: "Urgency",
+      completion: "Completion",
+      lastVisited: "Last Visited",
+      visitCount: "Visit Count",
+      totalScore: "Total Score",
+      updateMetrics: "Update Metrics",
+      noFileOpen: "No file is currently open",
+      currentDocument: "Current Document",
+      priorityLabel: "Priority",
+      customMetricsTitle: "Custom Metrics",
+      visitStatsTitle: "Visit Statistics",
+      visitCountLabel: "Visit Count",
+      lastVisitedLabel: "Last Visited",
+      neverVisited: "Never visited",
+      weightBreakdown: "Weight Breakdown",
+      totalLabel: "Total"
+    },
+    ranking: {
+      title: "Document Priority Ranking",
+      emptyMessage: "No documents in roaming list",
+      score: "Score",
+      visits: "Visits",
+      lastVisit: "Last Visit",
+      priorityToggle: "By Priority",
+      visitsToggle: "By Visits",
+      refreshButton: "Refresh Ranking",
+      openButton: "Open"
+    },
+    recommendations: {
+      title: "Intelligent Document Recommendations",
+      emptyMessage: "No recommendations available",
+      similarity: "Similarity",
+      openRecommended: "Open Recommended",
+      refreshing: "Refreshing recommendations...",
+      refreshButton: "Refresh Recommendations",
+      smartJumpButton: "Jump to Top Match",
+      smartJumpFailed: "Smart jump failed, please try again",
+      smartJumpNotice: "Smart recommendation: {filename} (similarity {similarity}%)",
+      priorityLabel: "Priority",
+      visitCountLabel: "Visits",
+      openButton: "Open"
+    },
+    visualization: {
+      title: "Priority Visualization",
+      xAxis: "Document Rank (by priority)",
+      yAxis: "Priority Score",
+      refresh: "Refresh",
+      emptyMessage: "No documents to visualize"
+    },
+    actions: {
+      addFile: "Add Current File",
+      addFolder: "Add Folder",
+      addMultiple: "Add Multiple Files",
+      removeFromRoaming: "Remove from Roaming",
+      clearHistory: "Clear History",
+      refresh: "Refresh"
+    },
+    settings: {
+      title: "Incremental Reading Settings",
+      general: {
+        title: "General Settings",
+        language: "Language",
+        languageDesc: "Select the interface language"
+      },
+      customMetrics: {
+        title: "Custom Metrics",
+        description: "Define your own evaluation metrics (1-10 indicators). Weights are automatically normalized.",
+        addMetric: "Add Metric",
+        metricName: "Metric Name",
+        metricWeight: "Weight",
+        removeMetric: "Remove",
+        minMetricsWarning: "At least one metric is required",
+        maxMetricsWarning: "Maximum 10 metrics allowed"
+      },
+      recommendation: {
+        title: "Recommendation Settings",
+        description: "Configure intelligent recommendation algorithm parameters",
+        recentCount: "Recent Documents Count",
+        recentCountDesc: "Number of recently visited documents to use as reference",
+        topCount: "Top Priority Count",
+        topCountDesc: "Number of high-priority documents to use as reference",
+        topK: "Recommendation Count",
+        topKDesc: "Number of recommendations to display",
+        maxCandidates: "Max Candidates",
+        maxCandidatesDesc: "Maximum number of documents to analyze",
+        maxParagraphs: "Max Paragraphs",
+        maxParagraphsDesc: "Maximum paragraphs to analyze per document"
+      },
+      filter: {
+        title: "Filter Settings",
+        description: "Configure document filtering rules",
+        excludeVisited: "Exclude Visited Documents",
+        excludeVisitedDesc: "Do not recommend documents you've already visited",
+        excludedPaths: "Excluded Paths",
+        excludedPathsDesc: "Path patterns to exclude (one per line, supports wildcards)",
+        excludedPathsPlaceholder: "Templates/**\nArchive/**"
+      },
+      dataManagement: {
+        title: "Data Management",
+        description: "Manage your reading history and settings data",
+        clearHistory: "Clear Reading History",
+        clearHistoryDesc: "Remove all documents from roaming list and reset visit counts",
+        clearButton: "Clear History",
+        clearConfirm: "Are you sure you want to clear all reading history?",
+        exportData: "Export Data",
+        exportDataDesc: "Export all settings and metrics to a JSON file",
+        exportButton: "Export",
+        importData: "Import Data",
+        importDataDesc: "Import settings and metrics from a JSON file",
+        importButton: "Import"
+      }
+    },
+    notices: {
+      addedToRoaming: 'Added "{filename}" to roaming',
+      removedFromRoaming: 'Removed "{filename}" from roaming',
+      historyCleared: "Reading history cleared",
+      onlyMarkdownFiles: "Only Markdown files can be added to roaming list",
+      noActiveFile: "No active file",
+      filesAdded: "Successfully added {count} files to roaming list",
+      noFilesAdded: "No files were added",
+      settingsSaved: "Settings saved",
+      errorSavingSettings: "Error saving settings",
+      errorLoadingSettings: "Error loading settings, using defaults",
+      dataExported: "Data exported successfully",
+      dataImported: "Data imported successfully",
+      invalidData: "Invalid data format",
+      continueFailed: "Continue reading failed",
+      randomRoaming: "\u{1F3B2} Random roaming: {filename}",
+      randomRoamingFailed: "Random roaming failed",
+      selectionProbability: "Selected: {filename} (probability: {probability}%)",
+      documentOpenFailed: "Failed to open document",
+      editMetricsFailed: "Failed to edit document metrics",
+      fileSwitchError: "Error switching files",
+      smartRecommendationFailed: "Smart recommendation failed, please try again"
+    },
+    commands: {
+      startReading: "Start Incremental Reading",
+      openRandom: "Open Random Document",
+      addToRoaming: "Add to Roaming",
+      addFolder: "Add Folder to Roaming",
+      addMultiple: "Add Multiple Files to Roaming",
+      clearHistory: "Clear Reading History"
+    }
+  },
+  zh: {
+    common: {
+      ok: "\u786E\u5B9A",
+      cancel: "\u53D6\u6D88",
+      save: "\u4FDD\u5B58",
+      delete: "\u5220\u9664",
+      edit: "\u7F16\u8F91",
+      add: "\u6DFB\u52A0",
+      remove: "\u79FB\u9664",
+      confirm: "\u786E\u8BA4",
+      close: "\u5173\u95ED",
+      reset: "\u91CD\u7F6E",
+      search: "\u641C\u7D22",
+      loading: "\u52A0\u8F7D\u4E2D...",
+      error: "\u9519\u8BEF",
+      success: "\u6210\u529F",
+      warning: "\u8B66\u544A"
+    },
+    view: {
+      title: "\u6F2B\u6E38\u5F0F\u6E10\u8FDB\u9605\u8BFB",
+      subtitle: '"\u5C55\u5377\u4E43\u65E0\u8A00\u7684\u60C5\u610F\uFF1A\u4EE5<span class="chance">\u7B49\u5F85\u6F2B\u6E38...</span>\u7684\u673A\u9047\uFF0C<br>\u7A7F\u8D8A\u661F\u8FB0\u9047\u89C1\u4F60\uFF0C\u4E09\u79CB\u971C\u96EA\u5370\u9A6C\u8E44\u3002"',
+      statusTemplate: "\u5DF2\u6F2B\u6E38 {count} \u4E2A\u6587\u6863",
+      noDocuments: "\u6F2B\u6E38\u5217\u8868\u4E3A\u7A7A",
+      openDocument: "\u6253\u5F00\u6587\u6863",
+      actionBar: {
+        continue: "\u7EE7\u7EED\u9605\u8BFB",
+        smartRecommend: "\u667A\u80FD\u63A8\u8350",
+        refresh: "\u5237\u65B0\u6570\u636E",
+        random: "\u968F\u673A\u6F2B\u6E38",
+        addCurrent: "\u52A0\u5165\u6F2B\u6E38",
+        addFolder: "\u6DFB\u52A0\u6587\u4EF6\u5939",
+        multiSelect: "\u6279\u91CF\u6DFB\u52A0",
+        noDocuments: "\u6682\u65E0\u6F2B\u6E38\u6587\u6863",
+        alreadyInRoaming: "\u5DF2\u5728\u6F2B\u6E38\u5217\u8868",
+        smartTooltip: "\u8DF3\u8F6C\u5230\u6700\u76F8\u4F3C\u7684\u6587\u6863"
+      },
+      nonRoaming: {
+        title: "\u6B64\u6587\u6863\u5C1A\u672A\u52A0\u5165\u6F2B\u6E38\u5217\u8868",
+        description: "\u5C06\u5176\u6DFB\u52A0\u5230\u6F2B\u6E38\u5217\u8868\uFF0C\u89E3\u9501\u81EA\u5B9A\u4E49\u6307\u6807\u3001\u4F18\u5148\u7EA7\u8C03\u6574\u548C\u667A\u80FD\u63A8\u8350\u529F\u80FD\u3002",
+        benefits: [
+          "\u8BBE\u7F6E\u81EA\u5B9A\u4E49\u6307\u6807\u8BC4\u5206",
+          "\u8C03\u6574\u6587\u6863\u4F18\u5148\u7EA7",
+          "\u83B7\u5F97\u667A\u80FD\u63A8\u8350",
+          "\u51FA\u73B0\u5728\u6392\u884C\u699C\u4E2D"
+        ],
+        action: "\u6DFB\u52A0\u5230\u6F2B\u6E38\u5217\u8868"
+      }
+    },
+    tabs: {
+      metrics: "\u6587\u6863\u6307\u6807",
+      ranking: "\u4F18\u5148\u7EA7\u6392\u884C",
+      recommendations: "\u667A\u80FD\u63A8\u8350",
+      visualization: "\u4F18\u5148\u7EA7\u53EF\u89C6\u5316"
+    },
+    metrics: {
+      title: "\u5F53\u524D\u6587\u6863\u6307\u6807",
+      importance: "\u91CD\u8981\u6027",
+      urgency: "\u7D27\u6025\u5EA6",
+      completion: "\u5B8C\u6210\u5EA6",
+      lastVisited: "\u6700\u540E\u8BBF\u95EE",
+      visitCount: "\u8BBF\u95EE\u6B21\u6570",
+      totalScore: "\u7EFC\u5408\u8BC4\u5206",
+      updateMetrics: "\u66F4\u65B0\u6307\u6807",
+      noFileOpen: "\u5F53\u524D\u6CA1\u6709\u6253\u5F00\u7684\u6587\u4EF6",
+      currentDocument: "\u5F53\u524D\u6587\u6863",
+      priorityLabel: "\u4F18\u5148\u7EA7",
+      customMetricsTitle: "\u81EA\u5B9A\u4E49\u6307\u6807",
+      visitStatsTitle: "\u8BBF\u95EE\u7EDF\u8BA1",
+      visitCountLabel: "\u8BBF\u95EE\u6B21\u6570",
+      lastVisitedLabel: "\u6700\u540E\u8BBF\u95EE",
+      neverVisited: "\u4ECE\u672A\u8BBF\u95EE",
+      weightBreakdown: "\u6743\u91CD\u5206\u89E3",
+      totalLabel: "\u603B\u8BA1"
+    },
+    ranking: {
+      title: "\u6587\u6863\u4F18\u5148\u7EA7\u6392\u884C",
+      emptyMessage: "\u6F2B\u6E38\u5217\u8868\u4E3A\u7A7A",
+      score: "\u8BC4\u5206",
+      visits: "\u8BBF\u95EE",
+      lastVisit: "\u6700\u540E\u8BBF\u95EE",
+      priorityToggle: "\u6309\u4F18\u5148\u7EA7",
+      visitsToggle: "\u6309\u8BBF\u95EE\u91CF",
+      refreshButton: "\u5237\u65B0\u6392\u884C",
+      openButton: "\u6253\u5F00"
+    },
+    recommendations: {
+      title: "\u667A\u80FD\u6587\u6863\u63A8\u8350",
+      emptyMessage: "\u6682\u65E0\u63A8\u8350",
+      similarity: "\u76F8\u4F3C\u5EA6",
+      openRecommended: "\u6253\u5F00\u63A8\u8350",
+      refreshing: "\u6B63\u5728\u5237\u65B0\u63A8\u8350...",
+      refreshButton: "\u5237\u65B0\u63A8\u8350",
+      smartJumpButton: "\u8DF3\u8F6C\u5230\u6700\u4F73\u5339\u914D",
+      smartJumpFailed: "\u667A\u80FD\u8DF3\u8F6C\u5931\u8D25\uFF0C\u8BF7\u91CD\u8BD5",
+      smartJumpNotice: "\u667A\u80FD\u63A8\u8350\uFF1A{filename}\uFF08\u76F8\u4F3C\u5EA6 {similarity}%\uFF09",
+      priorityLabel: "\u4F18\u5148\u7EA7",
+      visitCountLabel: "\u8BBF\u95EE\u91CF",
+      openButton: "\u6253\u5F00"
+    },
+    visualization: {
+      title: "\u4F18\u5148\u7EA7\u53EF\u89C6\u5316",
+      xAxis: "\u6587\u6863\u6392\u540D\uFF08\u6309\u4F18\u5148\u7EA7\uFF09",
+      yAxis: "\u4F18\u5148\u7EA7\u5206\u6570",
+      refresh: "\u5237\u65B0",
+      emptyMessage: "\u6CA1\u6709\u53EF\u89C6\u5316\u7684\u6587\u6863"
+    },
+    actions: {
+      addFile: "\u52A0\u5165\u5F53\u524D\u6587\u6863",
+      addFolder: "\u6DFB\u52A0\u6587\u4EF6\u5939",
+      addMultiple: "\u6279\u91CF\u6DFB\u52A0",
+      removeFromRoaming: "\u79FB\u51FA\u6F2B\u6E38",
+      clearHistory: "\u6E05\u9664\u5386\u53F2",
+      refresh: "\u5237\u65B0"
+    },
+    settings: {
+      title: "\u589E\u91CF\u9605\u8BFB \u63D2\u4EF6\u8BBE\u7F6E",
+      general: {
+        title: "\u901A\u7528\u8BBE\u7F6E",
+        language: "\u754C\u9762\u8BED\u8A00",
+        languageDesc: "\u9009\u62E9\u754C\u9762\u663E\u793A\u8BED\u8A00"
+      },
+      customMetrics: {
+        title: "\u81EA\u5B9A\u4E49\u6307\u6807",
+        description: "\u81EA\u5B9A\u4E49\u8BC4\u4F30\u6307\u6807\uFF081-10\u4E2A\uFF09\uFF0C\u6743\u91CD\u4F1A\u81EA\u52A8\u6807\u51C6\u5316",
+        addMetric: "\u6DFB\u52A0\u6307\u6807",
+        metricName: "\u6307\u6807\u540D\u79F0",
+        metricWeight: "\u6743\u91CD",
+        removeMetric: "\u5220\u9664",
+        minMetricsWarning: "\u81F3\u5C11\u9700\u8981\u4E00\u4E2A\u6307\u6807",
+        maxMetricsWarning: "\u6700\u591A\u53EA\u80FD\u6DFB\u52A010\u4E2A\u6307\u6807"
+      },
+      recommendation: {
+        title: "\u63A8\u8350\u8BBE\u7F6E",
+        description: "\u914D\u7F6E\u667A\u80FD\u63A8\u8350\u7B97\u6CD5\u53C2\u6570",
+        recentCount: "\u6700\u8FD1\u6587\u6863\u6570",
+        recentCountDesc: "\u7528\u4F5C\u53C2\u8003\u7684\u6700\u8FD1\u8BBF\u95EE\u6587\u6863\u6570\u91CF",
+        topCount: "\u9AD8\u4F18\u5148\u7EA7\u6587\u6863\u6570",
+        topCountDesc: "\u7528\u4F5C\u53C2\u8003\u7684\u9AD8\u4F18\u5148\u7EA7\u6587\u6863\u6570\u91CF",
+        topK: "\u63A8\u8350\u6570\u91CF",
+        topKDesc: "\u663E\u793A\u7684\u63A8\u8350\u6587\u6863\u6570\u91CF",
+        maxCandidates: "\u6700\u5927\u5019\u9009\u6570",
+        maxCandidatesDesc: "\u5206\u6790\u7684\u6700\u5927\u6587\u6863\u6570\u91CF",
+        maxParagraphs: "\u6700\u5927\u6BB5\u843D\u6570",
+        maxParagraphsDesc: "\u6BCF\u4E2A\u6587\u6863\u5206\u6790\u7684\u6700\u5927\u6BB5\u843D\u6570"
+      },
+      filter: {
+        title: "\u8FC7\u6EE4\u8BBE\u7F6E",
+        description: "\u914D\u7F6E\u6587\u6863\u8FC7\u6EE4\u89C4\u5219",
+        excludeVisited: "\u6392\u9664\u5DF2\u8BBF\u95EE\u6587\u6863",
+        excludeVisitedDesc: "\u4E0D\u63A8\u8350\u5DF2\u7ECF\u8BBF\u95EE\u8FC7\u7684\u6587\u6863",
+        excludedPaths: "\u6392\u9664\u8DEF\u5F84",
+        excludedPathsDesc: "\u8981\u6392\u9664\u7684\u8DEF\u5F84\u6A21\u5F0F\uFF08\u6BCF\u884C\u4E00\u4E2A\uFF0C\u652F\u6301\u901A\u914D\u7B26\uFF09",
+        excludedPathsPlaceholder: "Templates/**\nArchive/**"
+      },
+      dataManagement: {
+        title: "\u6570\u636E\u7BA1\u7406",
+        description: "\u7BA1\u7406\u4F60\u7684\u9605\u8BFB\u5386\u53F2\u548C\u8BBE\u7F6E\u6570\u636E",
+        clearHistory: "\u6E05\u9664\u9605\u8BFB\u5386\u53F2",
+        clearHistoryDesc: "\u4ECE\u6F2B\u6E38\u5217\u8868\u4E2D\u79FB\u9664\u6240\u6709\u6587\u6863\u5E76\u91CD\u7F6E\u8BBF\u95EE\u8BA1\u6570",
+        clearButton: "\u6E05\u9664\u5386\u53F2",
+        clearConfirm: "\u786E\u5B9A\u8981\u6E05\u9664\u6240\u6709\u9605\u8BFB\u5386\u53F2\u5417\uFF1F",
+        exportData: "\u5BFC\u51FA\u6570\u636E",
+        exportDataDesc: "\u5C06\u6240\u6709\u8BBE\u7F6E\u548C\u6307\u6807\u5BFC\u51FA\u5230JSON\u6587\u4EF6",
+        exportButton: "\u5BFC\u51FA",
+        importData: "\u5BFC\u5165\u6570\u636E",
+        importDataDesc: "\u4ECEJSON\u6587\u4EF6\u5BFC\u5165\u8BBE\u7F6E\u548C\u6307\u6807",
+        importButton: "\u5BFC\u5165"
+      }
+    },
+    notices: {
+      addedToRoaming: '\u5DF2\u5C06 "{filename}" \u52A0\u5165\u6F2B\u6E38',
+      removedFromRoaming: '\u5DF2\u5C06 "{filename}" \u79FB\u51FA\u6F2B\u6E38',
+      historyCleared: "\u9605\u8BFB\u5386\u53F2\u5DF2\u6E05\u9664",
+      onlyMarkdownFiles: "\u53EA\u80FD\u6DFB\u52A0Markdown\u6587\u6863\u5230\u6F2B\u6E38\u5217\u8868",
+      noActiveFile: "\u6CA1\u6709\u6253\u5F00\u7684\u6587\u6863",
+      filesAdded: "\u6210\u529F\u6DFB\u52A0 {count} \u4E2A\u6587\u4EF6\u5230\u6F2B\u6E38\u5217\u8868",
+      noFilesAdded: "\u6CA1\u6709\u6587\u4EF6\u88AB\u6DFB\u52A0",
+      settingsSaved: "\u8BBE\u7F6E\u5DF2\u4FDD\u5B58",
+      errorSavingSettings: "\u4FDD\u5B58\u8BBE\u7F6E\u65F6\u51FA\u9519",
+      errorLoadingSettings: "\u52A0\u8F7D\u8BBE\u7F6E\u65F6\u51FA\u9519\uFF0C\u4F7F\u7528\u9ED8\u8BA4\u8BBE\u7F6E",
+      dataExported: "\u6570\u636E\u5BFC\u51FA\u6210\u529F",
+      dataImported: "\u6570\u636E\u5BFC\u5165\u6210\u529F",
+      invalidData: "\u65E0\u6548\u7684\u6570\u636E\u683C\u5F0F",
+      continueFailed: "\u7EE7\u7EED\u6F2B\u6E38\u5931\u8D25",
+      randomRoaming: "\u{1F3B2} \u968F\u673A\u6F2B\u6E38\uFF1A{filename}",
+      randomRoamingFailed: "\u968F\u673A\u6F2B\u6E38\u5931\u8D25",
+      selectionProbability: "\u5DF2\u9009\u62E9\uFF1A{filename}\uFF08\u9009\u62E9\u6982\u7387\uFF1A{probability}%\uFF09",
+      documentOpenFailed: "\u6253\u5F00\u6587\u6863\u5931\u8D25",
+      editMetricsFailed: "\u7F16\u8F91\u6587\u6863\u5F97\u5206\u5931\u8D25",
+      fileSwitchError: "\u6587\u4EF6\u5207\u6362\u65F6\u51FA\u73B0\u9519\u8BEF",
+      smartRecommendationFailed: "\u667A\u80FD\u63A8\u8350\u5931\u8D25\uFF0C\u8BF7\u91CD\u8BD5"
+    },
+    commands: {
+      startReading: "\u5F00\u59CB\u589E\u91CF\u9605\u8BFB",
+      openRandom: "\u6253\u5F00\u968F\u673A\u6587\u6863",
+      addToRoaming: "\u6DFB\u52A0\u81F3\u6F2B\u6E38",
+      addFolder: "\u6DFB\u52A0\u6587\u4EF6\u5939\u5230\u6F2B\u6E38",
+      addMultiple: "\u6279\u91CF\u6DFB\u52A0\u6587\u4EF6\u5230\u6F2B\u6E38",
+      clearHistory: "\u6E05\u9664\u9605\u8BFB\u5386\u53F2"
+    }
+  }
+};
+
+// src/i18n/i18n.ts
+var I18n = class {
+  constructor() {
+    this.currentLanguage = "en";
+    this.translations = translations;
+  }
+  static getInstance() {
+    if (!I18n.instance) {
+      I18n.instance = new I18n();
+    }
+    return I18n.instance;
+  }
+  setLanguage(language) {
+    if (this.translations[language]) {
+      this.currentLanguage = language;
+    } else {
+      console.warn(`Language ${language} not found, falling back to English`);
+      this.currentLanguage = "en";
+    }
+  }
+  getLanguage() {
+    return this.currentLanguage;
+  }
+  t(key, replacements) {
+    const keys = key.split(".");
+    let value = this.translations[this.currentLanguage];
+    for (const k of keys) {
+      if (value && typeof value === "object" && k in value) {
+        value = value[k];
+      } else {
+        console.warn(`Translation key not found: ${key}`);
+        return key;
+      }
+    }
+    if (typeof value !== "string") {
+      console.warn(`Translation value is not a string: ${key}`);
+      return key;
+    }
+    if (replacements) {
+      Object.keys(replacements).forEach((replaceKey) => {
+        value = value.replace(new RegExp(`\\{${replaceKey}\\}`, "g"), String(replacements[replaceKey]));
+      });
+    }
+    return value;
+  }
+  // Convenience method to get the entire translation object
+  getTranslation() {
+    return this.translations[this.currentLanguage];
+  }
+  // Get localized metric name
+  getMetricName(metric) {
+    var _a, _b;
+    const lang = this.currentLanguage;
+    if (metric.name && metric.name[lang]) {
+      return metric.name[lang];
+    }
+    return ((_a = metric.name) == null ? void 0 : _a.en) || ((_b = metric.name) == null ? void 0 : _b.zh) || "Unknown";
+  }
+  // Get available languages
+  getAvailableLanguages() {
+    return [
+      { code: "en", name: "English" },
+      { code: "zh", name: "\u4E2D\u6587" }
+    ];
+  }
+};
+var i18n = I18n.getInstance();
+
+// src/components/Modal.ts
 var DocumentMetricsModal = class extends import_obsidian.Modal {
   constructor(app, file, metrics, customMetrics, onSave, onRealTimeUpdate) {
     super(app);
@@ -59,7 +535,7 @@ var DocumentMetricsModal = class extends import_obsidian.Modal {
     for (const metric of this.customMetrics) {
       const config = {
         key: metric.id,
-        label: `${metric.name} (${metric.weight}%)`,
+        label: `${i18n.getMetricName(metric)} (${metric.weight}%)`,
         min: 0,
         max: 10,
         step: 0.5
@@ -369,471 +845,6 @@ var MultiFileSelectionModal = class extends import_obsidian.Modal {
   }
 };
 
-// src/i18n/translations.ts
-var translations = {
-  en: {
-    common: {
-      ok: "OK",
-      cancel: "Cancel",
-      save: "Save",
-      delete: "Delete",
-      edit: "Edit",
-      add: "Add",
-      remove: "Remove",
-      confirm: "Confirm",
-      close: "Close",
-      reset: "Reset",
-      search: "Search",
-      loading: "Loading...",
-      error: "Error",
-      success: "Success",
-      warning: "Warning"
-    },
-    view: {
-      title: "Incremental Reading",
-      subtitle: `"Unfold the scroll of silent affection: With the <span class="chance">chance of waiting and roaming...</span><br>Through stars we meet, three autumns' frost prints on the hooves."`,
-      statusTemplate: "Roaming through {count} documents",
-      noDocuments: "No documents in roaming list",
-      openDocument: "Open Document",
-      actionBar: {
-        continue: "Continue Reading",
-        smartRecommend: "Smart Recommendations",
-        refresh: "Refresh Data",
-        random: "Random Roaming",
-        addCurrent: "Add to Roaming",
-        addFolder: "Add Folder",
-        multiSelect: "Add Multiple Files",
-        noDocuments: "No roaming documents yet",
-        alreadyInRoaming: "Already in roaming",
-        smartTooltip: "Jump to the most similar document"
-      },
-      nonRoaming: {
-        title: "This document is not in your roaming list yet",
-        description: "Add it to unlock custom metrics, priority tuning, and smart recommendations.",
-        benefits: [
-          "Set custom metric scores",
-          "Fine-tune document priority",
-          "Receive intelligent recommendations",
-          "Appear in ranking insights"
-        ],
-        action: "Add to Roaming List"
-      }
-    },
-    tabs: {
-      metrics: "Document Metrics",
-      ranking: "Priority Ranking",
-      recommendations: "Smart Recommendations",
-      visualization: "Priority Visualization"
-    },
-    metrics: {
-      title: "Current Document Metrics",
-      importance: "Importance",
-      urgency: "Urgency",
-      completion: "Completion",
-      lastVisited: "Last Visited",
-      visitCount: "Visit Count",
-      totalScore: "Total Score",
-      updateMetrics: "Update Metrics",
-      noFileOpen: "No file is currently open",
-      currentDocument: "Current Document",
-      priorityLabel: "Priority",
-      customMetricsTitle: "Custom Metrics",
-      visitStatsTitle: "Visit Statistics",
-      visitCountLabel: "Visit Count",
-      lastVisitedLabel: "Last Visited",
-      neverVisited: "Never visited",
-      weightBreakdown: "Weight Breakdown",
-      totalLabel: "Total"
-    },
-    ranking: {
-      title: "Document Priority Ranking",
-      emptyMessage: "No documents in roaming list",
-      score: "Score",
-      visits: "Visits",
-      lastVisit: "Last Visit",
-      priorityToggle: "By Priority",
-      visitsToggle: "By Visits",
-      refreshButton: "Refresh Ranking",
-      openButton: "Open"
-    },
-    recommendations: {
-      title: "Intelligent Document Recommendations",
-      emptyMessage: "No recommendations available",
-      similarity: "Similarity",
-      openRecommended: "Open Recommended",
-      refreshing: "Refreshing recommendations...",
-      refreshButton: "Refresh Recommendations",
-      smartJumpButton: "Jump to Top Match",
-      smartJumpFailed: "Smart jump failed, please try again",
-      smartJumpNotice: "\u{1F9E0} Smart recommendation: {filename} (similarity {similarity}%)",
-      priorityLabel: "Priority",
-      visitCountLabel: "Visits",
-      openButton: "Open"
-    },
-    visualization: {
-      title: "Priority Visualization",
-      xAxis: "Document Rank (by priority)",
-      yAxis: "Priority Score",
-      refresh: "Refresh",
-      emptyMessage: "No documents to visualize"
-    },
-    actions: {
-      addFile: "Add Current File",
-      addFolder: "Add Folder",
-      addMultiple: "Add Multiple Files",
-      removeFromRoaming: "Remove from Roaming",
-      clearHistory: "Clear History",
-      refresh: "Refresh"
-    },
-    settings: {
-      title: "Incremental Reading Settings",
-      general: {
-        title: "General Settings",
-        language: "Language",
-        languageDesc: "Select the interface language"
-      },
-      customMetrics: {
-        title: "Custom Metrics",
-        description: "Define your own evaluation metrics (1-10 indicators). Weights are automatically normalized.",
-        addMetric: "Add Metric",
-        metricName: "Metric Name",
-        metricWeight: "Weight",
-        removeMetric: "Remove",
-        minMetricsWarning: "At least one metric is required",
-        maxMetricsWarning: "Maximum 10 metrics allowed"
-      },
-      recommendation: {
-        title: "Recommendation Settings",
-        description: "Configure intelligent recommendation algorithm parameters",
-        recentCount: "Recent Documents Count",
-        recentCountDesc: "Number of recently visited documents to use as reference",
-        topCount: "Top Priority Count",
-        topCountDesc: "Number of high-priority documents to use as reference",
-        topK: "Recommendation Count",
-        topKDesc: "Number of recommendations to display",
-        maxCandidates: "Max Candidates",
-        maxCandidatesDesc: "Maximum number of documents to analyze",
-        maxParagraphs: "Max Paragraphs",
-        maxParagraphsDesc: "Maximum paragraphs to analyze per document"
-      },
-      filter: {
-        title: "Filter Settings",
-        description: "Configure document filtering rules",
-        excludeVisited: "Exclude Visited Documents",
-        excludeVisitedDesc: "Do not recommend documents you've already visited",
-        excludedPaths: "Excluded Paths",
-        excludedPathsDesc: "Path patterns to exclude (one per line, supports wildcards)",
-        excludedPathsPlaceholder: "Templates/**\nArchive/**"
-      },
-      dataManagement: {
-        title: "Data Management",
-        description: "Manage your reading history and settings data",
-        clearHistory: "Clear Reading History",
-        clearHistoryDesc: "Remove all documents from roaming list and reset visit counts",
-        clearButton: "Clear History",
-        clearConfirm: "Are you sure you want to clear all reading history?",
-        exportData: "Export Data",
-        exportDataDesc: "Export all settings and metrics to a JSON file",
-        exportButton: "Export",
-        importData: "Import Data",
-        importDataDesc: "Import settings and metrics from a JSON file",
-        importButton: "Import"
-      }
-    },
-    notices: {
-      addedToRoaming: 'Added "{filename}" to roaming',
-      removedFromRoaming: 'Removed "{filename}" from roaming',
-      historyCleared: "Reading history cleared",
-      onlyMarkdownFiles: "Only Markdown files can be added to roaming list",
-      noActiveFile: "No active file",
-      filesAdded: "Successfully added {count} files to roaming list",
-      noFilesAdded: "No files were added",
-      settingsSaved: "Settings saved",
-      errorSavingSettings: "Error saving settings",
-      errorLoadingSettings: "Error loading settings, using defaults",
-      dataExported: "Data exported successfully",
-      dataImported: "Data imported successfully",
-      invalidData: "Invalid data format",
-      continueFailed: "Continue reading failed",
-      randomRoaming: "\u{1F3B2} Random roaming: {filename}",
-      randomRoamingFailed: "Random roaming failed",
-      selectionProbability: "Selected: {filename} (probability: {probability}%)",
-      documentOpenFailed: "Failed to open document",
-      editMetricsFailed: "Failed to edit document metrics",
-      fileSwitchError: "Error switching files",
-      smartRecommendationFailed: "Smart recommendation failed, please try again"
-    },
-    commands: {
-      startReading: "Start Incremental Reading",
-      openRandom: "Open Random Document",
-      addToRoaming: "Add to Roaming",
-      addFolder: "Add Folder to Roaming",
-      addMultiple: "Add Multiple Files to Roaming",
-      clearHistory: "Clear Reading History"
-    }
-  },
-  zh: {
-    common: {
-      ok: "\u786E\u5B9A",
-      cancel: "\u53D6\u6D88",
-      save: "\u4FDD\u5B58",
-      delete: "\u5220\u9664",
-      edit: "\u7F16\u8F91",
-      add: "\u6DFB\u52A0",
-      remove: "\u79FB\u9664",
-      confirm: "\u786E\u8BA4",
-      close: "\u5173\u95ED",
-      reset: "\u91CD\u7F6E",
-      search: "\u641C\u7D22",
-      loading: "\u52A0\u8F7D\u4E2D...",
-      error: "\u9519\u8BEF",
-      success: "\u6210\u529F",
-      warning: "\u8B66\u544A"
-    },
-    view: {
-      title: "\u6F2B\u6E38\u5F0F\u6E10\u8FDB\u9605\u8BFB",
-      subtitle: '"\u5C55\u5377\u4E43\u65E0\u8A00\u7684\u60C5\u610F\uFF1A\u4EE5<span class="chance">\u7B49\u5F85\u6F2B\u6E38...</span>\u7684\u673A\u9047\uFF0C<br>\u7A7F\u8D8A\u661F\u8FB0\u9047\u89C1\u4F60\uFF0C\u4E09\u79CB\u971C\u96EA\u5370\u9A6C\u8E44\u3002"',
-      statusTemplate: "\u5DF2\u6F2B\u6E38 {count} \u4E2A\u6587\u6863",
-      noDocuments: "\u6F2B\u6E38\u5217\u8868\u4E3A\u7A7A",
-      openDocument: "\u6253\u5F00\u6587\u6863",
-      actionBar: {
-        continue: "\u7EE7\u7EED\u9605\u8BFB",
-        smartRecommend: "\u667A\u80FD\u63A8\u8350",
-        refresh: "\u5237\u65B0\u6570\u636E",
-        random: "\u968F\u673A\u6F2B\u6E38",
-        addCurrent: "\u52A0\u5165\u6F2B\u6E38",
-        addFolder: "\u6DFB\u52A0\u6587\u4EF6\u5939",
-        multiSelect: "\u6279\u91CF\u6DFB\u52A0",
-        noDocuments: "\u6682\u65E0\u6F2B\u6E38\u6587\u6863",
-        alreadyInRoaming: "\u5DF2\u5728\u6F2B\u6E38\u5217\u8868",
-        smartTooltip: "\u8DF3\u8F6C\u5230\u6700\u76F8\u4F3C\u7684\u6587\u6863"
-      },
-      nonRoaming: {
-        title: "\u6B64\u6587\u6863\u5C1A\u672A\u52A0\u5165\u6F2B\u6E38\u5217\u8868",
-        description: "\u5C06\u5176\u6DFB\u52A0\u5230\u6F2B\u6E38\u5217\u8868\uFF0C\u89E3\u9501\u81EA\u5B9A\u4E49\u6307\u6807\u3001\u4F18\u5148\u7EA7\u8C03\u6574\u548C\u667A\u80FD\u63A8\u8350\u529F\u80FD\u3002",
-        benefits: [
-          "\u8BBE\u7F6E\u81EA\u5B9A\u4E49\u6307\u6807\u8BC4\u5206",
-          "\u8C03\u6574\u6587\u6863\u4F18\u5148\u7EA7",
-          "\u83B7\u5F97\u667A\u80FD\u63A8\u8350",
-          "\u51FA\u73B0\u5728\u6392\u884C\u699C\u4E2D"
-        ],
-        action: "\u6DFB\u52A0\u5230\u6F2B\u6E38\u5217\u8868"
-      }
-    },
-    tabs: {
-      metrics: "\u6587\u6863\u6307\u6807",
-      ranking: "\u4F18\u5148\u7EA7\u6392\u884C",
-      recommendations: "\u667A\u80FD\u63A8\u8350",
-      visualization: "\u4F18\u5148\u7EA7\u53EF\u89C6\u5316"
-    },
-    metrics: {
-      title: "\u5F53\u524D\u6587\u6863\u6307\u6807",
-      importance: "\u91CD\u8981\u6027",
-      urgency: "\u7D27\u6025\u5EA6",
-      completion: "\u5B8C\u6210\u5EA6",
-      lastVisited: "\u6700\u540E\u8BBF\u95EE",
-      visitCount: "\u8BBF\u95EE\u6B21\u6570",
-      totalScore: "\u7EFC\u5408\u8BC4\u5206",
-      updateMetrics: "\u66F4\u65B0\u6307\u6807",
-      noFileOpen: "\u5F53\u524D\u6CA1\u6709\u6253\u5F00\u7684\u6587\u4EF6",
-      currentDocument: "\u5F53\u524D\u6587\u6863",
-      priorityLabel: "\u4F18\u5148\u7EA7",
-      customMetricsTitle: "\u81EA\u5B9A\u4E49\u6307\u6807",
-      visitStatsTitle: "\u8BBF\u95EE\u7EDF\u8BA1",
-      visitCountLabel: "\u8BBF\u95EE\u6B21\u6570",
-      lastVisitedLabel: "\u6700\u540E\u8BBF\u95EE",
-      neverVisited: "\u4ECE\u672A\u8BBF\u95EE",
-      weightBreakdown: "\u6743\u91CD\u5206\u89E3",
-      totalLabel: "\u603B\u8BA1"
-    },
-    ranking: {
-      title: "\u6587\u6863\u4F18\u5148\u7EA7\u6392\u884C",
-      emptyMessage: "\u6F2B\u6E38\u5217\u8868\u4E3A\u7A7A",
-      score: "\u8BC4\u5206",
-      visits: "\u8BBF\u95EE",
-      lastVisit: "\u6700\u540E\u8BBF\u95EE",
-      priorityToggle: "\u6309\u4F18\u5148\u7EA7",
-      visitsToggle: "\u6309\u8BBF\u95EE\u91CF",
-      refreshButton: "\u5237\u65B0\u6392\u884C",
-      openButton: "\u6253\u5F00"
-    },
-    recommendations: {
-      title: "\u667A\u80FD\u6587\u6863\u63A8\u8350",
-      emptyMessage: "\u6682\u65E0\u63A8\u8350",
-      similarity: "\u76F8\u4F3C\u5EA6",
-      openRecommended: "\u6253\u5F00\u63A8\u8350",
-      refreshing: "\u6B63\u5728\u5237\u65B0\u63A8\u8350...",
-      refreshButton: "\u5237\u65B0\u63A8\u8350",
-      smartJumpButton: "\u8DF3\u8F6C\u5230\u6700\u4F73\u5339\u914D",
-      smartJumpFailed: "\u667A\u80FD\u8DF3\u8F6C\u5931\u8D25\uFF0C\u8BF7\u91CD\u8BD5",
-      smartJumpNotice: "\u{1F9E0} \u667A\u80FD\u63A8\u8350\uFF1A{filename}\uFF08\u76F8\u4F3C\u5EA6 {similarity}%\uFF09",
-      priorityLabel: "\u4F18\u5148\u7EA7",
-      visitCountLabel: "\u8BBF\u95EE\u91CF",
-      openButton: "\u6253\u5F00"
-    },
-    visualization: {
-      title: "\u4F18\u5148\u7EA7\u53EF\u89C6\u5316",
-      xAxis: "\u6587\u6863\u6392\u540D\uFF08\u6309\u4F18\u5148\u7EA7\uFF09",
-      yAxis: "\u4F18\u5148\u7EA7\u5206\u6570",
-      refresh: "\u5237\u65B0",
-      emptyMessage: "\u6CA1\u6709\u53EF\u89C6\u5316\u7684\u6587\u6863"
-    },
-    actions: {
-      addFile: "\u52A0\u5165\u5F53\u524D\u6587\u6863",
-      addFolder: "\u6DFB\u52A0\u6587\u4EF6\u5939",
-      addMultiple: "\u6279\u91CF\u6DFB\u52A0",
-      removeFromRoaming: "\u79FB\u51FA\u6F2B\u6E38",
-      clearHistory: "\u6E05\u9664\u5386\u53F2",
-      refresh: "\u5237\u65B0"
-    },
-    settings: {
-      title: "\u589E\u91CF\u9605\u8BFB \u63D2\u4EF6\u8BBE\u7F6E",
-      general: {
-        title: "\u901A\u7528\u8BBE\u7F6E",
-        language: "\u754C\u9762\u8BED\u8A00",
-        languageDesc: "\u9009\u62E9\u754C\u9762\u663E\u793A\u8BED\u8A00"
-      },
-      customMetrics: {
-        title: "\u81EA\u5B9A\u4E49\u6307\u6807",
-        description: "\u81EA\u5B9A\u4E49\u8BC4\u4F30\u6307\u6807\uFF081-10\u4E2A\uFF09\uFF0C\u6743\u91CD\u4F1A\u81EA\u52A8\u6807\u51C6\u5316",
-        addMetric: "\u6DFB\u52A0\u6307\u6807",
-        metricName: "\u6307\u6807\u540D\u79F0",
-        metricWeight: "\u6743\u91CD",
-        removeMetric: "\u5220\u9664",
-        minMetricsWarning: "\u81F3\u5C11\u9700\u8981\u4E00\u4E2A\u6307\u6807",
-        maxMetricsWarning: "\u6700\u591A\u53EA\u80FD\u6DFB\u52A010\u4E2A\u6307\u6807"
-      },
-      recommendation: {
-        title: "\u63A8\u8350\u8BBE\u7F6E",
-        description: "\u914D\u7F6E\u667A\u80FD\u63A8\u8350\u7B97\u6CD5\u53C2\u6570",
-        recentCount: "\u6700\u8FD1\u6587\u6863\u6570",
-        recentCountDesc: "\u7528\u4F5C\u53C2\u8003\u7684\u6700\u8FD1\u8BBF\u95EE\u6587\u6863\u6570\u91CF",
-        topCount: "\u9AD8\u4F18\u5148\u7EA7\u6587\u6863\u6570",
-        topCountDesc: "\u7528\u4F5C\u53C2\u8003\u7684\u9AD8\u4F18\u5148\u7EA7\u6587\u6863\u6570\u91CF",
-        topK: "\u63A8\u8350\u6570\u91CF",
-        topKDesc: "\u663E\u793A\u7684\u63A8\u8350\u6587\u6863\u6570\u91CF",
-        maxCandidates: "\u6700\u5927\u5019\u9009\u6570",
-        maxCandidatesDesc: "\u5206\u6790\u7684\u6700\u5927\u6587\u6863\u6570\u91CF",
-        maxParagraphs: "\u6700\u5927\u6BB5\u843D\u6570",
-        maxParagraphsDesc: "\u6BCF\u4E2A\u6587\u6863\u5206\u6790\u7684\u6700\u5927\u6BB5\u843D\u6570"
-      },
-      filter: {
-        title: "\u8FC7\u6EE4\u8BBE\u7F6E",
-        description: "\u914D\u7F6E\u6587\u6863\u8FC7\u6EE4\u89C4\u5219",
-        excludeVisited: "\u6392\u9664\u5DF2\u8BBF\u95EE\u6587\u6863",
-        excludeVisitedDesc: "\u4E0D\u63A8\u8350\u5DF2\u7ECF\u8BBF\u95EE\u8FC7\u7684\u6587\u6863",
-        excludedPaths: "\u6392\u9664\u8DEF\u5F84",
-        excludedPathsDesc: "\u8981\u6392\u9664\u7684\u8DEF\u5F84\u6A21\u5F0F\uFF08\u6BCF\u884C\u4E00\u4E2A\uFF0C\u652F\u6301\u901A\u914D\u7B26\uFF09",
-        excludedPathsPlaceholder: "Templates/**\nArchive/**"
-      },
-      dataManagement: {
-        title: "\u6570\u636E\u7BA1\u7406",
-        description: "\u7BA1\u7406\u4F60\u7684\u9605\u8BFB\u5386\u53F2\u548C\u8BBE\u7F6E\u6570\u636E",
-        clearHistory: "\u6E05\u9664\u9605\u8BFB\u5386\u53F2",
-        clearHistoryDesc: "\u4ECE\u6F2B\u6E38\u5217\u8868\u4E2D\u79FB\u9664\u6240\u6709\u6587\u6863\u5E76\u91CD\u7F6E\u8BBF\u95EE\u8BA1\u6570",
-        clearButton: "\u6E05\u9664\u5386\u53F2",
-        clearConfirm: "\u786E\u5B9A\u8981\u6E05\u9664\u6240\u6709\u9605\u8BFB\u5386\u53F2\u5417\uFF1F",
-        exportData: "\u5BFC\u51FA\u6570\u636E",
-        exportDataDesc: "\u5C06\u6240\u6709\u8BBE\u7F6E\u548C\u6307\u6807\u5BFC\u51FA\u5230JSON\u6587\u4EF6",
-        exportButton: "\u5BFC\u51FA",
-        importData: "\u5BFC\u5165\u6570\u636E",
-        importDataDesc: "\u4ECEJSON\u6587\u4EF6\u5BFC\u5165\u8BBE\u7F6E\u548C\u6307\u6807",
-        importButton: "\u5BFC\u5165"
-      }
-    },
-    notices: {
-      addedToRoaming: '\u5DF2\u5C06 "{filename}" \u52A0\u5165\u6F2B\u6E38',
-      removedFromRoaming: '\u5DF2\u5C06 "{filename}" \u79FB\u51FA\u6F2B\u6E38',
-      historyCleared: "\u9605\u8BFB\u5386\u53F2\u5DF2\u6E05\u9664",
-      onlyMarkdownFiles: "\u53EA\u80FD\u6DFB\u52A0Markdown\u6587\u6863\u5230\u6F2B\u6E38\u5217\u8868",
-      noActiveFile: "\u6CA1\u6709\u6253\u5F00\u7684\u6587\u6863",
-      filesAdded: "\u6210\u529F\u6DFB\u52A0 {count} \u4E2A\u6587\u4EF6\u5230\u6F2B\u6E38\u5217\u8868",
-      noFilesAdded: "\u6CA1\u6709\u6587\u4EF6\u88AB\u6DFB\u52A0",
-      settingsSaved: "\u8BBE\u7F6E\u5DF2\u4FDD\u5B58",
-      errorSavingSettings: "\u4FDD\u5B58\u8BBE\u7F6E\u65F6\u51FA\u9519",
-      errorLoadingSettings: "\u52A0\u8F7D\u8BBE\u7F6E\u65F6\u51FA\u9519\uFF0C\u4F7F\u7528\u9ED8\u8BA4\u8BBE\u7F6E",
-      dataExported: "\u6570\u636E\u5BFC\u51FA\u6210\u529F",
-      dataImported: "\u6570\u636E\u5BFC\u5165\u6210\u529F",
-      invalidData: "\u65E0\u6548\u7684\u6570\u636E\u683C\u5F0F",
-      continueFailed: "\u7EE7\u7EED\u6F2B\u6E38\u5931\u8D25",
-      randomRoaming: "\u{1F3B2} \u968F\u673A\u6F2B\u6E38\uFF1A{filename}",
-      randomRoamingFailed: "\u968F\u673A\u6F2B\u6E38\u5931\u8D25",
-      selectionProbability: "\u5DF2\u9009\u62E9\uFF1A{filename}\uFF08\u9009\u62E9\u6982\u7387\uFF1A{probability}%\uFF09",
-      documentOpenFailed: "\u6253\u5F00\u6587\u6863\u5931\u8D25",
-      editMetricsFailed: "\u7F16\u8F91\u6587\u6863\u5F97\u5206\u5931\u8D25",
-      fileSwitchError: "\u6587\u4EF6\u5207\u6362\u65F6\u51FA\u73B0\u9519\u8BEF",
-      smartRecommendationFailed: "\u667A\u80FD\u63A8\u8350\u5931\u8D25\uFF0C\u8BF7\u91CD\u8BD5"
-    },
-    commands: {
-      startReading: "\u5F00\u59CB\u589E\u91CF\u9605\u8BFB",
-      openRandom: "\u6253\u5F00\u968F\u673A\u6587\u6863",
-      addToRoaming: "\u6DFB\u52A0\u81F3\u6F2B\u6E38",
-      addFolder: "\u6DFB\u52A0\u6587\u4EF6\u5939\u5230\u6F2B\u6E38",
-      addMultiple: "\u6279\u91CF\u6DFB\u52A0\u6587\u4EF6\u5230\u6F2B\u6E38",
-      clearHistory: "\u6E05\u9664\u9605\u8BFB\u5386\u53F2"
-    }
-  }
-};
-
-// src/i18n/i18n.ts
-var I18n = class {
-  constructor() {
-    this.currentLanguage = "en";
-    this.translations = translations;
-  }
-  static getInstance() {
-    if (!I18n.instance) {
-      I18n.instance = new I18n();
-    }
-    return I18n.instance;
-  }
-  setLanguage(language) {
-    if (this.translations[language]) {
-      this.currentLanguage = language;
-    } else {
-      console.warn(`Language ${language} not found, falling back to English`);
-      this.currentLanguage = "en";
-    }
-  }
-  getLanguage() {
-    return this.currentLanguage;
-  }
-  t(key, replacements) {
-    const keys = key.split(".");
-    let value = this.translations[this.currentLanguage];
-    for (const k of keys) {
-      if (value && typeof value === "object" && k in value) {
-        value = value[k];
-      } else {
-        console.warn(`Translation key not found: ${key}`);
-        return key;
-      }
-    }
-    if (typeof value !== "string") {
-      console.warn(`Translation value is not a string: ${key}`);
-      return key;
-    }
-    if (replacements) {
-      Object.keys(replacements).forEach((replaceKey) => {
-        value = value.replace(new RegExp(`\\{${replaceKey}\\}`, "g"), String(replacements[replaceKey]));
-      });
-    }
-    return value;
-  }
-  // Convenience method to get the entire translation object
-  getTranslation() {
-    return this.translations[this.currentLanguage];
-  }
-  // Get available languages
-  getAvailableLanguages() {
-    return [
-      { code: "en", name: "English" },
-      { code: "zh", name: "\u4E2D\u6587" }
-    ];
-  }
-};
-var i18n = I18n.getInstance();
-
 // src/views/components/ActionBar.ts
 var ActionBar = class {
   constructor(container, plugin, callbacks) {
@@ -857,28 +868,28 @@ var ActionBar = class {
     this.continueBtn.onclick = () => this.onContinueReading();
     this.updateContinueButtonState();
     const recommendBtn = actionBar.createEl("button", { cls: "btn" });
-    recommendBtn.innerHTML = `<span>\u{1F9E0}</span><span>${i18n.t("view.actionBar.smartRecommend")}</span>`;
+    recommendBtn.textContent = i18n.t("view.actionBar.smartRecommend");
     recommendBtn.title = i18n.t("view.actionBar.smartTooltip");
     recommendBtn.onclick = () => this.onGetSmartRecommendations();
     const refreshDataBtn = actionBar.createEl("button", { cls: "btn" });
-    refreshDataBtn.innerHTML = `<span>\u{1F504}</span><span>${i18n.t("view.actionBar.refresh")}</span>`;
+    refreshDataBtn.textContent = i18n.t("view.actionBar.refresh");
     refreshDataBtn.onclick = () => this.onRefreshData();
     const randomRoamBtn = actionBar.createEl("button", { cls: "btn" });
-    randomRoamBtn.innerHTML = `<span>\u{1F3B2}</span><span>${i18n.t("view.actionBar.random")}</span>`;
+    randomRoamBtn.textContent = i18n.t("view.actionBar.random");
     randomRoamBtn.onclick = () => this.onRandomRoaming();
     this.addRoamingBtn = actionBar.createEl("button", { cls: "btn" });
-    this.addRoamingBtn.innerHTML = `<span>\u2795</span><span>${i18n.t("view.actionBar.addCurrent")}</span>`;
+    this.addRoamingBtn.textContent = i18n.t("view.actionBar.addCurrent");
     this.addRoamingBtn.onclick = () => this.onAddCurrentToRoaming();
     this.updateAddRoamingButtonState();
     this.removeRoamingBtn = actionBar.createEl("button", { cls: "btn" });
-    this.removeRoamingBtn.innerHTML = `<span>\u2796</span><span>${i18n.t("actions.removeFromRoaming")}</span>`;
+    this.removeRoamingBtn.textContent = i18n.t("actions.removeFromRoaming");
     this.removeRoamingBtn.onclick = () => this.onRemoveCurrentFromRoaming();
     this.updateRemoveRoamingButtonState();
     const addFolderBtn = actionBar.createEl("button", { cls: "btn primary" });
-    addFolderBtn.innerHTML = `<span>\u{1F4C1}</span><span>${i18n.t("view.actionBar.addFolder")}</span>`;
+    addFolderBtn.textContent = i18n.t("view.actionBar.addFolder");
     addFolderBtn.onclick = () => this.addFolderToRoaming();
     const multiSelectBtn = actionBar.createEl("button", { cls: "btn primary" });
-    multiSelectBtn.innerHTML = `<span>\u{1F4C4}</span><span>${i18n.t("view.actionBar.multiSelect")}</span>`;
+    multiSelectBtn.textContent = i18n.t("view.actionBar.multiSelect");
     multiSelectBtn.onclick = () => this.multiSelectFilesToRoaming();
   }
   addFolderToRoaming() {
@@ -913,7 +924,7 @@ var ActionBar = class {
     } else {
       this.addRoamingBtn.style.display = "flex";
       this.addRoamingBtn.disabled = !activeFile;
-      this.addRoamingBtn.innerHTML = activeFile ? `<span>\u2795</span><span>${i18n.t("view.actionBar.addCurrent")}</span>` : `<span>\u2795</span><span>${i18n.t("view.actionBar.noDocuments")}</span>`;
+      this.addRoamingBtn.textContent = activeFile ? i18n.t("view.actionBar.addCurrent") : i18n.t("view.actionBar.noDocuments");
     }
   }
   updateRemoveRoamingButtonState() {
@@ -924,7 +935,7 @@ var ActionBar = class {
     if (isInRoaming) {
       this.removeRoamingBtn.style.display = "flex";
       this.removeRoamingBtn.disabled = false;
-      this.removeRoamingBtn.innerHTML = `<span>\u2796</span><span>${i18n.t("actions.removeFromRoaming")}</span>`;
+      this.removeRoamingBtn.textContent = i18n.t("actions.removeFromRoaming");
     } else {
       this.removeRoamingBtn.style.display = "none";
     }
@@ -1101,17 +1112,27 @@ var SharedUtils = class {
     }
     if (settings.customMetrics !== void 0 && Array.isArray(settings.customMetrics)) {
       validated.customMetrics = settings.customMetrics.filter(
-        (metric) => metric && typeof metric.id === "string" && typeof metric.name === "string" && typeof metric.weight === "number"
-      ).map((metric) => ({
-        id: metric.id,
-        name: metric.name,
-        weight: Math.max(0, Math.min(100, metric.weight))
-      }));
+        (metric) => metric && typeof metric.id === "string" && (typeof metric.name === "string" || typeof metric.name === "object" && metric.name.en && metric.name.zh) && typeof metric.weight === "number"
+      ).map((metric) => {
+        let name;
+        if (typeof metric.name === "string") {
+          const chineseName = metric.name;
+          const englishName = this.getEnglishTranslation(chineseName) || chineseName;
+          name = { en: englishName, zh: chineseName };
+        } else {
+          name = metric.name;
+        }
+        return {
+          id: metric.id,
+          name,
+          weight: Math.max(0, Math.min(100, metric.weight))
+        };
+      });
     } else {
       validated.customMetrics = [
-        { id: "importance", name: "\u91CD\u8981\u6027", weight: 40 },
-        { id: "urgency", name: "\u7D27\u6025\u5EA6", weight: 30 },
-        { id: "completion", name: "\u5B8C\u6210\u5EA6", weight: 30 }
+        { id: "importance", name: { en: "Importance", zh: "\u91CD\u8981\u6027" }, weight: 40 },
+        { id: "urgency", name: { en: "Urgency", zh: "\u7D27\u6025\u5EA6" }, weight: 30 },
+        { id: "completion", name: { en: "Completion", zh: "\u5B8C\u6210\u5EA6" }, weight: 30 }
       ];
     }
     if (validated.customMetrics && validated.customMetrics.length > 0) {
@@ -1174,6 +1195,24 @@ var SharedUtils = class {
    */
   static isValidNumber(value) {
     return typeof value === "number" && !isNaN(value) && isFinite(value);
+  }
+  /**
+   * Get English translation for Chinese metric names
+   */
+  static getEnglishTranslation(chineseName) {
+    const translations2 = {
+      "\u91CD\u8981\u6027": "Importance",
+      "\u7D27\u6025\u5EA6": "Urgency",
+      "\u5B8C\u6210\u5EA6": "Completion",
+      "\u96BE\u5EA6": "Difficulty",
+      "\u5174\u8DA3\u5EA6": "Interest",
+      "\u5B9E\u7528\u6027": "Practicality",
+      "\u4F18\u5148\u7EA7": "Priority",
+      "\u590D\u6742\u5EA6": "Complexity",
+      "\u4EF7\u503C\u5EA6": "Value",
+      "\u65F6\u6548\u6027": "Timeliness"
+    };
+    return translations2[chineseName] || null;
   }
 };
 
@@ -1287,7 +1326,7 @@ var DocumentMetricsDisplay = class {
       const breakdownItem = breakdown.createEl("div", { cls: "breakdown-item" });
       breakdownItem.createEl("span", {
         cls: "breakdown-label",
-        text: `${metric.name} (${metricWeight}%):`
+        text: `${i18n.getMetricName(metric)} (${metricWeight}%):`
       });
       breakdownItem.createEl("span", {
         cls: "breakdown-score",
@@ -1317,7 +1356,7 @@ var DocumentMetricsDisplay = class {
     for (const metric of this.plugin.settings.customMetrics) {
       const metricItem = metricsList.createEl("div", { cls: "metric-item" });
       const labelRow = metricItem.createEl("div", { cls: "metric-label-row" });
-      const label = labelRow.createEl("span", { cls: "metric-label", text: `${metric.name} (${metric.weight}%):` });
+      const label = labelRow.createEl("span", { cls: "metric-label", text: `${i18n.getMetricName(metric)} (${metric.weight}%):` });
       const valueDisplay = labelRow.createEl("span", {
         cls: "metric-value",
         text: (this.metrics[metric.id] || 5).toFixed(1)
@@ -1396,7 +1435,7 @@ var DocumentMetricsDisplay = class {
       const updateSliderBackground = () => {
         const value = parseFloat(slider.value);
         const percentage = value / 10 * 100;
-        slider.style.background = `linear-gradient(to right, var(--interactive-accent) 0%, var(--interactive-accent) ${percentage}%, var(--background-modifier-border) ${percentage}%, var(--background-modifier-border) 100%)`;
+        slider.style.background = `linear-gradient(to right, var(--accent-color) 0%, var(--accent-color) ${percentage}%, rgba(0,0,0,0.1) ${percentage}%, rgba(0,0,0,0.1) 100%)`;
       };
       slider.addEventListener("input", updateSliderBackground);
       updateSliderBackground();
@@ -1475,16 +1514,16 @@ var NavigationTabs = class {
     const tabContainer = navSection.createEl("div", { cls: "tabs-wrapper" });
     this.tabSlider = tabContainer.createEl("div", { cls: "tab-slider" });
     const tabs = [
-      { id: "metrics", label: i18n.t("tabs.metrics"), icon: "\u{1F4CA}" },
-      { id: "recommendations", label: i18n.t("tabs.recommendations"), icon: "\u{1F9E0}" },
-      { id: "ranking", label: i18n.t("tabs.ranking"), icon: "\u{1F3C6}" },
-      { id: "visualization", label: i18n.t("tabs.visualization"), icon: "\u{1F4C8}" }
+      { id: "metrics", label: i18n.t("tabs.metrics") },
+      { id: "recommendations", label: i18n.t("tabs.recommendations") },
+      { id: "ranking", label: i18n.t("tabs.ranking") },
+      { id: "visualization", label: i18n.t("tabs.visualization") }
     ];
     this.tabButtons = [];
     tabs.forEach((tab, index) => {
       const tabBtn = tabContainer.createEl("button", {
         cls: "tab-btn",
-        text: `${tab.icon} ${tab.label}`
+        text: tab.label
       });
       tabBtn.setAttribute("data-target", tab.id);
       tabBtn.onclick = () => this.switchToTab(tab.id, index);
@@ -1559,7 +1598,7 @@ var RankingList = class {
     this.container.empty();
     const rankingSection = this.container.createEl("div", { cls: "ranking-section" });
     const headerContainer = rankingSection.createEl("div", { cls: "ranking-header" });
-    const title = headerContainer.createEl("h3", { text: "\u{1F3C6} " + i18n.t("ranking.title") });
+    const title = headerContainer.createEl("h3", { text: i18n.t("ranking.title") });
     const toggleContainer = headerContainer.createEl("div", { cls: "ranking-toggle" });
     const priorityBtn = toggleContainer.createEl("button", {
       cls: `toggle-btn ${this.currentRankingType === "priority" ? "active" : ""}`,
@@ -1587,7 +1626,7 @@ var RankingList = class {
     });
     const refreshBtn = rankingSection.createEl("button", {
       cls: "refresh-ranking-btn",
-      text: "\u{1F504} " + i18n.t("ranking.refreshButton")
+      text: i18n.t("ranking.refreshButton")
     });
     refreshBtn.onclick = () => this.render();
   }
@@ -1681,7 +1720,7 @@ var RecommendationList = class {
   render(recommendations) {
     this.container.empty();
     const recommendationsSection = this.container.createEl("div", { cls: "recommendations-section" });
-    recommendationsSection.createEl("h3", { text: "\u{1F9E0} " + i18n.t("recommendations.title") });
+    recommendationsSection.createEl("h3", { text: i18n.t("recommendations.title") });
     if (recommendations.length === 0) {
       recommendationsSection.createEl("p", {
         text: i18n.t("recommendations.emptyMessage"),
@@ -1697,12 +1736,12 @@ var RecommendationList = class {
     const buttonContainer = recommendationsSection.createEl("div", { cls: "recommendation-buttons" });
     const refreshBtn = buttonContainer.createEl("button", {
       cls: "refresh-recommendations-btn",
-      text: "\u{1F504} " + i18n.t("recommendations.refreshButton")
+      text: i18n.t("recommendations.refreshButton")
     });
     refreshBtn.onclick = () => this.refresh();
     const smartJumpBtn = buttonContainer.createEl("button", {
       cls: "smart-jump-btn",
-      text: "\u{1F9E0} " + i18n.t("recommendations.smartJumpButton")
+      text: i18n.t("recommendations.smartJumpButton")
     });
     smartJumpBtn.onclick = async () => {
       try {
@@ -1728,7 +1767,7 @@ var RecommendationList = class {
     this.container.empty();
     this.cachedRecommendations = recommendations;
     const recommendationsSection = this.container.createEl("div", { cls: "recommendations-section" });
-    recommendationsSection.createEl("h3", { text: "\u{1F9E0} " + i18n.t("recommendations.title") });
+    recommendationsSection.createEl("h3", { text: i18n.t("recommendations.title") });
     if (recommendations.length === 0) {
       recommendationsSection.createEl("p", {
         text: i18n.t("recommendations.emptyMessage"),
@@ -1744,12 +1783,12 @@ var RecommendationList = class {
     const buttonContainer = recommendationsSection.createEl("div", { cls: "recommendation-buttons" });
     const refreshBtn = buttonContainer.createEl("button", {
       cls: "refresh-recommendations-btn",
-      text: "\u{1F504} " + i18n.t("recommendations.refreshButton")
+      text: i18n.t("recommendations.refreshButton")
     });
     refreshBtn.onclick = () => this.refresh();
     const smartJumpBtn = buttonContainer.createEl("button", {
       cls: "smart-jump-btn",
-      text: "\u{1F9E0} " + i18n.t("recommendations.smartJumpButton")
+      text: i18n.t("recommendations.smartJumpButton")
     });
     smartJumpBtn.onclick = async () => {
       try {
@@ -1875,10 +1914,10 @@ var PriorityVisualization = class {
     this.container.empty();
     const vizSection = this.container.createEl("div", { cls: "priority-visualization-section" });
     const header = vizSection.createEl("div", { cls: "viz-header" });
-    header.createEl("h3", { text: "\u{1F4CA} " + i18n.t("visualization.title") });
+    header.createEl("h3", { text: i18n.t("visualization.title") });
     const refreshBtn = header.createEl("button", {
       cls: "viz-refresh-btn",
-      text: "\u{1F504} " + i18n.t("visualization.refresh")
+      text: i18n.t("visualization.refresh")
     });
     refreshBtn.onclick = () => this.render();
     const canvasContainer = vizSection.createEl("div", { cls: "viz-canvas-container" });
@@ -1977,7 +2016,7 @@ var PriorityVisualization = class {
     this.ctx.translate(20, padding.top + height / 2);
     this.ctx.rotate(-Math.PI / 2);
     this.ctx.textAlign = "center";
-    this.ctx.fillStyle = "#8e44ad";
+    this.ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--accent-color").trim() || "#8e44ad";
     this.ctx.font = "bold 14px sans-serif";
     this.ctx.fillText(i18n.t("visualization.yAxis"), 0, 0);
     this.ctx.restore();
@@ -1988,7 +2027,7 @@ var PriorityVisualization = class {
       const x = padding.left + i / Math.max(1, fileCount - 1) * width;
       this.ctx.fillText(`#${i + 1}`, x, padding.top + height + 10);
     }
-    this.ctx.fillStyle = "#8e44ad";
+    this.ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--accent-color").trim() || "#8e44ad";
     this.ctx.font = "bold 14px sans-serif";
     this.ctx.fillText(i18n.t("visualization.xAxis"), padding.left + width / 2, padding.top + height + 40);
   }
@@ -2003,7 +2042,8 @@ var PriorityVisualization = class {
     const color = this.getPriorityColor(point.priority);
     this.ctx.fillStyle = color;
     this.ctx.fill();
-    this.ctx.strokeStyle = isHovered ? "#732d91" : "#fff";
+    const accentColor = getComputedStyle(document.documentElement).getPropertyValue("--accent-color").trim() || "#8e44ad";
+    this.ctx.strokeStyle = isHovered ? accentColor : "#fff";
     this.ctx.lineWidth = isHovered ? 3 : 2;
     this.ctx.stroke();
     if (!isHovered) {
@@ -2030,7 +2070,8 @@ var PriorityVisualization = class {
       tooltipY = point.y + 10;
     }
     this.ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
-    this.ctx.strokeStyle = "#8e44ad";
+    const accentColor = getComputedStyle(document.documentElement).getPropertyValue("--accent-color").trim() || "#8e44ad";
+    this.ctx.strokeStyle = accentColor;
     this.ctx.lineWidth = 2;
     const radius = 8;
     this.ctx.beginPath();
@@ -2052,7 +2093,7 @@ var PriorityVisualization = class {
     this.ctx.font = "bold 12px sans-serif";
     this.ctx.fillText(fileName, tooltipX + padding, tooltipY + padding);
     this.ctx.font = "12px sans-serif";
-    this.ctx.fillStyle = "#8e44ad";
+    this.ctx.fillStyle = accentColor;
     this.ctx.fillText(priorityText, tooltipX + padding, tooltipY + padding + lineHeight);
   }
   getPriorityColor(priority) {
@@ -2163,6 +2204,7 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
     return "book-open";
   }
   async onOpen() {
+    this.plugin.applyColorScheme(this.plugin.settings.colorScheme || "arctic");
     this.createView();
     this.registerEvent(
       this.app.workspace.on("file-open", (file) => {
@@ -2187,19 +2229,17 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
     this.createSlidingNavigation(container);
     this.createContentArea(container);
     this.addStyles();
-    this.refreshData();
-    setTimeout(() => {
-      this.switchToTab("metrics", 0);
-    }, 100);
     setTimeout(() => {
       var _a;
+      this.refreshData();
+      this.switchToTab("metrics", 0);
       const activeFile = this.app.workspace.getActiveFile();
       if (activeFile) {
         this.onFileOpen(activeFile);
       } else {
         (_a = this.actionBar) == null ? void 0 : _a.updateButtonStates();
       }
-    }, 150);
+    }, 100);
   }
   createHeroSection(container) {
     const heroSection = container.createEl("div", { cls: "hero-section" });
@@ -2208,7 +2248,7 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
     subtitle.innerHTML = i18n.t("view.subtitle");
     const docCount = this.getVisitedDocumentCount();
     this.statusText = heroSection.createEl("div", { cls: "status-text" });
-    this.statusText.innerHTML = `<span>\u{1F4DA}</span><span>${i18n.t("view.statusTemplate", { count: docCount.toString() })}</span>`;
+    this.statusText.textContent = i18n.t("view.statusTemplate", { count: docCount.toString() });
     this.actionBar = new ActionBar(heroSection, this.plugin, {
       onContinueReading: () => this.continueReading(),
       onGetSmartRecommendations: () => this.getSmartRecommendations(),
@@ -2259,6 +2299,7 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
       }
       // 空实现，保留接口兼容性
     });
+    this.recommendationList.render([]);
   }
   createRankingSection(container) {
     const rankingSection = container.createEl("div", { cls: "ranking-section", attr: { "data-section": "ranking" } });
@@ -2268,6 +2309,7 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
       }
       // 空实现，保留接口兼容性
     });
+    this.rankingList.refresh();
   }
   createVisualizationSection(container) {
     const visualizationSection = container.createEl("div", { cls: "visualization-section", attr: { "data-section": "visualization" } });
@@ -2276,6 +2318,7 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
       this.plugin,
       (file) => this.openDocument(file)
     );
+    this.priorityVisualization.refresh();
   }
   async switchToTab(tabId, index) {
     var _a;
@@ -2449,6 +2492,7 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
     console.log("\u5F00\u59CB\u5237\u65B0UI...");
     const currentTab = this.currentActiveTab;
     console.log(`\u5F53\u524D\u6FC0\u6D3B\u6807\u7B7E: ${currentTab}`);
+    this.plugin.applyColorScheme(this.plugin.settings.colorScheme || "arctic");
     this.createView();
     setTimeout(() => {
       console.log(`\u6062\u590D\u6807\u7B7E\u9875: ${currentTab}`);
@@ -2460,7 +2504,7 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
   updateStatusText() {
     if (this.statusText) {
       const docCount = this.getVisitedDocumentCount();
-      this.statusText.innerHTML = `<span>\u{1F4DA}</span><span>${i18n.t("view.statusTemplate", { count: docCount.toString() })}</span>`;
+      this.statusText.textContent = i18n.t("view.statusTemplate", { count: docCount.toString() });
     }
   }
   async randomRoaming() {
@@ -2792,51 +2836,37 @@ var RecommendationService = class {
    */
   async getRecommendations(excludeFile) {
     try {
-      console.log("\u5F00\u59CB\u667A\u80FD\u63A8\u8350\u7B97\u6CD5...");
       const files = this.app.vault.getMarkdownFiles();
       const roamingFiles = files.filter(
         (file) => SharedUtils.shouldIncludeFile(file, this.settings.excludedPaths) && file !== excludeFile && this.settings.roamingDocs.includes(file.path)
         // Only include roaming documents
       );
-      console.log(`\u627E\u5230 ${roamingFiles.length} \u4E2A\u6F2B\u6E38\u6587\u6863`);
       if (roamingFiles.length === 0) {
-        console.log("\u6CA1\u6709\u6F2B\u6E38\u6587\u6863\uFF0C\u8FD4\u56DE\u7A7A\u63A8\u8350");
         return [];
       }
       const currentFile = excludeFile || this.app.workspace.getActiveFile();
       if (!currentFile) {
-        console.log("\u6CA1\u6709\u5F53\u524D\u6587\u6863\uFF0C\u6309\u4F18\u5148\u7EA7\u6392\u5E8F\u63A8\u8350\u6F2B\u6E38\u6587\u6863");
         return this.getPriorityBasedRecommendations(roamingFiles);
       }
-      console.log(`\u5F53\u524D\u53C2\u8003\u6587\u6863: ${currentFile.basename}`);
-      const similarityScores = [];
-      for (const roamingFile of roamingFiles) {
-        if (roamingFile.path === currentFile.path)
-          continue;
+      const maxCandidates = Math.min(roamingFiles.length, this.settings.recommendationSettings.maxCandidates);
+      const limitedRoamingFiles = roamingFiles.slice(0, maxCandidates);
+      const similarityPromises = limitedRoamingFiles.filter((roamingFile) => roamingFile.path !== currentFile.path).map(async (roamingFile) => {
         try {
-          const similarity = await this.calculateTextSimilarity(currentFile, roamingFile);
-          console.log(`${roamingFile.basename} \u76F8\u4F3C\u5EA6: ${similarity.toFixed(4)}`);
-          if (similarity > 0) {
-            similarityScores.push({ file: roamingFile, score: similarity });
-          }
+          const similarity = await this.calculateTextSimilarityFast(currentFile, roamingFile);
+          return { file: roamingFile, score: similarity };
         } catch (error) {
-          console.error(`\u8BA1\u7B97 ${roamingFile.basename} \u76F8\u4F3C\u5EA6\u5931\u8D25:`, error);
+          return null;
         }
-      }
+      });
+      const similarityResults = await Promise.all(similarityPromises);
+      const similarityScores = similarityResults.filter((result2) => result2 && result2.score > 0).map((result2) => result2);
       similarityScores.sort((a, b) => b.score - a.score);
-      console.log(`\u627E\u5230 ${similarityScores.length} \u4E2A\u6709\u76F8\u4F3C\u5EA6\u7684\u6587\u6863`);
       if (similarityScores.length === 0) {
-        console.log("\u6CA1\u6709\u76F8\u4F3C\u6587\u6863\uFF0C\u6309\u4F18\u5148\u7EA7\u6392\u5E8F\u63A8\u8350");
         return this.getPriorityBasedRecommendations(roamingFiles);
       }
       const topK = Math.min(this.settings.recommendationSettings.topK, similarityScores.length);
       const result = similarityScores.slice(0, topK);
-      console.log(`\u63A8\u8350\u5B8C\u6210\uFF0C\u8FD4\u56DE ${result.length} \u4E2A\u6587\u6863`);
-      console.log(`\u53BB\u91CD\u524D\u7684\u63A8\u8350\u7ED3\u679C:`, result.map((r) => ({ name: r.file.basename, path: r.file.path, score: r.score })));
-      const uniqueResults = this.deduplicateRecommendations(result);
-      console.log(`\u53BB\u91CD\u540E\u7684\u63A8\u8350\u7ED3\u679C:`, uniqueResults.map((r) => ({ name: r.file.basename, path: r.file.path, score: r.score })));
-      console.log(`\u53BB\u91CD\u540E\u8FD4\u56DE ${uniqueResults.length} \u4E2A\u6587\u6863`);
-      return uniqueResults;
+      return result;
     } catch (error) {
       console.error("\u667A\u80FD\u63A8\u8350\u7B97\u6CD5\u51FA\u9519:", error);
       return [];
@@ -2883,7 +2913,43 @@ var RecommendationService = class {
     return this.deduplicateRecommendations(priorityRecs);
   }
   /**
-   * 计算两个文档之间的文本余弦相似度
+   * 快速计算两个文档之间的文本相似度（优化版）
+   */
+  async calculateTextSimilarityFast(file1, file2) {
+    try {
+      const cacheKey = `${file1.path}-${file2.path}`;
+      const cached = this.vectorCache.getVector(cacheKey);
+      if (cached !== null) {
+        return cached.vector.get("similarity") || 0;
+      }
+      const [content1, content2] = await Promise.all([
+        this.extractSimpleTextContent(file1),
+        this.extractSimpleTextContent(file2)
+      ]);
+      if (!content1 || !content2 || content1.length < 20 || content2.length < 20) {
+        return 0;
+      }
+      const limitedContent1 = content1.substring(0, 1e3);
+      const limitedContent2 = content2.substring(0, 1e3);
+      const tokens1 = this.simpleTokenize(limitedContent1);
+      const tokens2 = this.simpleTokenize(limitedContent2);
+      if (tokens1.length === 0 || tokens2.length === 0) {
+        return 0;
+      }
+      const freq1 = this.calculateWordFrequency(tokens1);
+      const freq2 = this.calculateWordFrequency(tokens2);
+      const similarity = this.cosineSimilarityFromFreq(freq1, freq2);
+      const validSimilarity = !isFinite(similarity) || isNaN(similarity) ? 0 : Math.max(0, Math.min(1, similarity));
+      const similarityVector = /* @__PURE__ */ new Map();
+      similarityVector.set("similarity", validSimilarity);
+      this.vectorCache.setVector(cacheKey, similarityVector);
+      return validSimilarity;
+    } catch (error) {
+      return 0;
+    }
+  }
+  /**
+   * 计算两个文档之间的文本余弦相似度（详细版）
    */
   async calculateTextSimilarity(file1, file2) {
     try {
@@ -3366,15 +3432,67 @@ var RecommendationService = class {
 };
 
 // src/models/Settings.ts
+var COLOR_SCHEMES = [
+  {
+    id: "arctic",
+    name: { en: "Arctic", zh: "\u6781\u5730" },
+    primaryColor: "#a855f7",
+    accentColor: "#8b5cf6",
+    bgGradient: "linear-gradient(135deg, #faf5ff 0%, #ede9fe 100%)",
+    cardBg: "rgba(255, 255, 255, 0.9)",
+    textMain: "#1e293b",
+    textSecondary: "#64748b"
+  },
+  {
+    id: "forest",
+    name: { en: "Forest", zh: "\u68EE\u6797" },
+    primaryColor: "#27ae60",
+    accentColor: "#16a085",
+    bgGradient: "linear-gradient(135deg, #f0fff4 0%, #d4f1d4 100%)",
+    cardBg: "rgba(255, 255, 255, 0.9)",
+    textMain: "#2c3e50",
+    textSecondary: "#7f8c8d"
+  },
+  {
+    id: "sunset",
+    name: { en: "Sunset", zh: "\u65E5\u843D" },
+    primaryColor: "#ff6b6b",
+    accentColor: "#ff9f43",
+    bgGradient: "linear-gradient(135deg, #fff5f5 0%, #ffe0e0 100%)",
+    cardBg: "rgba(255, 255, 255, 0.85)",
+    textMain: "#2c3e50",
+    textSecondary: "#7f8c8d"
+  },
+  {
+    id: "ocean",
+    name: { en: "Ocean", zh: "\u6D77\u6D0B" },
+    primaryColor: "#3498db",
+    accentColor: "#2980b9",
+    bgGradient: "linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%)",
+    cardBg: "rgba(255, 255, 255, 0.9)",
+    textMain: "#2c3e50",
+    textSecondary: "#7f8c8d"
+  },
+  {
+    id: "dark",
+    name: { en: "Dark Mode", zh: "\u6DF1\u8272\u6A21\u5F0F" },
+    primaryColor: "#ecf0f1",
+    accentColor: "#3498db",
+    bgGradient: "linear-gradient(135deg, #2c3e50 0%, #34495e 100%)",
+    cardBg: "rgba(52, 73, 94, 0.8)",
+    textMain: "#ecf0f1",
+    textSecondary: "#bdc3c7"
+  }
+];
 var DEFAULT_SETTINGS = {
   excludeVisited: true,
   roamingDocs: [],
   // 手动添加的漫游文档
   documentMetrics: {},
   customMetrics: [
-    { id: "importance", name: "\u91CD\u8981\u6027", weight: 40 },
-    { id: "urgency", name: "\u7D27\u6025\u5EA6", weight: 30 },
-    { id: "completion", name: "\u5B8C\u6210\u5EA6", weight: 30 }
+    { id: "importance", name: { en: "Importance", zh: "\u91CD\u8981\u6027" }, weight: 40 },
+    { id: "urgency", name: { en: "Urgency", zh: "\u7D27\u6025\u5EA6" }, weight: 30 },
+    { id: "completion", name: { en: "Completion", zh: "\u5B8C\u6210\u5EA6" }, weight: 30 }
   ],
   metricWeights: {
     importance: 40,
@@ -3398,6 +3516,8 @@ var DEFAULT_SETTINGS = {
   maxCandidates: 100,
   language: "en",
   // 默认英语
+  colorScheme: "arctic",
+  // 默认极地主题
   version: "2.0.0"
   // 当前版本 - 更新版本号表示重大更新
 };
@@ -3627,7 +3747,7 @@ var DocumentScoringService = class {
       const normalizedWeight = metricWeight / 100;
       const score = metricValue * normalizedWeight;
       breakdown.push({
-        name: metric.name,
+        name: i18n.getMetricName(metric),
         value: metricValue,
         weight: metricWeight,
         score
@@ -3672,7 +3792,7 @@ var CustomMetricsSettings = class {
     } else {
       this.contentEl.empty();
     }
-    this.contentEl.createEl("h3", { text: "\u{1F4CA} " + i18n.t("settings.customMetrics.title") });
+    this.contentEl.createEl("h3", { text: i18n.t("settings.customMetrics.title") });
     this.createMetricManagementHeader();
     this.createCustomMetricsList();
   }
@@ -3694,18 +3814,27 @@ var CustomMetricsSettings = class {
   }
   createMetricSetting(container, metric, index) {
     const metricItem = container.createEl("div", { cls: "metric-setting-item" });
-    const titleSetting = new import_obsidian6.Setting(metricItem).setName(`${i18n.t("settings.customMetrics.title")} ${index + 1}`).setDesc(`${i18n.t("settings.customMetrics.metricName")}: ${metric.name}`).addButton((button) => button.setButtonText(i18n.t("settings.customMetrics.removeMetric")).setWarning().onClick(() => this.deleteMetric(index)));
-    new import_obsidian6.Setting(metricItem).setName(i18n.t("settings.customMetrics.metricName")).setDesc(i18n.t("settings.customMetrics.description")).addText((text) => text.setPlaceholder(i18n.t("settings.customMetrics.metricName")).setValue(metric.name).onChange(async (value) => {
-      const newName = value || `${i18n.t("settings.customMetrics.metricName")}${index + 1}`;
+    const titleSetting = new import_obsidian6.Setting(metricItem).setName(`${i18n.t("settings.customMetrics.title")} ${index + 1}`).setDesc(`${i18n.t("settings.customMetrics.metricName")}: ${i18n.getMetricName(metric)}`).addButton((button) => button.setButtonText(i18n.t("settings.customMetrics.removeMetric")).setWarning().onClick(() => this.deleteMetric(index)));
+    new import_obsidian6.Setting(metricItem).setName("Metric Name (English)").setDesc("Enter the English name for this metric").addText((text) => text.setPlaceholder("e.g., Importance").setValue(metric.name.en || "").onChange(async (value) => {
       const oldId = this.plugin.settings.customMetrics[index].id;
-      const newId = this.generateMetricId(newName);
-      this.plugin.settings.customMetrics[index].name = newName;
+      if (!this.plugin.settings.customMetrics[index].name) {
+        this.plugin.settings.customMetrics[index].name = { en: "", zh: "" };
+      }
+      this.plugin.settings.customMetrics[index].name.en = value || "Metric";
+      const newId = this.generateMetricId(value || "Metric");
       this.plugin.settings.customMetrics[index].id = newId;
       if (oldId !== newId) {
         await this.updateMetricIdInAllDocuments(oldId, newId);
       }
       await this.saveSettings();
       this.refresh();
+    }));
+    new import_obsidian6.Setting(metricItem).setName("\u6307\u6807\u540D\u79F0\uFF08\u4E2D\u6587\uFF09").setDesc("\u8F93\u5165\u6B64\u6307\u6807\u7684\u4E2D\u6587\u540D\u79F0").addText((text) => text.setPlaceholder("\u4F8B\u5982\uFF1A\u91CD\u8981\u6027").setValue(metric.name.zh || "").onChange(async (value) => {
+      if (!this.plugin.settings.customMetrics[index].name) {
+        this.plugin.settings.customMetrics[index].name = { en: "", zh: "" };
+      }
+      this.plugin.settings.customMetrics[index].name.zh = value || "\u6307\u6807";
+      await this.saveSettings();
     }));
     new import_obsidian6.Setting(metricItem).setName(i18n.t("settings.customMetrics.metricWeight")).setDesc(i18n.t("settings.customMetrics.description")).addSlider((slider) => slider.setLimits(0, 100, 1).setValue(metric.weight).setDynamicTooltip().onChange(async (value) => {
       this.plugin.settings.customMetrics[index].weight = Math.floor(value);
@@ -3726,8 +3855,11 @@ var CustomMetricsSettings = class {
     }
     try {
       const newMetric = {
-        id: this.generateMetricId(`${i18n.t("settings.customMetrics.metricName")}${currentCount + 1}`),
-        name: `${i18n.t("settings.customMetrics.metricName")}${currentCount + 1}`,
+        id: this.generateMetricId(`Metric${currentCount + 1}`),
+        name: {
+          en: `Metric ${currentCount + 1}`,
+          zh: `\u6307\u6807${currentCount + 1}`
+        },
         weight: Math.floor(100 / (currentCount + 1))
       };
       this.plugin.settings.customMetrics.push(newMetric);
@@ -3751,8 +3883,9 @@ var CustomMetricsSettings = class {
       return;
     }
     try {
-      console.log(`\u5F00\u59CB\u5220\u9664\u6307\u6807: ${metricToDelete.name} (ID: ${metricToDelete.id})`);
-      const confirmed = await this.showDeleteConfirmation(metricToDelete.name);
+      const displayName = typeof metricToDelete.name === "string" ? metricToDelete.name : metricToDelete.name.zh || metricToDelete.name.en;
+      console.log(`\u5F00\u59CB\u5220\u9664\u6307\u6807: ${displayName} (ID: ${metricToDelete.id})`);
+      const confirmed = await this.showDeleteConfirmation(displayName);
       if (!confirmed) {
         console.log("\u7528\u6237\u53D6\u6D88\u4E86\u5220\u9664\u64CD\u4F5C");
         return;
@@ -4062,7 +4195,7 @@ var DataManagementSettings = class {
   }
   render() {
     this.containerEl.createEl("h3", { text: i18n.t("settings.dataManagement.title") });
-    new import_obsidian9.Setting(this.containerEl).setName(i18n.t("settings.dataManagement.clearHistory")).setDesc(i18n.t("settings.dataManagement.clearHistoryDesc")).addButton((button) => button.setButtonText("\u{1F5D1}\uFE0F " + i18n.t("settings.dataManagement.clearButton")).onClick(async () => {
+    new import_obsidian9.Setting(this.containerEl).setName(i18n.t("settings.dataManagement.clearHistory")).setDesc(i18n.t("settings.dataManagement.clearHistoryDesc")).addButton((button) => button.setButtonText(i18n.t("settings.dataManagement.clearButton")).onClick(async () => {
       if (confirm(i18n.t("settings.dataManagement.clearConfirm"))) {
         this.plugin.settings.roamingDocs = [];
         for (const [path] of Object.entries(this.plugin.settings.documentMetrics)) {
@@ -4076,8 +4209,144 @@ var DataManagementSettings = class {
   }
 };
 
+// src/settings/ColorSchemeSettings.ts
+var import_obsidian10 = require("obsidian");
+var ColorSchemeSettings = class {
+  constructor(containerEl, plugin) {
+    this.applyThemeTimeout = null;
+    this.containerEl = containerEl;
+    this.plugin = plugin;
+  }
+  render() {
+    const colorSchemeContainer = this.containerEl.createEl("div", { cls: "color-scheme-settings-content" });
+    colorSchemeContainer.createEl("h3", { text: "Color Theme" });
+    new import_obsidian10.Setting(colorSchemeContainer).setName("Color Theme").setDesc("Select your preferred color scheme for the plugin interface").addDropdown((dropdown) => {
+      COLOR_SCHEMES.forEach((scheme) => {
+        const displayName = i18n.getLanguage() === "zh" ? scheme.name.zh : scheme.name.en;
+        dropdown.addOption(scheme.id, displayName);
+      });
+      dropdown.setValue(this.plugin.settings.colorScheme || "arctic").onChange(async (value) => {
+        this.plugin.settings.colorScheme = value;
+        await this.plugin.saveSettings();
+        this.applyColorScheme(value);
+        clearTimeout(this.applyThemeTimeout);
+        this.applyThemeTimeout = setTimeout(() => {
+          this.plugin.notifyViewsRefreshUI();
+        }, 100);
+      });
+    });
+    this.createColorSchemePreview(colorSchemeContainer);
+  }
+  createColorSchemePreview(container) {
+    const previewContainer = container.createEl("div", { cls: "color-scheme-preview" });
+    previewContainer.createEl("h4", { text: "Theme Preview" });
+    const previewGrid = previewContainer.createEl("div", { cls: "preview-grid" });
+    COLOR_SCHEMES.forEach((scheme) => {
+      const previewCard = previewGrid.createEl("div", { cls: "preview-card" });
+      const colorDisplay = previewCard.createEl("div", { cls: "color-display" });
+      colorDisplay.style.background = scheme.bgGradient;
+      const primaryColor = colorDisplay.createEl("div", { cls: "color-swatch primary" });
+      primaryColor.style.backgroundColor = scheme.primaryColor;
+      const accentColor = colorDisplay.createEl("div", { cls: "color-swatch accent" });
+      accentColor.style.backgroundColor = scheme.accentColor;
+      const schemeName = i18n.getLanguage() === "zh" ? scheme.name.zh : scheme.name.en;
+      const nameLabel = previewCard.createEl("div", { cls: "scheme-name", text: schemeName });
+      previewCard.addEventListener("click", async () => {
+        this.plugin.settings.colorScheme = scheme.id;
+        await this.plugin.saveSettings();
+        this.applyColorScheme(scheme.id);
+        const dropdown = container.querySelector(".dropdown");
+        if (dropdown) {
+          dropdown.value = scheme.id;
+        }
+        previewGrid.querySelectorAll(".preview-card").forEach((card) => {
+          card.classList.remove("selected");
+        });
+        previewCard.classList.add("selected");
+        clearTimeout(this.applyThemeTimeout);
+        this.applyThemeTimeout = setTimeout(() => {
+          this.plugin.notifyViewsRefreshUI();
+        }, 100);
+      });
+      if (scheme.id === (this.plugin.settings.colorScheme || "arctic")) {
+        previewCard.classList.add("selected");
+      }
+    });
+  }
+  applyColorScheme(schemeId) {
+    const scheme = COLOR_SCHEMES.find((s) => s.id === schemeId);
+    if (!scheme)
+      return;
+    let styleEl = document.getElementById("incremental-reading-color-scheme");
+    if (!styleEl) {
+      styleEl = document.createElement("style");
+      styleEl.id = "incremental-reading-color-scheme";
+      document.head.appendChild(styleEl);
+    }
+    const hexToRgb = (hex) => {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : { r: 142, g: 68, b: 173 };
+    };
+    const accentRgb = hexToRgb(scheme.accentColor);
+    const primaryRgb = hexToRgb(scheme.primaryColor);
+    const cssVariables = `
+            :root {
+                /* Primary Color Scheme */
+                --primary-color: ${scheme.primaryColor};
+                --accent-color: ${scheme.accentColor};
+                --accent-light: ${scheme.primaryColor};
+                --accent-dark: ${scheme.accentColor};
+
+                /* Background Colors */
+                --bg-gradient: ${scheme.bgGradient};
+                --card-bg: ${scheme.cardBg};
+                --card-hover-bg: ${scheme.cardBg};
+
+                /* Text Colors */
+                --text-main: ${scheme.textMain};
+                --text-secondary: ${scheme.textSecondary};
+
+                /* Accent Variations */
+                --accent-transparent: rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.1);
+                --accent-light-transparent: rgba(${primaryRgb.r}, ${primaryRgb.g}, ${primaryRgb.b}, 0.1);
+                --accent-dark-transparent: rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.1);
+
+                /* Box Shadows */
+                --accent-shadow: rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.3);
+                --accent-shadow-hover: rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.5);
+                --accent-shadow-light: rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.1);
+                --accent-shadow-heavy: rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.6);
+
+                /* Borders */
+                --accent-border: rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.3);
+                --accent-border-hover: rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.4);
+                --light-border: rgba(0,0,0,0.05);
+                --medium-border: rgba(0,0,0,0.08);
+
+                /* Gradients */
+                --accent-gradient: linear-gradient(135deg, var(--accent-light) 0%, var(--accent-color) 100%);
+                --accent-gradient-vertical: linear-gradient(180deg, var(--accent-light) 0%, var(--accent-color) 100%);
+                --accent-gradient-horizontal: linear-gradient(90deg, var(--accent-light) 0%, var(--accent-color) 100%);
+
+                /* Dimensions */
+                --border-radius: 16px;
+                --small-border-radius: 8px;
+            }
+        `;
+    styleEl.textContent = cssVariables;
+    const pluginContainers = document.querySelectorAll(".plugin-container");
+    pluginContainers.forEach((container) => {
+      container.style.background = scheme.bgGradient;
+    });
+  }
+};
+
 // src/main.ts
-var IncrementalReadingPlugin = class extends import_obsidian10.Plugin {
+var IncrementalReadingPlugin = class extends import_obsidian11.Plugin {
   constructor() {
     super(...arguments);
     this.leaf = null;
@@ -4087,6 +4356,7 @@ var IncrementalReadingPlugin = class extends import_obsidian10.Plugin {
     console.log("Loading Incremental Reading plugin");
     await this.loadSettings();
     i18n.setLanguage(this.settings.language || "en");
+    this.applyColorScheme(this.settings.colorScheme || "arctic");
     this.recommendationService = new RecommendationService(this.app, this.settings);
     this.fileManagementService = new FileManagementService(this.app, this.settings);
     this.documentScoringService = new DocumentScoringService(this.settings);
@@ -4099,6 +4369,13 @@ var IncrementalReadingPlugin = class extends import_obsidian10.Plugin {
     });
     this.addCommands();
     this.addSettingTab(new IncrementalReadingSettingTab(this.app, this));
+    this.registerEvent(
+      this.app.workspace.on("layout-change", () => {
+        if (this.leaf && this.leaf.detach) {
+          this.leaf = null;
+        }
+      })
+    );
   }
   onunload() {
     console.log("Unloading Incremental Reading plugin");
@@ -4112,11 +4389,11 @@ var IncrementalReadingPlugin = class extends import_obsidian10.Plugin {
         this.settings.roamingDocs = [];
         this.settings.version = DEFAULT_SETTINGS.version;
         await this.saveData(this.settings);
-        new import_obsidian10.Notice('Plugin upgraded! Please re-add documents to roaming list using "Add to Roaming"');
+        new import_obsidian11.Notice('Plugin upgraded! Please re-add documents to roaming list using "Add to Roaming"');
       }
     } catch (error) {
       console.error("Error loading settings:", error);
-      new import_obsidian10.Notice(i18n.t("notices.errorLoadingSettings"));
+      new import_obsidian11.Notice(i18n.t("notices.errorLoadingSettings"));
       this.settings = { ...DEFAULT_SETTINGS };
     }
   }
@@ -4136,7 +4413,7 @@ var IncrementalReadingPlugin = class extends import_obsidian10.Plugin {
       this.notifyViewsRefresh();
     } catch (error) {
       console.error("Error saving settings:", error);
-      new import_obsidian10.Notice(i18n.t("notices.errorSavingSettings"));
+      new import_obsidian11.Notice(i18n.t("notices.errorSavingSettings"));
     } finally {
       this.isUpdatingSettings = false;
     }
@@ -4176,15 +4453,29 @@ var IncrementalReadingPlugin = class extends import_obsidian10.Plugin {
     }
   }
   async activateView() {
-    var _a;
     const { workspace } = this.app;
-    if (this.leaf) {
-      workspace.revealLeaf(this.leaf);
-    } else {
-      this.leaf = workspace.getRightLeaf(false);
-      await ((_a = this.leaf) == null ? void 0 : _a.setViewState({ type: VIEW_TYPE_INCREMENTAL_READING, active: true }));
+    if (this.leaf && !this.leaf.detach) {
+      try {
+        const existingLeaves2 = workspace.getLeavesOfType(VIEW_TYPE_INCREMENTAL_READING);
+        if (existingLeaves2.includes(this.leaf)) {
+          workspace.revealLeaf(this.leaf);
+          return;
+        }
+      } catch (error) {
+        console.warn("Error checking existing leaf:", error);
+      }
     }
-    workspace.revealLeaf(this.leaf);
+    const existingLeaves = workspace.getLeavesOfType(VIEW_TYPE_INCREMENTAL_READING);
+    if (existingLeaves.length > 0) {
+      this.leaf = existingLeaves[0];
+      workspace.revealLeaf(this.leaf);
+      return;
+    }
+    this.leaf = workspace.getRightLeaf(false);
+    if (this.leaf) {
+      await this.leaf.setViewState({ type: VIEW_TYPE_INCREMENTAL_READING, active: true });
+      workspace.revealLeaf(this.leaf);
+    }
   }
   addCommands() {
     this.addCommand({
@@ -4207,12 +4498,12 @@ var IncrementalReadingPlugin = class extends import_obsidian10.Plugin {
       callback: async () => {
         const activeFile = this.app.workspace.getActiveFile();
         if (!activeFile) {
-          new import_obsidian10.Notice(i18n.t("notices.noActiveFile"));
+          new import_obsidian11.Notice(i18n.t("notices.noActiveFile"));
           return;
         }
         try {
           if (activeFile.extension !== "md") {
-            new import_obsidian10.Notice(i18n.t("notices.onlyMarkdownFiles"));
+            new import_obsidian11.Notice(i18n.t("notices.onlyMarkdownFiles"));
             return;
           }
           if (!this.settings.roamingDocs.includes(activeFile.path)) {
@@ -4221,10 +4512,10 @@ var IncrementalReadingPlugin = class extends import_obsidian10.Plugin {
           const defaultMetrics = this.fileManagementService.createDefaultMetricsForFile(activeFile);
           await this.updateDocumentMetrics(activeFile, defaultMetrics);
           await this.saveSettings();
-          new import_obsidian10.Notice(i18n.t("notices.addedToRoaming", { filename: activeFile.basename }));
+          new import_obsidian11.Notice(i18n.t("notices.addedToRoaming", { filename: activeFile.basename }));
         } catch (error) {
           console.error("\u52A0\u5165\u6F2B\u6E38\u5931\u8D25:", error);
-          new import_obsidian10.Notice(i18n.t("notices.errorSavingSettings"));
+          new import_obsidian11.Notice(i18n.t("notices.errorSavingSettings"));
         }
       }
     });
@@ -4232,14 +4523,14 @@ var IncrementalReadingPlugin = class extends import_obsidian10.Plugin {
       id: "add-folder-to-roaming",
       name: i18n.t("commands.addFolder"),
       callback: async () => {
-        new import_obsidian10.Notice(i18n.t("view.actionBar.addFolder"));
+        new import_obsidian11.Notice(i18n.t("view.actionBar.addFolder"));
       }
     });
     this.addCommand({
       id: "add-multiple-files-to-roaming",
       name: i18n.t("commands.addMultiple"),
       callback: async () => {
-        new import_obsidian10.Notice(i18n.t("view.actionBar.multiSelect"));
+        new import_obsidian11.Notice(i18n.t("view.actionBar.multiSelect"));
       }
     });
     this.addCommand({
@@ -4252,7 +4543,7 @@ var IncrementalReadingPlugin = class extends import_obsidian10.Plugin {
           this.settings.documentMetrics[path].lastVisited = 0;
         }
         await this.saveSettings();
-        new import_obsidian10.Notice(i18n.t("notices.historyCleared"));
+        new import_obsidian11.Notice(i18n.t("notices.historyCleared"));
       }
     });
   }
@@ -4260,13 +4551,13 @@ var IncrementalReadingPlugin = class extends import_obsidian10.Plugin {
     try {
       const randomFile = this.fileManagementService.getRandomUnvisitedFile();
       if (!randomFile) {
-        new import_obsidian10.Notice(i18n.t("view.actionBar.noDocuments"));
+        new import_obsidian11.Notice(i18n.t("view.actionBar.noDocuments"));
         return;
       }
       await this.app.workspace.getLeaf().openFile(randomFile);
     } catch (error) {
       console.error("Error opening random document:", error);
-      new import_obsidian10.Notice(i18n.t("notices.documentOpenFailed"));
+      new import_obsidian11.Notice(i18n.t("notices.documentOpenFailed"));
     }
   }
   // 公共方法供视图组件使用
@@ -4281,7 +4572,7 @@ var IncrementalReadingPlugin = class extends import_obsidian10.Plugin {
       await this.saveSettings();
     } catch (error) {
       console.error("Error updating document metrics:", error);
-      new import_obsidian10.Notice(i18n.t("notices.errorSavingSettings"));
+      new import_obsidian11.Notice(i18n.t("notices.errorSavingSettings"));
     }
   }
   getRecommendedDocuments(limit = 10) {
@@ -4315,24 +4606,97 @@ var IncrementalReadingPlugin = class extends import_obsidian10.Plugin {
     try {
       const addedCount = await this.fileManagementService.addFoldersToRoaming(folderPaths);
       await this.saveSettings();
-      new import_obsidian10.Notice(i18n.t("notices.filesAdded", { count: addedCount }));
+      new import_obsidian11.Notice(i18n.t("notices.filesAdded", { count: addedCount }));
     } catch (error) {
       console.error("\u6DFB\u52A0\u6587\u4EF6\u5939\u5931\u8D25:", error);
-      new import_obsidian10.Notice(i18n.t("notices.errorSavingSettings"));
+      new import_obsidian11.Notice(i18n.t("notices.errorSavingSettings"));
     }
   }
   async addMultipleFilesToRoaming(files) {
     try {
       const addedCount = await this.fileManagementService.addMultipleFilesToRoaming(files);
       await this.saveSettings();
-      new import_obsidian10.Notice(i18n.t("notices.filesAdded", { count: addedCount }));
+      new import_obsidian11.Notice(i18n.t("notices.filesAdded", { count: addedCount }));
     } catch (error) {
       console.error("\u6DFB\u52A0\u6587\u4EF6\u5931\u8D25:", error);
-      new import_obsidian10.Notice(i18n.t("notices.errorSavingSettings"));
+      new import_obsidian11.Notice(i18n.t("notices.errorSavingSettings"));
     }
   }
+  /**
+   * 应用颜色主题
+   */
+  applyColorScheme(schemeId) {
+    const scheme = COLOR_SCHEMES.find((s) => s.id === schemeId);
+    if (!scheme)
+      return;
+    let styleEl = document.getElementById("incremental-reading-color-scheme");
+    if (!styleEl) {
+      styleEl = document.createElement("style");
+      styleEl.id = "incremental-reading-color-scheme";
+      document.head.appendChild(styleEl);
+    }
+    const hexToRgb = (hex) => {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : { r: 142, g: 68, b: 173 };
+    };
+    const accentRgb = hexToRgb(scheme.accentColor);
+    const primaryRgb = hexToRgb(scheme.primaryColor);
+    const cssVariables = `
+            :root {
+                /* Primary Color Scheme */
+                --primary-color: ${scheme.primaryColor};
+                --accent-color: ${scheme.accentColor};
+                --accent-light: ${scheme.primaryColor};
+                --accent-dark: ${scheme.accentColor};
+
+                /* Background Colors */
+                --bg-gradient: ${scheme.bgGradient};
+                --card-bg: ${scheme.cardBg};
+                --card-hover-bg: ${scheme.cardBg};
+
+                /* Text Colors */
+                --text-main: ${scheme.textMain};
+                --text-secondary: ${scheme.textSecondary};
+
+                /* Accent Variations */
+                --accent-transparent: rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.1);
+                --accent-light-transparent: rgba(${primaryRgb.r}, ${primaryRgb.g}, ${primaryRgb.b}, 0.1);
+                --accent-dark-transparent: rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.1);
+
+                /* Box Shadows */
+                --accent-shadow: rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.3);
+                --accent-shadow-hover: rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.5);
+                --accent-shadow-light: rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.1);
+                --accent-shadow-heavy: rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.6);
+
+                /* Borders */
+                --accent-border: rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.3);
+                --accent-border-hover: rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.4);
+                --light-border: rgba(0,0,0,0.05);
+                --medium-border: rgba(0,0,0,0.08);
+
+                /* Gradients */
+                --accent-gradient: linear-gradient(135deg, var(--accent-light) 0%, var(--accent-color) 100%);
+                --accent-gradient-vertical: linear-gradient(180deg, var(--accent-light) 0%, var(--accent-color) 100%);
+                --accent-gradient-horizontal: linear-gradient(90deg, var(--accent-light) 0%, var(--accent-color) 100%);
+
+                /* Dimensions */
+                --border-radius: 16px;
+                --small-border-radius: 8px;
+            }
+        `;
+    styleEl.textContent = cssVariables;
+    const pluginContainers = document.querySelectorAll(".plugin-container");
+    pluginContainers.forEach((container) => {
+      container.style.background = scheme.bgGradient;
+    });
+  }
 };
-var IncrementalReadingSettingTab = class extends import_obsidian10.PluginSettingTab {
+var IncrementalReadingSettingTab = class extends import_obsidian11.PluginSettingTab {
   constructor(app, plugin) {
     super(app, plugin);
     this.plugin = plugin;
@@ -4345,7 +4709,7 @@ var IncrementalReadingSettingTab = class extends import_obsidian10.PluginSetting
     containerEl.addClass("incremental-reading-plugin-root");
     containerEl.createEl("h2", { text: i18n.t("settings.title") });
     containerEl.createEl("h3", { text: i18n.t("settings.general.title") });
-    new import_obsidian10.Setting(containerEl).setName(i18n.t("settings.general.language")).setDesc(i18n.t("settings.general.languageDesc")).addDropdown((dropdown) => {
+    new import_obsidian11.Setting(containerEl).setName(i18n.t("settings.general.language")).setDesc(i18n.t("settings.general.languageDesc")).addDropdown((dropdown) => {
       const languages = i18n.getAvailableLanguages();
       languages.forEach((lang) => {
         dropdown.addOption(lang.code, lang.name);
@@ -4356,9 +4720,11 @@ var IncrementalReadingSettingTab = class extends import_obsidian10.PluginSetting
         await this.plugin.saveSettings();
         this.display();
         this.plugin.notifyViewsRefreshUI();
-        new import_obsidian10.Notice(i18n.t("notices.settingsSaved"));
+        new import_obsidian11.Notice(i18n.t("notices.settingsSaved"));
       });
     });
+    const colorSchemeSettings = new ColorSchemeSettings(containerEl, this.plugin);
+    colorSchemeSettings.render();
     const customMetricsSettings = new CustomMetricsSettings(containerEl, this.plugin);
     customMetricsSettings.render();
     const recommendationSettings = new RecommendationSettings(containerEl, this.plugin);

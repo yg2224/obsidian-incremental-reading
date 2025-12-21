@@ -1,6 +1,7 @@
 import { TFile } from 'obsidian';
 import { DocumentMetrics, IncrementalReadingSettings, CustomMetric } from '../models/Settings';
 import { SharedUtils } from '../utils/SharedUtils';
+import { i18n } from '../i18n';
 
 /**
  * 文档评分服务 - 处理文档评分、优先级计算等
@@ -138,7 +139,7 @@ export class DocumentScoringService {
             const score = metricValue * normalizedWeight;
 
             breakdown.push({
-                name: metric.name,
+                name: i18n.getMetricName(metric),
                 value: metricValue,
                 weight: metricWeight,
                 score: score

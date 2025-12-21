@@ -1,5 +1,6 @@
 import { App, Modal as ObsidianModal, Setting, Notice, TFile, TFolder, normalizePath } from 'obsidian';
 import { CustomMetric } from '../models/Settings';
+import { i18n } from '../i18n';
 
 export interface ModalOptions {
 	title: string;
@@ -383,7 +384,7 @@ export class DocumentMetricsModal extends ObsidianModal {
 		for (const metric of this.customMetrics) {
 			const config = {
 				key: metric.id,
-				label: `${metric.name} (${metric.weight}%)`,
+				label: `${i18n.getMetricName(metric)} (${metric.weight}%)`,
 				min: 0,
 				max: 10,
 				step: 0.5

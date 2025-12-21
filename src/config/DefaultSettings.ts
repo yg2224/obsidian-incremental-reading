@@ -5,9 +5,9 @@ export const DEFAULT_SETTINGS: IncrementalReadingSettings = {
     roamingDocs: [], // 手动添加的漫游文档
     documentMetrics: {},
     customMetrics: [
-        { id: 'importance', name: '重要性', weight: 40 },
-        { id: 'urgency', name: '紧急度', weight: 30 },
-        { id: 'completion', name: '完成度', weight: 30 }
+        { id: 'importance', name: { en: 'Importance', zh: '重要性' }, weight: 40 },
+        { id: 'urgency', name: { en: 'Urgency', zh: '紧急度' }, weight: 30 },
+        { id: 'completion', name: { en: 'Completion', zh: '完成度' }, weight: 30 }
     ],
     metricWeights: {
         importance: 40.0,
@@ -30,5 +30,6 @@ export const DEFAULT_SETTINGS: IncrementalReadingSettings = {
     ],
     maxCandidates: 100,
     language: 'en', // 界面语言
+    colorScheme: 'arctic', // 默认极地主题
     version: '2.0.0' // 当前版本
 };

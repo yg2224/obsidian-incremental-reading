@@ -62,6 +62,16 @@ export class I18n {
         return this.translations[this.currentLanguage];
     }
 
+    // Get localized metric name
+    getMetricName(metric: { name: { en: string; zh: string } }): string {
+        const lang = this.currentLanguage;
+        if (metric.name && metric.name[lang]) {
+            return metric.name[lang];
+        }
+        // Fallback to English if current language not available
+        return metric.name?.en || metric.name?.zh || 'Unknown';
+    }
+
     // Get available languages
     getAvailableLanguages(): Array<{ code: string; name: string }> {
         return [

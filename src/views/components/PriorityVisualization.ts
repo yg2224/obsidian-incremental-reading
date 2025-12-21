@@ -32,11 +32,11 @@ export class PriorityVisualization {
 
         // 标题
         const header = vizSection.createEl('div', { cls: 'viz-header' });
-        header.createEl('h3', { text: '📊 ' + i18n.t('visualization.title') });
+        header.createEl('h3', { text: i18n.t('visualization.title') });
 
         const refreshBtn = header.createEl('button', {
             cls: 'viz-refresh-btn',
-            text: '🔄 ' + i18n.t('visualization.refresh')
+            text: i18n.t('visualization.refresh')
         });
         refreshBtn.onclick = () => this.render();
 
@@ -176,7 +176,7 @@ export class PriorityVisualization {
         this.ctx.translate(20, padding.top + height / 2);
         this.ctx.rotate(-Math.PI / 2);
         this.ctx.textAlign = 'center';
-        this.ctx.fillStyle = '#8e44ad';
+        this.ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim() || '#8e44ad';
         this.ctx.font = 'bold 14px sans-serif';
         this.ctx.fillText(i18n.t('visualization.yAxis'), 0, 0);
         this.ctx.restore();
@@ -191,7 +191,7 @@ export class PriorityVisualization {
         }
 
         // X轴标题
-        this.ctx.fillStyle = '#8e44ad';
+        this.ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim() || '#8e44ad';
         this.ctx.font = 'bold 14px sans-serif';
         this.ctx.fillText(i18n.t('visualization.xAxis'), padding.left + width / 2, padding.top + height + 40);
     }
@@ -212,7 +212,8 @@ export class PriorityVisualization {
         this.ctx.fill();
 
         // 边框
-        this.ctx.strokeStyle = isHovered ? '#732d91' : '#fff';
+        const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim() || '#8e44ad';
+        this.ctx.strokeStyle = isHovered ? accentColor : '#fff';
         this.ctx.lineWidth = isHovered ? 3 : 2;
         this.ctx.stroke();
 
@@ -250,7 +251,8 @@ export class PriorityVisualization {
 
         // 绘制背景
         this.ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-        this.ctx.strokeStyle = '#8e44ad';
+        const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim() || '#8e44ad';
+        this.ctx.strokeStyle = accentColor;
         this.ctx.lineWidth = 2;
 
         // 绘制圆角矩形（手动实现）
@@ -276,7 +278,7 @@ export class PriorityVisualization {
         this.ctx.font = 'bold 12px sans-serif';
         this.ctx.fillText(fileName, tooltipX + padding, tooltipY + padding);
         this.ctx.font = '12px sans-serif';
-        this.ctx.fillStyle = '#8e44ad';
+        this.ctx.fillStyle = accentColor;
         this.ctx.fillText(priorityText, tooltipX + padding, tooltipY + padding + lineHeight);
     }
 

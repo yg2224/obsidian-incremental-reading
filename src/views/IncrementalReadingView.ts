@@ -56,6 +56,8 @@ export class IncrementalReadingView extends ItemView {
     }
 
     async onOpen(): Promise<void> {
+        // 确保主题被应用
+        this.plugin.applyColorScheme(this.plugin.settings.colorScheme || 'arctic');
         this.createView();
 
         // 添加文件切换监听器
@@ -89,16 +91,14 @@ export class IncrementalReadingView extends ItemView {
 
         this.addStyles();
 
-        // 初始数据加载
-        this.refreshData();
-
-        // 默认显示指标部分
+        // 初始数据加载 - 延迟到所有组件创建完成后
         setTimeout(() => {
+            this.refreshData();
+
+            // 默认显示指标部分
             this.switchToTab('metrics', 0);
-        }, 100);
 
-        // 立即更新按钮状态（基于当前活动文件）
-        setTimeout(() => {
+            // 立即更新按钮状态（基于当前活动文件）
             const activeFile = this.app.workspace.getActiveFile();
             if (activeFile) {
                 this.onFileOpen(activeFile);
@@ -106,7 +106,7 @@ export class IncrementalReadingView extends ItemView {
                 // 即使没有活动文件，也要更新按钮状态
                 this.actionBar?.updateButtonStates();
             }
-        }, 150);
+        }, 100);
     }
 
     private createHeroSection(container: HTMLElement): void {
@@ -122,7 +122,7 @@ export class IncrementalReadingView extends ItemView {
         // 状态徽章
         const docCount = this.getVisitedDocumentCount();
         this.statusText = heroSection.createEl('div', { cls: 'status-text' });
-        this.statusText.innerHTML = `<span>📚</span><span>${i18n.t('view.statusTemplate', { count: docCount.toString() })}</span>`;
+        this.statusText.textContent = i18n.t('view.statusTemplate', { count: docCount.toString() });
 
         // 操作栏
         this.actionBar = new ActionBar(heroSection, this.plugin, {
@@ -182,6 +182,9 @@ export class IncrementalReadingView extends ItemView {
             onOpenDocument: (file) => this.openDocument(file),
             onEditMetrics: (file, metrics) => {} // 空实现，保留接口兼容性
         });
+
+        // Initialize with empty state to avoid missing components
+        this.recommendationList.render([]);
     }
 
     private createRankingSection(container: HTMLElement): void {
@@ -191,6 +194,9 @@ export class IncrementalReadingView extends ItemView {
             onOpenDocument: (file) => this.openDocument(file),
             onEditMetrics: (file, metrics) => {} // 空实现，保留接口兼容性
         });
+
+        // Initialize to ensure component exists
+        this.rankingList.refresh();
     }
 
     private createVisualizationSection(container: HTMLElement): void {
@@ -201,6 +207,9 @@ export class IncrementalReadingView extends ItemView {
             this.plugin,
             (file) => this.openDocument(file)
         );
+
+        // Initialize to ensure component exists
+        this.priorityVisualization.refresh();
     }
 
     private async switchToTab(tabId: string, index: number): Promise<void> {
@@ -431,6 +440,9 @@ export class IncrementalReadingView extends ItemView {
         const currentTab = this.currentActiveTab;
         console.log(`当前激活标签: ${currentTab}`);
 
+        // 确保主题被应用
+        this.plugin.applyColorScheme(this.plugin.settings.colorScheme || 'arctic');
+
         // 完全重建视图
         this.createView();
 
@@ -451,7 +463,7 @@ export class IncrementalReadingView extends ItemView {
     private updateStatusText(): void {
         if (this.statusText) {
             const docCount = this.getVisitedDocumentCount();
-            this.statusText.innerHTML = `<span>📚</span><span>${i18n.t('view.statusTemplate', { count: docCount.toString() })}</span>`;
+            this.statusText.textContent = i18n.t('view.statusTemplate', { count: docCount.toString() });
         }
     }
 

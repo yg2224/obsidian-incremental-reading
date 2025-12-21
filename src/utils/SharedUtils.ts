@@ -217,20 +217,33 @@ export class SharedUtils {
 				.filter(metric =>
 					metric &&
 					typeof metric.id === 'string' &&
-					typeof metric.name === 'string' &&
+					(typeof metric.name === 'string' || (typeof metric.name === 'object' && metric.name.en && metric.name.zh)) &&
 					typeof metric.weight === 'number'
 				)
-				.map(metric => ({
-					id: metric.id,
-					name: metric.name,
-					weight: Math.max(0, Math.min(100, metric.weight))
-				}));
+				.map(metric => {
+					// Handle migration from string to bilingual object
+					let name: { en: string; zh: string };
+					if (typeof metric.name === 'string') {
+						// Migrate old string format to bilingual object
+						const chineseName = metric.name;
+						const englishName = this.getEnglishTranslation(chineseName) || chineseName;
+						name = { en: englishName, zh: chineseName };
+					} else {
+						name = metric.name;
+					}
+
+					return {
+						id: metric.id,
+						name: name,
+						weight: Math.max(0, Math.min(100, metric.weight))
+					};
+				});
 		} else {
 			// Use default custom metrics if none are provided
 			validated.customMetrics = [
-				{ id: 'importance', name: '重要性', weight: 40 },
-				{ id: 'urgency', name: '紧急度', weight: 30 },
-				{ id: 'completion', name: '完成度', weight: 30 }
+				{ id: 'importance', name: { en: 'Importance', zh: '重要性' }, weight: 40 },
+				{ id: 'urgency', name: { en: 'Urgency', zh: '紧急度' }, weight: 30 },
+				{ id: 'completion', name: { en: 'Completion', zh: '完成度' }, weight: 30 }
 			];
 		}
 
@@ -306,5 +319,24 @@ export class SharedUtils {
 	 */
 	static isValidNumber(value: any): value is number {
 		return typeof value === 'number' && !isNaN(value) && isFinite(value);
+	}
+
+	/**
+	 * Get English translation for Chinese metric names
+	 */
+	static getEnglishTranslation(chineseName: string): string | null {
+		const translations: Record<string, string> = {
+			'重要性': 'Importance',
+			'紧急度': 'Urgency',
+			'完成度': 'Completion',
+			'难度': 'Difficulty',
+			'兴趣度': 'Interest',
+			'实用性': 'Practicality',
+			'优先级': 'Priority',
+			'复杂度': 'Complexity',
+			'价值度': 'Value',
+			'时效性': 'Timeliness'
+		};
+		return translations[chineseName] || null;
 	}
 }

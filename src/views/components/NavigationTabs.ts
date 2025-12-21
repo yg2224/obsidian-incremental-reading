@@ -31,10 +31,10 @@ export class NavigationTabs {
         this.tabSlider = tabContainer.createEl('div', { cls: 'tab-slider' });
 
         const tabs = [
-            { id: 'metrics', label: i18n.t('tabs.metrics'), icon: '📊' },
-            { id: 'recommendations', label: i18n.t('tabs.recommendations'), icon: '🧠' },
-            { id: 'ranking', label: i18n.t('tabs.ranking'), icon: '🏆' },
-            { id: 'visualization', label: i18n.t('tabs.visualization'), icon: '📈' }
+            { id: 'metrics', label: i18n.t('tabs.metrics') },
+            { id: 'recommendations', label: i18n.t('tabs.recommendations') },
+            { id: 'ranking', label: i18n.t('tabs.ranking') },
+            { id: 'visualization', label: i18n.t('tabs.visualization') }
         ];
 
         // Create tab buttons
@@ -42,7 +42,7 @@ export class NavigationTabs {
         tabs.forEach((tab, index) => {
             const tabBtn = tabContainer.createEl('button', {
                 cls: 'tab-btn',
-                text: `${tab.icon} ${tab.label}`
+                text: tab.label
             });
             tabBtn.setAttribute('data-target', tab.id);
             tabBtn.onclick = () => this.switchToTab(tab.id, index);

@@ -1,7 +1,7 @@
 import { App, Plugin, PluginSettingTab, Setting, TFile, Notice, WorkspaceLeaf } from 'obsidian';
 import { IncrementalReadingView, VIEW_TYPE_INCREMENTAL_READING } from './views/IncrementalReadingView';
 import { RecommendationService } from './services/RecommendationService';
-import { DocumentMetrics, IncrementalReadingSettings, DEFAULT_SETTINGS } from './models/Settings';
+import { DocumentMetrics, IncrementalReadingSettings, DEFAULT_SETTINGS, COLOR_SCHEMES, ColorScheme } from './models/Settings';
 import { SharedUtils } from './utils/SharedUtils';
 
 // 导入服务
@@ -13,6 +13,7 @@ import { CustomMetricsSettings } from './settings/CustomMetricsSettings';
 import { RecommendationSettings } from './settings/RecommendationSettings';
 import { FilterSettings } from './settings/FilterSettings';
 import { DataManagementSettings } from './settings/DataManagementSettings';
+import { ColorSchemeSettings } from './settings/ColorSchemeSettings';
 
 // 导入国际化
 import { i18n } from './i18n';
@@ -33,6 +34,9 @@ export default class IncrementalReadingPlugin extends Plugin {
 
         // 初始化语言
         i18n.setLanguage(this.settings.language || 'en');
+
+        // 应用颜色主题
+        this.applyColorScheme(this.settings.colorScheme || 'arctic');
 
         // 初始化服务
         this.recommendationService = new RecommendationService(this.app, this.settings);
@@ -55,6 +59,15 @@ export default class IncrementalReadingPlugin extends Plugin {
 
         // 添加设置标签页
         this.addSettingTab(new IncrementalReadingSettingTab(this.app, this));
+
+        // 监听工作区变化来检测leaf是否被关闭
+        this.registerEvent(
+            this.app.workspace.on('layout-change', () => {
+                if (this.leaf && this.leaf.detach) {
+                    this.leaf = null;
+                }
+            })
+        );
     }
 
     onunload(): void {
@@ -156,14 +169,35 @@ export default class IncrementalReadingPlugin extends Plugin {
     async activateView(): Promise<void> {
         const { workspace } = this.app;
 
-        if (this.leaf) {
-            workspace.revealLeaf(this.leaf);
-        } else {
-            this.leaf = workspace.getRightLeaf(false);
-            await this.leaf?.setViewState({ type: VIEW_TYPE_INCREMENTAL_READING, active: true });
+        // Check if leaf already exists and is valid
+        if (this.leaf && !this.leaf.detach) {
+            try {
+                // Check if leaf is still in workspace
+                const existingLeaves = workspace.getLeavesOfType(VIEW_TYPE_INCREMENTAL_READING);
+                if (existingLeaves.includes(this.leaf)) {
+                    workspace.revealLeaf(this.leaf);
+                    return; // Already open and valid
+                }
+            } catch (error) {
+                console.warn('Error checking existing leaf:', error);
+            }
         }
 
-        workspace.revealLeaf(this.leaf!);
+        // Look for existing views first
+        const existingLeaves = workspace.getLeavesOfType(VIEW_TYPE_INCREMENTAL_READING);
+        if (existingLeaves.length > 0) {
+            // Use existing view instead of creating new one
+            this.leaf = existingLeaves[0];
+            workspace.revealLeaf(this.leaf);
+            return;
+        }
+
+        // Create new view only if none exists
+        this.leaf = workspace.getRightLeaf(false);
+        if (this.leaf) {
+            await this.leaf.setViewState({ type: VIEW_TYPE_INCREMENTAL_READING, active: true });
+            workspace.revealLeaf(this.leaf);
+        }
     }
 
     private addCommands(): void {
@@ -338,6 +372,89 @@ export default class IncrementalReadingPlugin extends Plugin {
             new Notice(i18n.t('notices.errorSavingSettings'));
         }
     }
+
+    /**
+     * 应用颜色主题
+     */
+    public applyColorScheme(schemeId: string): void {
+        const scheme = COLOR_SCHEMES.find(s => s.id === schemeId);
+        if (!scheme) return;
+
+        // 获取或创建主题样式元素
+        let styleEl = document.getElementById('incremental-reading-color-scheme') as HTMLStyleElement;
+        if (!styleEl) {
+            styleEl = document.createElement('style');
+            styleEl.id = 'incremental-reading-color-scheme';
+            document.head.appendChild(styleEl);
+        }
+
+        // 解析颜色值，生成RGB版本的变量
+        const hexToRgb = (hex: string) => {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : { r: 142, g: 68, b: 173 };
+        };
+
+        const accentRgb = hexToRgb(scheme.accentColor);
+        const primaryRgb = hexToRgb(scheme.primaryColor);
+
+        // 生成完整的CSS变量定义
+        const cssVariables = `
+            :root {
+                /* Primary Color Scheme */
+                --primary-color: ${scheme.primaryColor};
+                --accent-color: ${scheme.accentColor};
+                --accent-light: ${scheme.primaryColor};
+                --accent-dark: ${scheme.accentColor};
+
+                /* Background Colors */
+                --bg-gradient: ${scheme.bgGradient};
+                --card-bg: ${scheme.cardBg};
+                --card-hover-bg: ${scheme.cardBg};
+
+                /* Text Colors */
+                --text-main: ${scheme.textMain};
+                --text-secondary: ${scheme.textSecondary};
+
+                /* Accent Variations */
+                --accent-transparent: rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.1);
+                --accent-light-transparent: rgba(${primaryRgb.r}, ${primaryRgb.g}, ${primaryRgb.b}, 0.1);
+                --accent-dark-transparent: rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.1);
+
+                /* Box Shadows */
+                --accent-shadow: rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.3);
+                --accent-shadow-hover: rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.5);
+                --accent-shadow-light: rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.1);
+                --accent-shadow-heavy: rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.6);
+
+                /* Borders */
+                --accent-border: rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.3);
+                --accent-border-hover: rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.4);
+                --light-border: rgba(0,0,0,0.05);
+                --medium-border: rgba(0,0,0,0.08);
+
+                /* Gradients */
+                --accent-gradient: linear-gradient(135deg, var(--accent-light) 0%, var(--accent-color) 100%);
+                --accent-gradient-vertical: linear-gradient(180deg, var(--accent-light) 0%, var(--accent-color) 100%);
+                --accent-gradient-horizontal: linear-gradient(90deg, var(--accent-light) 0%, var(--accent-color) 100%);
+
+                /* Dimensions */
+                --border-radius: 16px;
+                --small-border-radius: 8px;
+            }
+        `;
+
+        styleEl.textContent = cssVariables;
+
+        // 更新插件容器背景
+        const pluginContainers = document.querySelectorAll('.plugin-container');
+        pluginContainers.forEach(container => {
+            (container as HTMLElement).style.background = scheme.bgGradient;
+        });
+    }
 }
 
 class IncrementalReadingSettingTab extends PluginSettingTab {
@@ -382,6 +499,10 @@ class IncrementalReadingSettingTab extends PluginSettingTab {
                         new Notice(i18n.t('notices.settingsSaved'));
                     });
             });
+
+        // 颜色主题设置
+        const colorSchemeSettings = new ColorSchemeSettings(containerEl, this.plugin);
+        colorSchemeSettings.render();
 
         // 自定义指标设置
         const customMetricsSettings = new CustomMetricsSettings(containerEl, this.plugin);

@@ -27,7 +27,7 @@ export class CustomMetricsSettings {
         }
 
         // 在内容容器中渲染
-        this.contentEl.createEl('h3', { text: '📊 ' + i18n.t('settings.customMetrics.title') });
+        this.contentEl.createEl('h3', { text: i18n.t('settings.customMetrics.title') });
 
         // 指标管理说明
         this.createMetricManagementHeader();
@@ -70,36 +70,55 @@ export class CustomMetricsSettings {
         // 指标标题
         const titleSetting = new Setting(metricItem)
             .setName(`${i18n.t('settings.customMetrics.title')} ${index + 1}`)
-            .setDesc(`${i18n.t('settings.customMetrics.metricName')}: ${metric.name}`)
+            .setDesc(`${i18n.t('settings.customMetrics.metricName')}: ${i18n.getMetricName(metric)}`)
             .addButton(button => button
                 .setButtonText(i18n.t('settings.customMetrics.removeMetric'))
                 .setWarning()
                 .onClick(() => this.deleteMetric(index)));
 
-        // 指标名称设置
+        // 指标名称设置（英文）
         new Setting(metricItem)
-            .setName(i18n.t('settings.customMetrics.metricName'))
-            .setDesc(i18n.t('settings.customMetrics.description'))
+            .setName('Metric Name (English)')
+            .setDesc('Enter the English name for this metric')
             .addText(text => text
-                .setPlaceholder(i18n.t('settings.customMetrics.metricName'))
-                .setValue(metric.name)
+                .setPlaceholder('e.g., Importance')
+                .setValue(metric.name.en || '')
                 .onChange(async (value) => {
-                    const newName = value || `${i18n.t('settings.customMetrics.metricName')}${index + 1}`;
                     const oldId = this.plugin.settings.customMetrics![index].id;
-                    const newId = this.generateMetricId(newName);
 
-                    this.plugin.settings.customMetrics![index].name = newName;
+                    // Update the English name
+                    if (!this.plugin.settings.customMetrics![index].name) {
+                        this.plugin.settings.customMetrics![index].name = { en: '', zh: '' };
+                    }
+                    this.plugin.settings.customMetrics![index].name.en = value || 'Metric';
+
+                    const newId = this.generateMetricId(value || 'Metric');
                     this.plugin.settings.customMetrics![index].id = newId;
 
-                    // 如果ID改变了，需要更新所有文档中的指标ID
+                    // If ID changed, update all documents
                     if (oldId !== newId) {
                         await this.updateMetricIdInAllDocuments(oldId, newId);
                     }
 
                     await this.saveSettings();
-
-                    // 更新权重设置的名称显示
                     this.refresh();
+                }));
+
+        // 指标名称设置（中文）
+        new Setting(metricItem)
+            .setName('指标名称（中文）')
+            .setDesc('输入此指标的中文名称')
+            .addText(text => text
+                .setPlaceholder('例如：重要性')
+                .setValue(metric.name.zh || '')
+                .onChange(async (value) => {
+                    // Update the Chinese name
+                    if (!this.plugin.settings.customMetrics![index].name) {
+                        this.plugin.settings.customMetrics![index].name = { en: '', zh: '' };
+                    }
+                    this.plugin.settings.customMetrics![index].name.zh = value || '指标';
+
+                    await this.saveSettings();
                 }));
 
         // 指标权重设置
@@ -131,8 +150,11 @@ export class CustomMetricsSettings {
 
         try {
             const newMetric: CustomMetric = {
-                id: this.generateMetricId(`${i18n.t('settings.customMetrics.metricName')}${currentCount + 1}`),
-                name: `${i18n.t('settings.customMetrics.metricName')}${currentCount + 1}`,
+                id: this.generateMetricId(`Metric${currentCount + 1}`),
+                name: {
+                    en: `Metric ${currentCount + 1}`,
+                    zh: `指标${currentCount + 1}`
+                },
                 weight: Math.floor(100 / (currentCount + 1))
             };
 
@@ -167,10 +189,13 @@ export class CustomMetricsSettings {
         }
 
         try {
-            console.log(`开始删除指标: ${metricToDelete.name} (ID: ${metricToDelete.id})`);
+            const displayName = typeof metricToDelete.name === 'string'
+                ? metricToDelete.name
+                : metricToDelete.name.zh || metricToDelete.name.en;
+            console.log(`开始删除指标: ${displayName} (ID: ${metricToDelete.id})`);
 
             // 确认删除
-            const confirmed = await this.showDeleteConfirmation(metricToDelete.name);
+            const confirmed = await this.showDeleteConfirmation(displayName);
             if (!confirmed) {
                 console.log('用户取消了删除操作');
                 return;

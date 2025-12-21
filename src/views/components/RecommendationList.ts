@@ -37,7 +37,7 @@ export class RecommendationList {
         this.container.empty();
 
         const recommendationsSection = this.container.createEl('div', { cls: 'recommendations-section' });
-        recommendationsSection.createEl('h3', { text: '🧠 ' + i18n.t('recommendations.title') });
+        recommendationsSection.createEl('h3', { text: i18n.t('recommendations.title') });
 
         if (recommendations.length === 0) {
             recommendationsSection.createEl('p', {
@@ -59,13 +59,13 @@ export class RecommendationList {
 
         const refreshBtn = buttonContainer.createEl('button', {
             cls: 'refresh-recommendations-btn',
-            text: '🔄 ' + i18n.t('recommendations.refreshButton')
+            text: i18n.t('recommendations.refreshButton')
         });
         refreshBtn.onclick = () => this.refresh();
 
         const smartJumpBtn = buttonContainer.createEl('button', {
             cls: 'smart-jump-btn',
-            text: '🧠 ' + i18n.t('recommendations.smartJumpButton')
+            text: i18n.t('recommendations.smartJumpButton')
         });
         smartJumpBtn.onclick = async () => {
             try {
@@ -93,7 +93,7 @@ export class RecommendationList {
         this.cachedRecommendations = recommendations;
 
         const recommendationsSection = this.container.createEl('div', { cls: 'recommendations-section' });
-        recommendationsSection.createEl('h3', { text: '🧠 ' + i18n.t('recommendations.title') });
+        recommendationsSection.createEl('h3', { text: i18n.t('recommendations.title') });
 
         if (recommendations.length === 0) {
             recommendationsSection.createEl('p', {
@@ -115,13 +115,13 @@ export class RecommendationList {
 
         const refreshBtn = buttonContainer.createEl('button', {
             cls: 'refresh-recommendations-btn',
-            text: '🔄 ' + i18n.t('recommendations.refreshButton')
+            text: i18n.t('recommendations.refreshButton')
         });
         refreshBtn.onclick = () => this.refresh();
 
         const smartJumpBtn = buttonContainer.createEl('button', {
             cls: 'smart-jump-btn',
-            text: '🧠 ' + i18n.t('recommendations.smartJumpButton')
+            text: i18n.t('recommendations.smartJumpButton')
         });
         smartJumpBtn.onclick = async () => {
             try {

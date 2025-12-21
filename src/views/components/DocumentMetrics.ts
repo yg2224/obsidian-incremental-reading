@@ -163,7 +163,7 @@ export class DocumentMetricsDisplay {
             const breakdownItem = breakdown.createEl('div', { cls: 'breakdown-item' });
             breakdownItem.createEl('span', {
                 cls: 'breakdown-label',
-                text: `${metric.name} (${metricWeight}%):`
+                text: `${i18n.getMetricName(metric)} (${metricWeight}%):`
             });
             breakdownItem.createEl('span', {
                 cls: 'breakdown-score',
@@ -205,7 +205,7 @@ export class DocumentMetricsDisplay {
             // Create label row
             const labelRow = metricItem.createEl('div', { cls: 'metric-label-row' });
 
-            const label = labelRow.createEl('span', { cls: 'metric-label', text: `${metric.name} (${metric.weight}%):` });
+            const label = labelRow.createEl('span', { cls: 'metric-label', text: `${i18n.getMetricName(metric)} (${metric.weight}%):` });
 
             const valueDisplay = labelRow.createEl('span', {
                 cls: 'metric-value',
@@ -311,7 +311,8 @@ export class DocumentMetricsDisplay {
             const updateSliderBackground = () => {
                 const value = parseFloat(slider.value);
                 const percentage = (value / 10) * 100;
-                slider.style.background = `linear-gradient(to right, var(--interactive-accent) 0%, var(--interactive-accent) ${percentage}%, var(--background-modifier-border) ${percentage}%, var(--background-modifier-border) 100%)`;
+                // Use our theme color instead of Obsidian's interactive-accent
+                slider.style.background = `linear-gradient(to right, var(--accent-color) 0%, var(--accent-color) ${percentage}%, rgba(0,0,0,0.1) ${percentage}%, rgba(0,0,0,0.1) 100%)`;
             };
 
             slider.addEventListener('input', updateSliderBackground);
