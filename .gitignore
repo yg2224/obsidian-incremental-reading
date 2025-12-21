@@ -39,3 +39,6 @@ coverage/
 
 # Logs
 *.log
+
+# Local plugin data
+data.json

@@ -27,10 +27,10 @@ __export(main_exports, {
   default: () => IncrementalReadingPlugin
 });
 module.exports = __toCommonJS(main_exports);
-var import_obsidian11 = require("obsidian");
+var import_obsidian12 = require("obsidian");
 
 // src/views/IncrementalReadingView.ts
-var import_obsidian4 = require("obsidian");
+var import_obsidian5 = require("obsidian");
 
 // src/components/Modal.ts
 var import_obsidian = require("obsidian");
@@ -846,11 +846,12 @@ var MultiFileSelectionModal = class extends import_obsidian.Modal {
 };
 
 // src/views/components/ActionBar.ts
+var import_obsidian2 = require("obsidian");
 var ActionBar = class {
   constructor(container, plugin, callbacks) {
-    this.continueBtn = null;
-    this.addRoamingBtn = null;
-    this.removeRoamingBtn = null;
+    this.buttonElements = /* @__PURE__ */ new Map();
+    this.buttonConfigs = /* @__PURE__ */ new Map();
+    this.statusEl = null;
     this.container = container;
     this.plugin = plugin;
     this.onContinueReading = callbacks.onContinueReading;
@@ -862,35 +863,96 @@ var ActionBar = class {
     this.create();
   }
   create() {
-    const actionBar = this.container.createEl("div", { cls: "action-bar" });
-    this.continueBtn = actionBar.createEl("button", { cls: "btn primary" });
-    this.continueBtn.textContent = i18n.t("view.actionBar.continue");
-    this.continueBtn.onclick = () => this.onContinueReading();
-    this.updateContinueButtonState();
-    const recommendBtn = actionBar.createEl("button", { cls: "btn" });
-    recommendBtn.textContent = i18n.t("view.actionBar.smartRecommend");
-    recommendBtn.title = i18n.t("view.actionBar.smartTooltip");
-    recommendBtn.onclick = () => this.onGetSmartRecommendations();
-    const refreshDataBtn = actionBar.createEl("button", { cls: "btn" });
-    refreshDataBtn.textContent = i18n.t("view.actionBar.refresh");
-    refreshDataBtn.onclick = () => this.onRefreshData();
-    const randomRoamBtn = actionBar.createEl("button", { cls: "btn" });
-    randomRoamBtn.textContent = i18n.t("view.actionBar.random");
-    randomRoamBtn.onclick = () => this.onRandomRoaming();
-    this.addRoamingBtn = actionBar.createEl("button", { cls: "btn" });
-    this.addRoamingBtn.textContent = i18n.t("view.actionBar.addCurrent");
-    this.addRoamingBtn.onclick = () => this.onAddCurrentToRoaming();
-    this.updateAddRoamingButtonState();
-    this.removeRoamingBtn = actionBar.createEl("button", { cls: "btn" });
-    this.removeRoamingBtn.textContent = i18n.t("actions.removeFromRoaming");
-    this.removeRoamingBtn.onclick = () => this.onRemoveCurrentFromRoaming();
-    this.updateRemoveRoamingButtonState();
-    const addFolderBtn = actionBar.createEl("button", { cls: "btn primary" });
-    addFolderBtn.textContent = i18n.t("view.actionBar.addFolder");
-    addFolderBtn.onclick = () => this.addFolderToRoaming();
-    const multiSelectBtn = actionBar.createEl("button", { cls: "btn primary" });
-    multiSelectBtn.textContent = i18n.t("view.actionBar.multiSelect");
-    multiSelectBtn.onclick = () => this.multiSelectFilesToRoaming();
+    const actionBar = this.container.createEl("div", { cls: "action-bar compact" });
+    const primaryGroup = actionBar.createEl("div", { cls: "action-group primary" });
+    this.createIconButton(primaryGroup, "continue", {
+      icon: "play",
+      tooltip: i18n.t("view.actionBar.continue"),
+      primary: true,
+      onClick: () => this.onContinueReading(),
+      getDisabled: () => this.plugin.getValidRoamingFiles().length === 0,
+      getTooltip: () => {
+        const hasDocs = this.plugin.getValidRoamingFiles().length > 0;
+        return hasDocs ? i18n.t("view.actionBar.continue") : i18n.t("view.actionBar.noDocuments");
+      }
+    });
+    this.createIconButton(primaryGroup, "recommend", {
+      icon: "lightbulb",
+      tooltip: i18n.t("view.actionBar.smartTooltip"),
+      onClick: () => this.onGetSmartRecommendations()
+    });
+    this.createIconButton(primaryGroup, "random", {
+      icon: "dice",
+      tooltip: i18n.t("view.actionBar.random"),
+      onClick: () => this.onRandomRoaming()
+    });
+    const statusGroup = actionBar.createEl("div", { cls: "action-group status" });
+    this.statusEl = statusGroup.createEl("span", { cls: "status-indicator" });
+    this.updateStatus();
+    const managementGroup = actionBar.createEl("div", { cls: "action-group management" });
+    this.createIconButton(managementGroup, "addCurrent", {
+      icon: "plus",
+      tooltip: i18n.t("view.actionBar.addCurrent"),
+      onClick: () => this.onAddCurrentToRoaming(),
+      getDisabled: () => !this.plugin.app.workspace.getActiveFile(),
+      getHidden: () => {
+        const activeFile = this.plugin.app.workspace.getActiveFile();
+        return activeFile ? this.plugin.settings.roamingDocs.includes(activeFile.path) : false;
+      },
+      getTooltip: () => {
+        const activeFile = this.plugin.app.workspace.getActiveFile();
+        return activeFile ? i18n.t("view.actionBar.addCurrent") : i18n.t("view.actionBar.noDocuments");
+      }
+    });
+    this.createIconButton(managementGroup, "removeCurrent", {
+      icon: "minus",
+      tooltip: i18n.t("actions.removeFromRoaming"),
+      onClick: () => this.onRemoveCurrentFromRoaming(),
+      getHidden: () => {
+        const activeFile = this.plugin.app.workspace.getActiveFile();
+        return !activeFile || !this.plugin.settings.roamingDocs.includes(activeFile.path);
+      }
+    });
+    this.createIconButton(managementGroup, "addFolder", {
+      icon: "folder-plus",
+      tooltip: i18n.t("view.actionBar.addFolder"),
+      onClick: () => this.addFolderToRoaming()
+    });
+    this.createIconButton(managementGroup, "multiSelect", {
+      icon: "files",
+      tooltip: i18n.t("view.actionBar.multiSelect"),
+      onClick: () => this.multiSelectFilesToRoaming()
+    });
+    this.createIconButton(managementGroup, "refresh", {
+      icon: "refresh-cw",
+      tooltip: i18n.t("view.actionBar.refresh"),
+      onClick: () => this.onRefreshData()
+    });
+    this.updateButtonStates();
+  }
+  createIconButton(container, id, config) {
+    const tooltip = config.getTooltip ? config.getTooltip() : config.tooltip;
+    const btn = container.createEl("button", {
+      cls: `icon-btn${config.primary ? " primary" : ""}`,
+      attr: {
+        "aria-label": tooltip,
+        "data-tooltip": tooltip,
+        "type": "button"
+      }
+    });
+    (0, import_obsidian2.setIcon)(btn, config.icon);
+    btn.onclick = config.onClick;
+    this.buttonElements.set(id, btn);
+    this.buttonConfigs.set(id, config);
+    return btn;
+  }
+  updateStatus() {
+    if (!this.statusEl)
+      return;
+    const count = this.plugin.settings.roamingDocs.length;
+    this.statusEl.textContent = `${count}`;
+    this.statusEl.setAttribute("aria-label", i18n.t("view.statusTemplate", { count: count.toString() }));
+    this.statusEl.setAttribute("data-tooltip", i18n.t("view.statusTemplate", { count: count.toString() }));
   }
   addFolderToRoaming() {
     const folderModal = new FolderSelectionModal(this.plugin.app, async (folderPaths) => {
@@ -906,52 +968,32 @@ var ActionBar = class {
     });
     fileModal.open();
   }
-  updateContinueButtonState() {
-    if (!this.continueBtn)
-      return;
-    const validRoamingFiles = this.plugin.getValidRoamingFiles();
-    const hasValidFiles = validRoamingFiles.length > 0;
-    this.continueBtn.disabled = !hasValidFiles;
-    this.continueBtn.textContent = hasValidFiles ? i18n.t("view.actionBar.continue") : i18n.t("view.actionBar.noDocuments");
-  }
-  updateAddRoamingButtonState() {
-    if (!this.addRoamingBtn)
-      return;
-    const activeFile = this.plugin.app.workspace.getActiveFile();
-    const isInRoaming = activeFile && this.plugin.settings.roamingDocs.includes(activeFile.path);
-    if (isInRoaming) {
-      this.addRoamingBtn.style.display = "none";
-    } else {
-      this.addRoamingBtn.style.display = "flex";
-      this.addRoamingBtn.disabled = !activeFile;
-      this.addRoamingBtn.textContent = activeFile ? i18n.t("view.actionBar.addCurrent") : i18n.t("view.actionBar.noDocuments");
-    }
-  }
-  updateRemoveRoamingButtonState() {
-    if (!this.removeRoamingBtn)
-      return;
-    const activeFile = this.plugin.app.workspace.getActiveFile();
-    const isInRoaming = activeFile && this.plugin.settings.roamingDocs.includes(activeFile.path);
-    if (isInRoaming) {
-      this.removeRoamingBtn.style.display = "flex";
-      this.removeRoamingBtn.disabled = false;
-      this.removeRoamingBtn.textContent = i18n.t("actions.removeFromRoaming");
-    } else {
-      this.removeRoamingBtn.style.display = "none";
-    }
-  }
   /**
    * 更新按钮状态（当文件变化时调用）
    */
   updateButtonStates() {
-    this.updateContinueButtonState();
-    this.updateAddRoamingButtonState();
-    this.updateRemoveRoamingButtonState();
+    this.buttonElements.forEach((btn, id) => {
+      const config = this.buttonConfigs.get(id);
+      if (!config)
+        return;
+      if (config.getDisabled) {
+        btn.disabled = config.getDisabled();
+      }
+      if (config.getHidden) {
+        btn.style.display = config.getHidden() ? "none" : "flex";
+      }
+      if (config.getTooltip) {
+        const tooltip = config.getTooltip();
+        btn.setAttribute("aria-label", tooltip);
+        btn.setAttribute("data-tooltip", tooltip);
+      }
+    });
+    this.updateStatus();
   }
 };
 
 // src/views/components/DocumentMetrics.ts
-var import_obsidian2 = require("obsidian");
+var import_obsidian3 = require("obsidian");
 
 // src/utils/SharedUtils.ts
 var SharedUtils = class {
@@ -1261,7 +1303,7 @@ var DocumentMetricsDisplay = class {
     addButton.onclick = async () => {
       try {
         if (this.file.extension !== "md") {
-          new import_obsidian2.Notice(i18n.t("notices.onlyMarkdownFiles"));
+          new import_obsidian3.Notice(i18n.t("notices.onlyMarkdownFiles"));
           return;
         }
         if (!this.plugin.settings.roamingDocs.includes(this.file.path)) {
@@ -1270,14 +1312,14 @@ var DocumentMetricsDisplay = class {
           const defaultMetrics = fileService.createDefaultMetricsForFile(this.file);
           await this.plugin.updateDocumentMetrics(this.file, defaultMetrics);
           await this.plugin.saveSettings();
-          new import_obsidian2.Notice(i18n.t("notices.addedToRoaming", { filename: this.file.basename }));
+          new import_obsidian3.Notice(i18n.t("notices.addedToRoaming", { filename: this.file.basename }));
           this.container.empty();
           this.render();
           this.onMetricsUpdated();
         }
       } catch (error) {
         console.error("\u52A0\u5165\u6F2B\u6E38\u5931\u8D25:", error);
-        new import_obsidian2.Notice(i18n.t("notices.errorSavingSettings"));
+        new import_obsidian3.Notice(i18n.t("notices.errorSavingSettings"));
       }
     };
   }
@@ -1484,7 +1526,7 @@ var DocumentMetricsDisplay = class {
    * 更新指标数据和文件
    */
   updateMetrics(fileOrMetrics, metrics) {
-    if (fileOrMetrics instanceof import_obsidian2.TFile && metrics) {
+    if (fileOrMetrics instanceof import_obsidian3.TFile && metrics) {
       console.log(`DocumentMetricsDisplay \u66F4\u65B0: ${this.file.basename} -> ${fileOrMetrics.basename}`);
       this.file = fileOrMetrics;
       this.metrics = metrics;
@@ -1708,7 +1750,7 @@ var RankingList = class {
 };
 
 // src/views/components/RecommendationList.ts
-var import_obsidian3 = require("obsidian");
+var import_obsidian4 = require("obsidian");
 var RecommendationList = class {
   constructor(container, plugin, callbacks) {
     this.cachedRecommendations = [];
@@ -1747,19 +1789,19 @@ var RecommendationList = class {
       try {
         const recommendations2 = await this.plugin.recommendationService.getRecommendations();
         if (recommendations2.length === 0) {
-          new import_obsidian3.Notice(i18n.t("recommendations.emptyMessage"));
+          new import_obsidian4.Notice(i18n.t("recommendations.emptyMessage"));
           return;
         }
         const topRecommendation = recommendations2[0];
         const similarity = (topRecommendation.score * 100).toFixed(1);
         await this.onOpenDocument(topRecommendation.file);
-        new import_obsidian3.Notice(i18n.t("recommendations.smartJumpNotice", {
+        new import_obsidian4.Notice(i18n.t("recommendations.smartJumpNotice", {
           filename: topRecommendation.file.basename,
           similarity
         }));
       } catch (error) {
         console.error("\u667A\u80FD\u8DF3\u8F6C\u5931\u8D25:", error);
-        new import_obsidian3.Notice(i18n.t("recommendations.smartJumpFailed"));
+        new import_obsidian4.Notice(i18n.t("recommendations.smartJumpFailed"));
       }
     };
   }
@@ -1794,19 +1836,19 @@ var RecommendationList = class {
       try {
         const recommendations2 = await this.plugin.recommendationService.getRecommendations();
         if (recommendations2.length === 0) {
-          new import_obsidian3.Notice(i18n.t("recommendations.emptyMessage"));
+          new import_obsidian4.Notice(i18n.t("recommendations.emptyMessage"));
           return;
         }
         const topRecommendation = recommendations2[0];
         const similarity = (topRecommendation.score * 100).toFixed(1);
         await this.onOpenDocument(topRecommendation.file);
-        new import_obsidian3.Notice(i18n.t("recommendations.smartJumpNotice", {
+        new import_obsidian4.Notice(i18n.t("recommendations.smartJumpNotice", {
           filename: topRecommendation.file.basename,
           similarity
         }));
       } catch (error) {
         console.error("\u667A\u80FD\u8DF3\u8F6C\u5931\u8D25:", error);
-        new import_obsidian3.Notice(i18n.t("recommendations.smartJumpFailed"));
+        new import_obsidian4.Notice(i18n.t("recommendations.smartJumpFailed"));
       }
     };
   }
@@ -2174,15 +2216,13 @@ var PriorityVisualization = class {
 
 // src/views/IncrementalReadingView.ts
 var VIEW_TYPE_INCREMENTAL_READING = "incremental-reading-view";
-var IncrementalReadingView = class extends import_obsidian4.ItemView {
+var IncrementalReadingView = class extends import_obsidian5.ItemView {
   constructor(leaf, plugin) {
     super(leaf);
     this.currentFile = null;
     this.currentMetrics = null;
     this.lastProcessedFile = null;
     this.lastProcessedTime = 0;
-    // 状态元素
-    this.statusText = null;
     // 组件实例
     this.actionBar = null;
     this.documentMetricsDisplay = null;
@@ -2225,7 +2265,7 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
     const container = this.containerEl.children[1];
     container.empty();
     container.addClass("plugin-container");
-    this.createHeroSection(container);
+    this.createActionBar(container);
     this.createSlidingNavigation(container);
     this.createContentArea(container);
     this.addStyles();
@@ -2241,15 +2281,8 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
       }
     }, 100);
   }
-  createHeroSection(container) {
-    const heroSection = container.createEl("div", { cls: "hero-section" });
-    heroSection.createEl("h1", { cls: "main-title", text: i18n.t("view.title") });
-    const subtitle = heroSection.createEl("p", { cls: "poetic-subtitle" });
-    subtitle.innerHTML = i18n.t("view.subtitle");
-    const docCount = this.getVisitedDocumentCount();
-    this.statusText = heroSection.createEl("div", { cls: "status-text" });
-    this.statusText.textContent = i18n.t("view.statusTemplate", { count: docCount.toString() });
-    this.actionBar = new ActionBar(heroSection, this.plugin, {
+  createActionBar(container) {
+    this.actionBar = new ActionBar(container, this.plugin, {
       onContinueReading: () => this.continueReading(),
       onGetSmartRecommendations: () => this.getSmartRecommendations(),
       onRefreshData: () => this.refreshData(),
@@ -2417,7 +2450,7 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
       (_c = this.actionBar) == null ? void 0 : _c.updateButtonStates();
     } catch (error) {
       console.error("\u6587\u4EF6\u5207\u6362\u5904\u7406\u5931\u8D25:", error);
-      new import_obsidian4.Notice(i18n.t("notices.fileSwitchError"));
+      new import_obsidian5.Notice(i18n.t("notices.fileSwitchError"));
     }
   }
   async continueReading() {
@@ -2425,7 +2458,7 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
     try {
       const validRoamingFiles = this.plugin.getValidRoamingFiles();
       if (validRoamingFiles.length === 0) {
-        new import_obsidian4.Notice(i18n.t("view.actionBar.noDocuments"));
+        new import_obsidian5.Notice(i18n.t("view.actionBar.noDocuments"));
         return;
       }
       const weightedFiles = validRoamingFiles.map((file) => {
@@ -2447,38 +2480,37 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
         await this.openDocument(selectedFile);
         const selectedWeight = ((_a = weightedFiles.find((item) => item.file.path === selectedFile.path)) == null ? void 0 : _a.weight) || 0.1;
         const selectionProbability = selectedWeight / totalWeight * 100;
-        new import_obsidian4.Notice(i18n.t("notices.selectionProbability", {
+        new import_obsidian5.Notice(i18n.t("notices.selectionProbability", {
           filename: selectedFile.basename,
           probability: selectionProbability.toFixed(1)
         }));
       }
     } catch (error) {
       console.error("\u7EE7\u7EED\u6F2B\u6E38\u5931\u8D25:", error);
-      new import_obsidian4.Notice(i18n.t("notices.continueFailed"));
+      new import_obsidian5.Notice(i18n.t("notices.continueFailed"));
     }
   }
   async getSmartRecommendations() {
     try {
       const recommendations = await this.plugin.recommendationService.getRecommendations();
       if (recommendations.length === 0) {
-        new import_obsidian4.Notice(i18n.t("recommendations.emptyMessage"));
+        new import_obsidian5.Notice(i18n.t("recommendations.emptyMessage"));
         return;
       }
       const topRecommendation = recommendations[0];
       const similarity = (topRecommendation.score * 100).toFixed(1);
       await this.openDocument(topRecommendation.file);
-      new import_obsidian4.Notice(i18n.t("recommendations.smartJumpNotice", {
+      new import_obsidian5.Notice(i18n.t("recommendations.smartJumpNotice", {
         filename: topRecommendation.file.basename,
         similarity
       }));
     } catch (error) {
       console.error("\u667A\u80FD\u63A8\u8350\u5931\u8D25:", error);
-      new import_obsidian4.Notice(i18n.t("notices.smartRecommendationFailed"));
+      new import_obsidian5.Notice(i18n.t("notices.smartRecommendationFailed"));
     }
   }
   async refreshData() {
     var _a;
-    this.updateStatusText();
     this.updateMetricsSection();
     await this.updateRecommendationsSection();
     this.updateRankingSection();
@@ -2501,42 +2533,36 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
       this.refreshData();
     }, 200);
   }
-  updateStatusText() {
-    if (this.statusText) {
-      const docCount = this.getVisitedDocumentCount();
-      this.statusText.textContent = i18n.t("view.statusTemplate", { count: docCount.toString() });
-    }
-  }
   async randomRoaming() {
     try {
       const roamingFiles = this.plugin.getValidRoamingFiles();
       if (roamingFiles.length === 0) {
-        new import_obsidian4.Notice(i18n.t("view.actionBar.noDocuments"));
+        new import_obsidian5.Notice(i18n.t("view.actionBar.noDocuments"));
         return;
       }
       const randomIndex = Math.floor(Math.random() * roamingFiles.length);
       const randomFile = roamingFiles[randomIndex];
       await this.openDocument(randomFile);
-      new import_obsidian4.Notice(i18n.t("notices.randomRoaming", { filename: randomFile.basename }));
+      new import_obsidian5.Notice(i18n.t("notices.randomRoaming", { filename: randomFile.basename }));
     } catch (error) {
       console.error("\u968F\u673A\u6F2B\u6E38\u5931\u8D25:", error);
-      new import_obsidian4.Notice(i18n.t("notices.randomRoamingFailed"));
+      new import_obsidian5.Notice(i18n.t("notices.randomRoamingFailed"));
     }
   }
   async addCurrentToRoaming() {
     var _a;
     const activeFile = this.app.workspace.getActiveFile();
     if (!activeFile) {
-      new import_obsidian4.Notice(i18n.t("notices.noActiveFile"));
+      new import_obsidian5.Notice(i18n.t("notices.noActiveFile"));
       return;
     }
     try {
       if (activeFile.extension !== "md") {
-        new import_obsidian4.Notice(i18n.t("notices.onlyMarkdownFiles"));
+        new import_obsidian5.Notice(i18n.t("notices.onlyMarkdownFiles"));
         return;
       }
       if (this.plugin.settings.roamingDocs.includes(activeFile.path)) {
-        new import_obsidian4.Notice(i18n.t("view.actionBar.alreadyInRoaming"));
+        new import_obsidian5.Notice(i18n.t("view.actionBar.alreadyInRoaming"));
         return;
       }
       this.plugin.settings.roamingDocs.push(activeFile.path);
@@ -2544,19 +2570,19 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
       const defaultMetrics = fileService.createDefaultMetricsForFile(activeFile);
       await this.plugin.updateDocumentMetrics(activeFile, defaultMetrics);
       await this.plugin.saveSettings();
-      new import_obsidian4.Notice(i18n.t("notices.addedToRoaming", { filename: activeFile.basename }));
+      new import_obsidian5.Notice(i18n.t("notices.addedToRoaming", { filename: activeFile.basename }));
       this.refreshData();
       (_a = this.actionBar) == null ? void 0 : _a.updateButtonStates();
     } catch (error) {
       console.error("\u52A0\u5165\u6F2B\u6E38\u5931\u8D25:", error);
-      new import_obsidian4.Notice(i18n.t("notices.errorSavingSettings"));
+      new import_obsidian5.Notice(i18n.t("notices.errorSavingSettings"));
     }
   }
   async removeCurrentFromRoaming() {
     var _a;
     const activeFile = this.app.workspace.getActiveFile();
     if (!activeFile) {
-      new import_obsidian4.Notice(i18n.t("notices.noActiveFile"));
+      new import_obsidian5.Notice(i18n.t("notices.noActiveFile"));
       return;
     }
     try {
@@ -2564,13 +2590,13 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
       if (index > -1) {
         this.plugin.settings.roamingDocs.splice(index, 1);
         await this.plugin.saveSettings();
-        new import_obsidian4.Notice(i18n.t("notices.removedFromRoaming", { filename: activeFile.basename }));
+        new import_obsidian5.Notice(i18n.t("notices.removedFromRoaming", { filename: activeFile.basename }));
         this.refreshData();
         (_a = this.actionBar) == null ? void 0 : _a.updateButtonStates();
       }
     } catch (error) {
       console.error("\u79FB\u9664\u6F2B\u6E38\u5931\u8D25:", error);
-      new import_obsidian4.Notice(i18n.t("notices.errorSavingSettings"));
+      new import_obsidian5.Notice(i18n.t("notices.errorSavingSettings"));
     }
   }
   async openDocument(file) {
@@ -2578,7 +2604,7 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
       await this.app.workspace.getLeaf().openFile(file);
     } catch (error) {
       console.error("\u6253\u5F00\u6587\u6863\u5931\u8D25:", error);
-      new import_obsidian4.Notice(i18n.t("notices.documentOpenFailed"));
+      new import_obsidian5.Notice(i18n.t("notices.documentOpenFailed"));
     }
   }
   async editDocumentMetrics(file, currentMetrics) {
@@ -2590,7 +2616,7 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
         this.plugin.settings.customMetrics,
         async (updatedMetrics) => {
           await this.plugin.updateDocumentMetrics(file, updatedMetrics);
-          new import_obsidian4.Notice(i18n.t("notices.settingsSaved"));
+          new import_obsidian5.Notice(i18n.t("notices.settingsSaved"));
           this.refreshData();
         },
         async (realTimeMetrics) => {
@@ -2600,7 +2626,7 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
       modal.open();
     } catch (error) {
       console.error("\u7F16\u8F91\u6587\u6863\u5F97\u5206\u5931\u8D25:", error);
-      new import_obsidian4.Notice(i18n.t("notices.editMetricsFailed"));
+      new import_obsidian5.Notice(i18n.t("notices.editMetricsFailed"));
     }
   }
   async updateDocumentMetricsRealTime(file, realTimeMetrics) {
@@ -2616,9 +2642,6 @@ var IncrementalReadingView = class extends import_obsidian4.ItemView {
   }
   calculatePriority(metrics) {
     return this.plugin.documentScoringService.calculatePriority(metrics, this.plugin.settings.customMetrics);
-  }
-  getVisitedDocumentCount() {
-    return this.plugin.settings.roamingDocs.length;
   }
   addStyles() {
   }
@@ -3523,7 +3546,7 @@ var DEFAULT_SETTINGS = {
 };
 
 // src/services/FileManagementService.ts
-var import_obsidian5 = require("obsidian");
+var import_obsidian6 = require("obsidian");
 var FileManagementService = class {
   constructor(app, settings) {
     this.app = app;
@@ -3535,12 +3558,12 @@ var FileManagementService = class {
   async getFilesInFolder(folderPath) {
     const files = [];
     const folder = this.app.vault.getAbstractFileByPath(folderPath);
-    if (!folder || !(folder instanceof import_obsidian5.TFolder)) {
+    if (!folder || !(folder instanceof import_obsidian6.TFolder)) {
       return files;
     }
     const allFiles = this.app.vault.getAllLoadedFiles();
     for (const file of allFiles) {
-      if (file instanceof import_obsidian5.TFile && file.extension === "md" && (file.path.startsWith(folder.path + "/") || file.path === folder.path)) {
+      if (file instanceof import_obsidian6.TFile && file.extension === "md" && (file.path.startsWith(folder.path + "/") || file.path === folder.path)) {
         files.push(file);
       }
     }
@@ -3557,7 +3580,7 @@ var FileManagementService = class {
         const files = await this.getFilesInFolder(folderPath);
         for (const file of files) {
           if (addedCount >= MAX_FILES) {
-            new import_obsidian5.Notice(`\u5DF2\u8FBE\u5230\u6700\u5927\u6587\u4EF6\u6570\u91CF\u9650\u5236 (${MAX_FILES})\uFF0C\u505C\u6B62\u6DFB\u52A0\u66F4\u591A\u6587\u4EF6`);
+            new import_obsidian6.Notice(`\u5DF2\u8FBE\u5230\u6700\u5927\u6587\u4EF6\u6570\u91CF\u9650\u5236 (${MAX_FILES})\uFF0C\u505C\u6B62\u6DFB\u52A0\u66F4\u591A\u6587\u4EF6`);
             break;
           }
           if (!this.settings.roamingDocs.includes(file.path)) {
@@ -3570,7 +3593,7 @@ var FileManagementService = class {
         }
       } catch (error) {
         console.error(`\u6DFB\u52A0\u6587\u4EF6\u5939 ${folderPath} \u5931\u8D25:`, error);
-        new import_obsidian5.Notice(`\u6DFB\u52A0\u6587\u4EF6\u5939 ${folderPath} \u5931\u8D25`);
+        new import_obsidian6.Notice(`\u6DFB\u52A0\u6587\u4EF6\u5939 ${folderPath} \u5931\u8D25`);
       }
     }
     return addedCount;
@@ -3596,7 +3619,7 @@ var FileManagementService = class {
    */
   getValidRoamingFiles() {
     return this.settings.roamingDocs.map((path) => this.app.vault.getAbstractFileByPath(path)).filter((file) => {
-      return file instanceof import_obsidian5.TFile && file.extension === "md";
+      return file instanceof import_obsidian6.TFile && file.extension === "md";
     });
   }
   /**
@@ -3780,7 +3803,7 @@ var DocumentScoringService = class {
 };
 
 // src/settings/CustomMetricsSettings.ts
-var import_obsidian6 = require("obsidian");
+var import_obsidian7 = require("obsidian");
 var CustomMetricsSettings = class {
   constructor(containerEl, plugin) {
     this.containerEl = containerEl;
@@ -3797,7 +3820,7 @@ var CustomMetricsSettings = class {
     this.createCustomMetricsList();
   }
   createMetricManagementHeader() {
-    new import_obsidian6.Setting(this.contentEl).setName(i18n.t("settings.customMetrics.title")).setDesc(i18n.t("settings.customMetrics.description")).addButton((button) => button.setButtonText("+ " + i18n.t("settings.customMetrics.addMetric")).setCta().onClick(() => this.addNewMetric()));
+    new import_obsidian7.Setting(this.contentEl).setName(i18n.t("settings.customMetrics.title")).setDesc(i18n.t("settings.customMetrics.description")).addButton((button) => button.setButtonText("+ " + i18n.t("settings.customMetrics.addMetric")).setCta().onClick(() => this.addNewMetric()));
   }
   createCustomMetricsList() {
     var _a;
@@ -3814,8 +3837,8 @@ var CustomMetricsSettings = class {
   }
   createMetricSetting(container, metric, index) {
     const metricItem = container.createEl("div", { cls: "metric-setting-item" });
-    const titleSetting = new import_obsidian6.Setting(metricItem).setName(`${i18n.t("settings.customMetrics.title")} ${index + 1}`).setDesc(`${i18n.t("settings.customMetrics.metricName")}: ${i18n.getMetricName(metric)}`).addButton((button) => button.setButtonText(i18n.t("settings.customMetrics.removeMetric")).setWarning().onClick(() => this.deleteMetric(index)));
-    new import_obsidian6.Setting(metricItem).setName("Metric Name (English)").setDesc("Enter the English name for this metric").addText((text) => text.setPlaceholder("e.g., Importance").setValue(metric.name.en || "").onChange(async (value) => {
+    const titleSetting = new import_obsidian7.Setting(metricItem).setName(`${i18n.t("settings.customMetrics.title")} ${index + 1}`).setDesc(`${i18n.t("settings.customMetrics.metricName")}: ${i18n.getMetricName(metric)}`).addButton((button) => button.setButtonText(i18n.t("settings.customMetrics.removeMetric")).setWarning().onClick(() => this.deleteMetric(index)));
+    new import_obsidian7.Setting(metricItem).setName("Metric Name (English)").setDesc("Enter the English name for this metric").addText((text) => text.setPlaceholder("e.g., Importance").setValue(metric.name.en || "").onChange(async (value) => {
       const oldId = this.plugin.settings.customMetrics[index].id;
       if (!this.plugin.settings.customMetrics[index].name) {
         this.plugin.settings.customMetrics[index].name = { en: "", zh: "" };
@@ -3829,14 +3852,14 @@ var CustomMetricsSettings = class {
       await this.saveSettings();
       this.refresh();
     }));
-    new import_obsidian6.Setting(metricItem).setName("\u6307\u6807\u540D\u79F0\uFF08\u4E2D\u6587\uFF09").setDesc("\u8F93\u5165\u6B64\u6307\u6807\u7684\u4E2D\u6587\u540D\u79F0").addText((text) => text.setPlaceholder("\u4F8B\u5982\uFF1A\u91CD\u8981\u6027").setValue(metric.name.zh || "").onChange(async (value) => {
+    new import_obsidian7.Setting(metricItem).setName("\u6307\u6807\u540D\u79F0\uFF08\u4E2D\u6587\uFF09").setDesc("\u8F93\u5165\u6B64\u6307\u6807\u7684\u4E2D\u6587\u540D\u79F0").addText((text) => text.setPlaceholder("\u4F8B\u5982\uFF1A\u91CD\u8981\u6027").setValue(metric.name.zh || "").onChange(async (value) => {
       if (!this.plugin.settings.customMetrics[index].name) {
         this.plugin.settings.customMetrics[index].name = { en: "", zh: "" };
       }
       this.plugin.settings.customMetrics[index].name.zh = value || "\u6307\u6807";
       await this.saveSettings();
     }));
-    new import_obsidian6.Setting(metricItem).setName(i18n.t("settings.customMetrics.metricWeight")).setDesc(i18n.t("settings.customMetrics.description")).addSlider((slider) => slider.setLimits(0, 100, 1).setValue(metric.weight).setDynamicTooltip().onChange(async (value) => {
+    new import_obsidian7.Setting(metricItem).setName(i18n.t("settings.customMetrics.metricWeight")).setDesc(i18n.t("settings.customMetrics.description")).addSlider((slider) => slider.setLimits(0, 100, 1).setValue(metric.weight).setDynamicTooltip().onChange(async (value) => {
       this.plugin.settings.customMetrics[index].weight = Math.floor(value);
       await this.normalizeMetricWeights();
       await this.saveSettings();
@@ -3850,7 +3873,7 @@ var CustomMetricsSettings = class {
     var _a;
     const currentCount = ((_a = this.plugin.settings.customMetrics) == null ? void 0 : _a.length) || 0;
     if (currentCount >= 10) {
-      new import_obsidian6.Notice(i18n.t("settings.customMetrics.maxMetricsWarning"));
+      new import_obsidian7.Notice(i18n.t("settings.customMetrics.maxMetricsWarning"));
       return;
     }
     try {
@@ -3867,10 +3890,10 @@ var CustomMetricsSettings = class {
       await this.addDefaultValuesForNewMetrics(currentCount, currentCount + 1);
       await this.saveSettings();
       this.refresh();
-      new import_obsidian6.Notice(i18n.t("notices.settingsSaved"));
+      new import_obsidian7.Notice(i18n.t("notices.settingsSaved"));
     } catch (error) {
       console.error("\u6DFB\u52A0\u6307\u6807\u5931\u8D25:", error);
-      new import_obsidian6.Notice(i18n.t("notices.errorSavingSettings"));
+      new import_obsidian7.Notice(i18n.t("notices.errorSavingSettings"));
     }
   }
   /**
@@ -3900,10 +3923,10 @@ var CustomMetricsSettings = class {
       console.log("\u5DF2\u4FDD\u5B58\u8BBE\u7F6E");
       this.refresh();
       console.log("\u5DF2\u5237\u65B0\u754C\u9762");
-      new import_obsidian6.Notice(`\u2705 \u5DF2\u5220\u9664\u6307\u6807"${metricToDelete.name}"`);
+      new import_obsidian7.Notice(`\u2705 \u5DF2\u5220\u9664\u6307\u6807"${metricToDelete.name}"`);
     } catch (error) {
       console.error("\u5220\u9664\u6307\u6807\u5931\u8D25:", error);
-      new import_obsidian6.Notice("\u5220\u9664\u6307\u6807\u5931\u8D25");
+      new import_obsidian7.Notice("\u5220\u9664\u6307\u6807\u5931\u8D25");
       try {
         this.refresh();
       } catch (refreshError) {
@@ -4071,11 +4094,11 @@ var CustomMetricsSettings = class {
       }
       if (updatedCount > 0) {
         await this.plugin.saveSettings();
-        new import_obsidian6.Notice(i18n.t("notices.settingsSaved"));
+        new import_obsidian7.Notice(i18n.t("notices.settingsSaved"));
       }
     } catch (error) {
       console.error("\u4E3A\u65B0\u6307\u6807\u6DFB\u52A0\u9ED8\u8BA4\u503C\u5931\u8D25:", error);
-      new import_obsidian6.Notice(i18n.t("notices.errorSavingSettings"));
+      new import_obsidian7.Notice(i18n.t("notices.errorSavingSettings"));
     }
   }
   async normalizeMetricWeights() {
@@ -4139,7 +4162,7 @@ var CustomMetricsSettings = class {
 };
 
 // src/settings/RecommendationSettings.ts
-var import_obsidian7 = require("obsidian");
+var import_obsidian8 = require("obsidian");
 var RecommendationSettings = class {
   constructor(containerEl, plugin) {
     this.containerEl = containerEl;
@@ -4147,23 +4170,23 @@ var RecommendationSettings = class {
   }
   render() {
     this.containerEl.createEl("h3", { text: i18n.t("settings.recommendation.title") });
-    new import_obsidian7.Setting(this.containerEl).setName(i18n.t("settings.recommendation.recentCount")).setDesc(i18n.t("settings.recommendation.recentCountDesc")).addSlider((slider) => slider.setLimits(1, 20, 1).setValue(this.plugin.settings.recommendationSettings.recentCount).setDynamicTooltip().onChange(async (value) => {
+    new import_obsidian8.Setting(this.containerEl).setName(i18n.t("settings.recommendation.recentCount")).setDesc(i18n.t("settings.recommendation.recentCountDesc")).addSlider((slider) => slider.setLimits(1, 20, 1).setValue(this.plugin.settings.recommendationSettings.recentCount).setDynamicTooltip().onChange(async (value) => {
       this.plugin.settings.recommendationSettings.recentCount = Math.floor(value);
       await this.plugin.saveSettings();
     }));
-    new import_obsidian7.Setting(this.containerEl).setName(i18n.t("settings.recommendation.topCount")).setDesc(i18n.t("settings.recommendation.topCountDesc")).addSlider((slider) => slider.setLimits(1, 20, 1).setValue(this.plugin.settings.recommendationSettings.topCount).setDynamicTooltip().onChange(async (value) => {
+    new import_obsidian8.Setting(this.containerEl).setName(i18n.t("settings.recommendation.topCount")).setDesc(i18n.t("settings.recommendation.topCountDesc")).addSlider((slider) => slider.setLimits(1, 20, 1).setValue(this.plugin.settings.recommendationSettings.topCount).setDynamicTooltip().onChange(async (value) => {
       this.plugin.settings.recommendationSettings.topCount = Math.floor(value);
       await this.plugin.saveSettings();
     }));
-    new import_obsidian7.Setting(this.containerEl).setName(i18n.t("settings.recommendation.topK")).setDesc(i18n.t("settings.recommendation.topKDesc")).addSlider((slider) => slider.setLimits(5, 50, 1).setValue(this.plugin.settings.recommendationSettings.topK).setDynamicTooltip().onChange(async (value) => {
+    new import_obsidian8.Setting(this.containerEl).setName(i18n.t("settings.recommendation.topK")).setDesc(i18n.t("settings.recommendation.topKDesc")).addSlider((slider) => slider.setLimits(5, 50, 1).setValue(this.plugin.settings.recommendationSettings.topK).setDynamicTooltip().onChange(async (value) => {
       this.plugin.settings.recommendationSettings.topK = Math.floor(value);
       await this.plugin.saveSettings();
     }));
-    new import_obsidian7.Setting(this.containerEl).setName(i18n.t("settings.recommendation.maxCandidates")).setDesc(i18n.t("settings.recommendation.maxCandidatesDesc")).addSlider((slider) => slider.setLimits(50, 500, 10).setValue(this.plugin.settings.maxCandidates).setDynamicTooltip().onChange(async (value) => {
+    new import_obsidian8.Setting(this.containerEl).setName(i18n.t("settings.recommendation.maxCandidates")).setDesc(i18n.t("settings.recommendation.maxCandidatesDesc")).addSlider((slider) => slider.setLimits(50, 500, 10).setValue(this.plugin.settings.maxCandidates).setDynamicTooltip().onChange(async (value) => {
       this.plugin.settings.maxCandidates = Math.floor(value);
       await this.plugin.saveSettings();
     }));
-    new import_obsidian7.Setting(this.containerEl).setName(i18n.t("settings.recommendation.maxParagraphs")).setDesc(i18n.t("settings.recommendation.maxParagraphsDesc")).addSlider((slider) => slider.setLimits(3, 10, 1).setValue(this.plugin.settings.recommendationSettings.maxParagraphs).setDynamicTooltip().onChange(async (value) => {
+    new import_obsidian8.Setting(this.containerEl).setName(i18n.t("settings.recommendation.maxParagraphs")).setDesc(i18n.t("settings.recommendation.maxParagraphsDesc")).addSlider((slider) => slider.setLimits(3, 10, 1).setValue(this.plugin.settings.recommendationSettings.maxParagraphs).setDynamicTooltip().onChange(async (value) => {
       this.plugin.settings.recommendationSettings.maxParagraphs = Math.floor(value);
       await this.plugin.saveSettings();
     }));
@@ -4171,7 +4194,7 @@ var RecommendationSettings = class {
 };
 
 // src/settings/FilterSettings.ts
-var import_obsidian8 = require("obsidian");
+var import_obsidian9 = require("obsidian");
 var FilterSettings = class {
   constructor(containerEl, plugin) {
     this.containerEl = containerEl;
@@ -4179,7 +4202,7 @@ var FilterSettings = class {
   }
   render() {
     this.containerEl.createEl("h3", { text: i18n.t("settings.filter.title") });
-    new import_obsidian8.Setting(this.containerEl).setName(i18n.t("settings.filter.excludedPaths")).setDesc(i18n.t("settings.filter.excludedPathsDesc")).addTextArea((text) => text.setPlaceholder(i18n.t("settings.filter.excludedPathsPlaceholder")).setValue(this.plugin.settings.excludedPaths.join("\n")).onChange(async (value) => {
+    new import_obsidian9.Setting(this.containerEl).setName(i18n.t("settings.filter.excludedPaths")).setDesc(i18n.t("settings.filter.excludedPathsDesc")).addTextArea((text) => text.setPlaceholder(i18n.t("settings.filter.excludedPathsPlaceholder")).setValue(this.plugin.settings.excludedPaths.join("\n")).onChange(async (value) => {
       this.plugin.settings.excludedPaths = value.split("\n").filter((p) => p.trim());
       await this.plugin.saveSettings();
     }));
@@ -4187,7 +4210,7 @@ var FilterSettings = class {
 };
 
 // src/settings/DataManagementSettings.ts
-var import_obsidian9 = require("obsidian");
+var import_obsidian10 = require("obsidian");
 var DataManagementSettings = class {
   constructor(containerEl, plugin) {
     this.containerEl = containerEl;
@@ -4195,7 +4218,7 @@ var DataManagementSettings = class {
   }
   render() {
     this.containerEl.createEl("h3", { text: i18n.t("settings.dataManagement.title") });
-    new import_obsidian9.Setting(this.containerEl).setName(i18n.t("settings.dataManagement.clearHistory")).setDesc(i18n.t("settings.dataManagement.clearHistoryDesc")).addButton((button) => button.setButtonText(i18n.t("settings.dataManagement.clearButton")).onClick(async () => {
+    new import_obsidian10.Setting(this.containerEl).setName(i18n.t("settings.dataManagement.clearHistory")).setDesc(i18n.t("settings.dataManagement.clearHistoryDesc")).addButton((button) => button.setButtonText(i18n.t("settings.dataManagement.clearButton")).onClick(async () => {
       if (confirm(i18n.t("settings.dataManagement.clearConfirm"))) {
         this.plugin.settings.roamingDocs = [];
         for (const [path] of Object.entries(this.plugin.settings.documentMetrics)) {
@@ -4203,14 +4226,14 @@ var DataManagementSettings = class {
           this.plugin.settings.documentMetrics[path].lastVisited = 0;
         }
         await this.plugin.saveSettings();
-        new import_obsidian9.Notice(i18n.t("notices.historyCleared"));
+        new import_obsidian10.Notice(i18n.t("notices.historyCleared"));
       }
     }));
   }
 };
 
 // src/settings/ColorSchemeSettings.ts
-var import_obsidian10 = require("obsidian");
+var import_obsidian11 = require("obsidian");
 var ColorSchemeSettings = class {
   constructor(containerEl, plugin) {
     this.applyThemeTimeout = null;
@@ -4220,7 +4243,7 @@ var ColorSchemeSettings = class {
   render() {
     const colorSchemeContainer = this.containerEl.createEl("div", { cls: "color-scheme-settings-content" });
     colorSchemeContainer.createEl("h3", { text: "Color Theme" });
-    new import_obsidian10.Setting(colorSchemeContainer).setName("Color Theme").setDesc("Select your preferred color scheme for the plugin interface").addDropdown((dropdown) => {
+    new import_obsidian11.Setting(colorSchemeContainer).setName("Color Theme").setDesc("Select your preferred color scheme for the plugin interface").addDropdown((dropdown) => {
       COLOR_SCHEMES.forEach((scheme) => {
         const displayName = i18n.getLanguage() === "zh" ? scheme.name.zh : scheme.name.en;
         dropdown.addOption(scheme.id, displayName);
@@ -4346,7 +4369,7 @@ var ColorSchemeSettings = class {
 };
 
 // src/main.ts
-var IncrementalReadingPlugin = class extends import_obsidian11.Plugin {
+var IncrementalReadingPlugin = class extends import_obsidian12.Plugin {
   constructor() {
     super(...arguments);
     this.leaf = null;
@@ -4389,11 +4412,11 @@ var IncrementalReadingPlugin = class extends import_obsidian11.Plugin {
         this.settings.roamingDocs = [];
         this.settings.version = DEFAULT_SETTINGS.version;
         await this.saveData(this.settings);
-        new import_obsidian11.Notice('Plugin upgraded! Please re-add documents to roaming list using "Add to Roaming"');
+        new import_obsidian12.Notice('Plugin upgraded! Please re-add documents to roaming list using "Add to Roaming"');
       }
     } catch (error) {
       console.error("Error loading settings:", error);
-      new import_obsidian11.Notice(i18n.t("notices.errorLoadingSettings"));
+      new import_obsidian12.Notice(i18n.t("notices.errorLoadingSettings"));
       this.settings = { ...DEFAULT_SETTINGS };
     }
   }
@@ -4413,7 +4436,7 @@ var IncrementalReadingPlugin = class extends import_obsidian11.Plugin {
       this.notifyViewsRefresh();
     } catch (error) {
       console.error("Error saving settings:", error);
-      new import_obsidian11.Notice(i18n.t("notices.errorSavingSettings"));
+      new import_obsidian12.Notice(i18n.t("notices.errorSavingSettings"));
     } finally {
       this.isUpdatingSettings = false;
     }
@@ -4498,12 +4521,12 @@ var IncrementalReadingPlugin = class extends import_obsidian11.Plugin {
       callback: async () => {
         const activeFile = this.app.workspace.getActiveFile();
         if (!activeFile) {
-          new import_obsidian11.Notice(i18n.t("notices.noActiveFile"));
+          new import_obsidian12.Notice(i18n.t("notices.noActiveFile"));
           return;
         }
         try {
           if (activeFile.extension !== "md") {
-            new import_obsidian11.Notice(i18n.t("notices.onlyMarkdownFiles"));
+            new import_obsidian12.Notice(i18n.t("notices.onlyMarkdownFiles"));
             return;
           }
           if (!this.settings.roamingDocs.includes(activeFile.path)) {
@@ -4512,10 +4535,10 @@ var IncrementalReadingPlugin = class extends import_obsidian11.Plugin {
           const defaultMetrics = this.fileManagementService.createDefaultMetricsForFile(activeFile);
           await this.updateDocumentMetrics(activeFile, defaultMetrics);
           await this.saveSettings();
-          new import_obsidian11.Notice(i18n.t("notices.addedToRoaming", { filename: activeFile.basename }));
+          new import_obsidian12.Notice(i18n.t("notices.addedToRoaming", { filename: activeFile.basename }));
         } catch (error) {
           console.error("\u52A0\u5165\u6F2B\u6E38\u5931\u8D25:", error);
-          new import_obsidian11.Notice(i18n.t("notices.errorSavingSettings"));
+          new import_obsidian12.Notice(i18n.t("notices.errorSavingSettings"));
         }
       }
     });
@@ -4523,14 +4546,14 @@ var IncrementalReadingPlugin = class extends import_obsidian11.Plugin {
       id: "add-folder-to-roaming",
       name: i18n.t("commands.addFolder"),
       callback: async () => {
-        new import_obsidian11.Notice(i18n.t("view.actionBar.addFolder"));
+        new import_obsidian12.Notice(i18n.t("view.actionBar.addFolder"));
       }
     });
     this.addCommand({
       id: "add-multiple-files-to-roaming",
       name: i18n.t("commands.addMultiple"),
       callback: async () => {
-        new import_obsidian11.Notice(i18n.t("view.actionBar.multiSelect"));
+        new import_obsidian12.Notice(i18n.t("view.actionBar.multiSelect"));
       }
     });
     this.addCommand({
@@ -4543,7 +4566,7 @@ var IncrementalReadingPlugin = class extends import_obsidian11.Plugin {
           this.settings.documentMetrics[path].lastVisited = 0;
         }
         await this.saveSettings();
-        new import_obsidian11.Notice(i18n.t("notices.historyCleared"));
+        new import_obsidian12.Notice(i18n.t("notices.historyCleared"));
       }
     });
   }
@@ -4551,13 +4574,13 @@ var IncrementalReadingPlugin = class extends import_obsidian11.Plugin {
     try {
       const randomFile = this.fileManagementService.getRandomUnvisitedFile();
       if (!randomFile) {
-        new import_obsidian11.Notice(i18n.t("view.actionBar.noDocuments"));
+        new import_obsidian12.Notice(i18n.t("view.actionBar.noDocuments"));
         return;
       }
       await this.app.workspace.getLeaf().openFile(randomFile);
     } catch (error) {
       console.error("Error opening random document:", error);
-      new import_obsidian11.Notice(i18n.t("notices.documentOpenFailed"));
+      new import_obsidian12.Notice(i18n.t("notices.documentOpenFailed"));
     }
   }
   // 公共方法供视图组件使用
@@ -4572,7 +4595,7 @@ var IncrementalReadingPlugin = class extends import_obsidian11.Plugin {
       await this.saveSettings();
     } catch (error) {
       console.error("Error updating document metrics:", error);
-      new import_obsidian11.Notice(i18n.t("notices.errorSavingSettings"));
+      new import_obsidian12.Notice(i18n.t("notices.errorSavingSettings"));
     }
   }
   getRecommendedDocuments(limit = 10) {
@@ -4606,20 +4629,20 @@ var IncrementalReadingPlugin = class extends import_obsidian11.Plugin {
     try {
       const addedCount = await this.fileManagementService.addFoldersToRoaming(folderPaths);
       await this.saveSettings();
-      new import_obsidian11.Notice(i18n.t("notices.filesAdded", { count: addedCount }));
+      new import_obsidian12.Notice(i18n.t("notices.filesAdded", { count: addedCount }));
     } catch (error) {
       console.error("\u6DFB\u52A0\u6587\u4EF6\u5939\u5931\u8D25:", error);
-      new import_obsidian11.Notice(i18n.t("notices.errorSavingSettings"));
+      new import_obsidian12.Notice(i18n.t("notices.errorSavingSettings"));
     }
   }
   async addMultipleFilesToRoaming(files) {
     try {
       const addedCount = await this.fileManagementService.addMultipleFilesToRoaming(files);
       await this.saveSettings();
-      new import_obsidian11.Notice(i18n.t("notices.filesAdded", { count: addedCount }));
+      new import_obsidian12.Notice(i18n.t("notices.filesAdded", { count: addedCount }));
     } catch (error) {
       console.error("\u6DFB\u52A0\u6587\u4EF6\u5931\u8D25:", error);
-      new import_obsidian11.Notice(i18n.t("notices.errorSavingSettings"));
+      new import_obsidian12.Notice(i18n.t("notices.errorSavingSettings"));
     }
   }
   /**
@@ -4696,7 +4719,7 @@ var IncrementalReadingPlugin = class extends import_obsidian11.Plugin {
     });
   }
 };
-var IncrementalReadingSettingTab = class extends import_obsidian11.PluginSettingTab {
+var IncrementalReadingSettingTab = class extends import_obsidian12.PluginSettingTab {
   constructor(app, plugin) {
     super(app, plugin);
     this.plugin = plugin;
@@ -4709,7 +4732,7 @@ var IncrementalReadingSettingTab = class extends import_obsidian11.PluginSetting
     containerEl.addClass("incremental-reading-plugin-root");
     containerEl.createEl("h2", { text: i18n.t("settings.title") });
     containerEl.createEl("h3", { text: i18n.t("settings.general.title") });
-    new import_obsidian11.Setting(containerEl).setName(i18n.t("settings.general.language")).setDesc(i18n.t("settings.general.languageDesc")).addDropdown((dropdown) => {
+    new import_obsidian12.Setting(containerEl).setName(i18n.t("settings.general.language")).setDesc(i18n.t("settings.general.languageDesc")).addDropdown((dropdown) => {
       const languages = i18n.getAvailableLanguages();
       languages.forEach((lang) => {
         dropdown.addOption(lang.code, lang.name);
@@ -4720,7 +4743,7 @@ var IncrementalReadingSettingTab = class extends import_obsidian11.PluginSetting
         await this.plugin.saveSettings();
         this.display();
         this.plugin.notifyViewsRefreshUI();
-        new import_obsidian11.Notice(i18n.t("notices.settingsSaved"));
+        new import_obsidian12.Notice(i18n.t("notices.settingsSaved"));
       });
     });
     const colorSchemeSettings = new ColorSchemeSettings(containerEl, this.plugin);

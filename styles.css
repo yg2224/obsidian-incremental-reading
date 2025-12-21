@@ -139,6 +139,151 @@
     border: 1px solid rgba(255,255,255,0.6);
 }
 
+/* ═══════ COMPACT ACTION BAR ═══════ */
+.action-bar.compact {
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.6);
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: nowrap;
+    box-shadow: var(--soft-shadow);
+}
+
+.action-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.action-group.primary {
+    gap: 8px;
+}
+
+.action-group.status {
+    flex: 0 0 auto;
+}
+
+.action-group.management {
+    gap: 4px;
+}
+
+/* ═══════ ICON BUTTONS ═══════ */
+.icon-btn {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.icon-btn:hover:not(:disabled) {
+    background: var(--accent-transparent);
+    color: var(--accent-color);
+    transform: translateY(-1px);
+}
+
+.icon-btn.primary {
+    width: 44px;
+    height: 44px;
+    background: var(--accent-color);
+    color: white;
+    box-shadow: 0 4px 12px var(--accent-shadow);
+}
+
+.icon-btn.primary:hover:not(:disabled) {
+    background: var(--accent-dark);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px var(--accent-shadow-hover);
+}
+
+.icon-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.icon-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.icon-btn.primary svg {
+    width: 22px;
+    height: 22px;
+}
+
+/* ═══════ TOOLTIP ═══════ */
+.icon-btn[data-tooltip]:hover::after,
+.status-indicator[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 6px 12px;
+    background: var(--text-main);
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 6px;
+    white-space: nowrap;
+    z-index: 1000;
+    pointer-events: none;
+    animation: tooltipFadeIn 0.15s ease;
+}
+
+.icon-btn[data-tooltip]:hover::before,
+.status-indicator[data-tooltip]:hover::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--text-main);
+    z-index: 1000;
+    pointer-events: none;
+    animation: tooltipFadeIn 0.15s ease;
+}
+
+@keyframes tooltipFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+/* ═══════ STATUS INDICATOR ═══════ */
+.status-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    padding: 0 10px;
+    background: var(--accent-gradient);
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px var(--accent-shadow);
+    position: relative;
+}
+
 /* ═══════ BUTTON STYLES ═══════ */
 .btn {
     border: none;
@@ -979,6 +1124,47 @@
 
     .btn {
         width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .action-bar.compact {
+        padding: 8px 12px;
+        gap: 4px;
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: nowrap;
+    }
+
+    .icon-btn {
+        width: 32px;
+        height: 32px;
+    }
+
+    .icon-btn.primary {
+        width: 40px;
+        height: 40px;
+    }
+
+    .icon-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .action-group.status {
+        order: -1;
+    }
+}
+
+@media (max-width: 480px) {
+    .action-bar.compact {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .action-group {
+        flex-wrap: wrap;
         justify-content: center;
     }
 }

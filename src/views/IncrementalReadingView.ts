@@ -24,9 +24,6 @@ export class IncrementalReadingView extends ItemView {
     private lastProcessedFile: string | null = null;
     private lastProcessedTime: number = 0;
 
-    // 状态元素
-    private statusText: HTMLElement | null = null;
-
     // 组件实例
     private actionBar: ActionBar | null = null;
     private documentMetricsDisplay: DocumentMetricsDisplay | null = null;
@@ -85,7 +82,7 @@ export class IncrementalReadingView extends ItemView {
         container.empty();
         container.addClass('plugin-container');
 
-        this.createHeroSection(container);
+        this.createActionBar(container);
         this.createSlidingNavigation(container);
         this.createContentArea(container);
 
@@ -109,23 +106,8 @@ export class IncrementalReadingView extends ItemView {
         }, 100);
     }
 
-    private createHeroSection(container: HTMLElement): void {
-        const heroSection = container.createEl('div', { cls: 'hero-section' });
-
-        // 主标题
-        heroSection.createEl('h1', { cls: 'main-title', text: i18n.t('view.title') });
-
-        // 诗意副标题
-        const subtitle = heroSection.createEl('p', { cls: 'poetic-subtitle' });
-        subtitle.innerHTML = i18n.t('view.subtitle');
-
-        // 状态徽章
-        const docCount = this.getVisitedDocumentCount();
-        this.statusText = heroSection.createEl('div', { cls: 'status-text' });
-        this.statusText.textContent = i18n.t('view.statusTemplate', { count: docCount.toString() });
-
-        // 操作栏
-        this.actionBar = new ActionBar(heroSection, this.plugin, {
+    private createActionBar(container: HTMLElement): void {
+        this.actionBar = new ActionBar(container, this.plugin, {
             onContinueReading: () => this.continueReading(),
             onGetSmartRecommendations: () => this.getSmartRecommendations(),
             onRefreshData: () => this.refreshData(),
@@ -419,9 +401,6 @@ export class IncrementalReadingView extends ItemView {
     }
 
     private async refreshData(): Promise<void> {
-        // 更新状态文本
-        this.updateStatusText();
-
         // 更新所有数据
         this.updateMetricsSection();
         await this.updateRecommendationsSection();
@@ -458,13 +437,6 @@ export class IncrementalReadingView extends ItemView {
             // 确保数据也被刷新
             this.refreshData();
         }, 200);
-    }
-
-    private updateStatusText(): void {
-        if (this.statusText) {
-            const docCount = this.getVisitedDocumentCount();
-            this.statusText.textContent = i18n.t('view.statusTemplate', { count: docCount.toString() });
-        }
     }
 
     private async randomRoaming(): Promise<void> {
@@ -599,10 +571,6 @@ export class IncrementalReadingView extends ItemView {
 
     private calculatePriority(metrics: DocumentMetrics): number {
         return this.plugin.documentScoringService.calculatePriority(metrics, this.plugin.settings.customMetrics);
-    }
-
-    private getVisitedDocumentCount(): number {
-        return this.plugin.settings.roamingDocs.length;
     }
 
     private addStyles(): void {

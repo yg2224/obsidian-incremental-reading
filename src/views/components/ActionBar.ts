@@ -1,7 +1,17 @@
-import { Notice } from 'obsidian';
+import { setIcon } from 'obsidian';
 import IncrementalReadingPlugin from '../../main';
 import { FolderSelectionModal, MultiFileSelectionModal } from '../../components/Modal';
 import { i18n } from '../../i18n';
+
+interface ActionButton {
+    icon: string;
+    tooltip: string;
+    primary?: boolean;
+    onClick: () => void;
+    getDisabled?: () => boolean;
+    getHidden?: () => boolean;
+    getTooltip?: () => string;
+}
 
 /**
  * 操作栏组件 - 包含主要操作按钮
@@ -9,9 +19,9 @@ import { i18n } from '../../i18n';
 export class ActionBar {
     private container: HTMLElement;
     private plugin: IncrementalReadingPlugin;
-    private continueBtn: HTMLButtonElement | null = null;
-    private addRoamingBtn: HTMLButtonElement | null = null;
-    private removeRoamingBtn: HTMLButtonElement | null = null;
+    private buttonElements: Map<string, HTMLButtonElement> = new Map();
+    private buttonConfigs: Map<string, ActionButton> = new Map();
+    private statusEl: HTMLElement | null = null;
 
     // 回调函数
     private onContinueReading: () => void;
@@ -46,51 +56,116 @@ export class ActionBar {
     }
 
     private create() {
-        const actionBar = this.container.createEl('div', { cls: 'action-bar' });
+        const actionBar = this.container.createEl('div', { cls: 'action-bar compact' });
 
-        // Continue Reading button (primary)
-        this.continueBtn = actionBar.createEl('button', { cls: 'btn primary' });
-        this.continueBtn.textContent = i18n.t('view.actionBar.continue');
-        this.continueBtn.onclick = () => this.onContinueReading();
-        this.updateContinueButtonState();
+        const primaryGroup = actionBar.createEl('div', { cls: 'action-group primary' });
+        this.createIconButton(primaryGroup, 'continue', {
+            icon: 'play',
+            tooltip: i18n.t('view.actionBar.continue'),
+            primary: true,
+            onClick: () => this.onContinueReading(),
+            getDisabled: () => this.plugin.getValidRoamingFiles().length === 0,
+            getTooltip: () => {
+                const hasDocs = this.plugin.getValidRoamingFiles().length > 0;
+                return hasDocs ? i18n.t('view.actionBar.continue') : i18n.t('view.actionBar.noDocuments');
+            }
+        });
 
-        // Smart Recommendations button
-        const recommendBtn = actionBar.createEl('button', { cls: 'btn' });
-        recommendBtn.textContent = i18n.t('view.actionBar.smartRecommend');
-        recommendBtn.title = i18n.t('view.actionBar.smartTooltip');
-        recommendBtn.onclick = () => this.onGetSmartRecommendations();
+        this.createIconButton(primaryGroup, 'recommend', {
+            icon: 'lightbulb',
+            tooltip: i18n.t('view.actionBar.smartTooltip'),
+            onClick: () => this.onGetSmartRecommendations()
+        });
 
-        // Refresh Data button
-        const refreshDataBtn = actionBar.createEl('button', { cls: 'btn' });
-        refreshDataBtn.textContent = i18n.t('view.actionBar.refresh');
-        refreshDataBtn.onclick = () => this.onRefreshData();
+        this.createIconButton(primaryGroup, 'random', {
+            icon: 'dice',
+            tooltip: i18n.t('view.actionBar.random'),
+            onClick: () => this.onRandomRoaming()
+        });
 
-        // Random Roaming button
-        const randomRoamBtn = actionBar.createEl('button', { cls: 'btn' });
-        randomRoamBtn.textContent = i18n.t('view.actionBar.random');
-        randomRoamBtn.onclick = () => this.onRandomRoaming();
+        const statusGroup = actionBar.createEl('div', { cls: 'action-group status' });
+        this.statusEl = statusGroup.createEl('span', { cls: 'status-indicator' });
+        this.updateStatus();
 
-        // Add to Roaming button
-        this.addRoamingBtn = actionBar.createEl('button', { cls: 'btn' });
-        this.addRoamingBtn.textContent = i18n.t('view.actionBar.addCurrent');
-        this.addRoamingBtn.onclick = () => this.onAddCurrentToRoaming();
-        this.updateAddRoamingButtonState();
+        const managementGroup = actionBar.createEl('div', { cls: 'action-group management' });
 
-        // Remove from Roaming button
-        this.removeRoamingBtn = actionBar.createEl('button', { cls: 'btn' });
-        this.removeRoamingBtn.textContent = i18n.t('actions.removeFromRoaming');
-        this.removeRoamingBtn.onclick = () => this.onRemoveCurrentFromRoaming();
-        this.updateRemoveRoamingButtonState();
+        this.createIconButton(managementGroup, 'addCurrent', {
+            icon: 'plus',
+            tooltip: i18n.t('view.actionBar.addCurrent'),
+            onClick: () => this.onAddCurrentToRoaming(),
+            getDisabled: () => !this.plugin.app.workspace.getActiveFile(),
+            getHidden: () => {
+                const activeFile = this.plugin.app.workspace.getActiveFile();
+                return activeFile ? this.plugin.settings.roamingDocs.includes(activeFile.path) : false;
+            },
+            getTooltip: () => {
+                const activeFile = this.plugin.app.workspace.getActiveFile();
+                return activeFile ? i18n.t('view.actionBar.addCurrent') : i18n.t('view.actionBar.noDocuments');
+            }
+        });
 
-        // Add Folder button (primary style)
-        const addFolderBtn = actionBar.createEl('button', { cls: 'btn primary' });
-        addFolderBtn.textContent = i18n.t('view.actionBar.addFolder');
-        addFolderBtn.onclick = () => this.addFolderToRoaming();
+        this.createIconButton(managementGroup, 'removeCurrent', {
+            icon: 'minus',
+            tooltip: i18n.t('actions.removeFromRoaming'),
+            onClick: () => this.onRemoveCurrentFromRoaming(),
+            getHidden: () => {
+                const activeFile = this.plugin.app.workspace.getActiveFile();
+                return !activeFile || !this.plugin.settings.roamingDocs.includes(activeFile.path);
+            }
+        });
 
-        // Multi-select Files button (primary style)
-        const multiSelectBtn = actionBar.createEl('button', { cls: 'btn primary' });
-        multiSelectBtn.textContent = i18n.t('view.actionBar.multiSelect');
-        multiSelectBtn.onclick = () => this.multiSelectFilesToRoaming();
+        this.createIconButton(managementGroup, 'addFolder', {
+            icon: 'folder-plus',
+            tooltip: i18n.t('view.actionBar.addFolder'),
+            onClick: () => this.addFolderToRoaming()
+        });
+
+        this.createIconButton(managementGroup, 'multiSelect', {
+            icon: 'files',
+            tooltip: i18n.t('view.actionBar.multiSelect'),
+            onClick: () => this.multiSelectFilesToRoaming()
+        });
+
+        this.createIconButton(managementGroup, 'refresh', {
+            icon: 'refresh-cw',
+            tooltip: i18n.t('view.actionBar.refresh'),
+            onClick: () => this.onRefreshData()
+        });
+
+        this.updateButtonStates();
+    }
+
+    private createIconButton(
+        container: HTMLElement,
+        id: string,
+        config: ActionButton
+    ): HTMLButtonElement {
+        const tooltip = config.getTooltip ? config.getTooltip() : config.tooltip;
+        const btn = container.createEl('button', {
+            cls: `icon-btn${config.primary ? ' primary' : ''}`,
+            attr: {
+                'aria-label': tooltip,
+                'data-tooltip': tooltip,
+                'type': 'button'
+            }
+        });
+
+        setIcon(btn, config.icon);
+        btn.onclick = config.onClick;
+
+        this.buttonElements.set(id, btn);
+        this.buttonConfigs.set(id, config);
+
+        return btn;
+    }
+
+    private updateStatus(): void {
+        if (!this.statusEl) return;
+
+        const count = this.plugin.settings.roamingDocs.length;
+        this.statusEl.textContent = `${count}`;
+        this.statusEl.setAttribute('aria-label', i18n.t('view.statusTemplate', { count: count.toString() }));
+        this.statusEl.setAttribute('data-tooltip', i18n.t('view.statusTemplate', { count: count.toString() }));
     }
 
     private addFolderToRoaming() {
@@ -109,56 +184,28 @@ export class ActionBar {
         fileModal.open();
     }
 
-    private updateContinueButtonState() {
-        if (!this.continueBtn) return;
-
-        const validRoamingFiles = this.plugin.getValidRoamingFiles();
-        const hasValidFiles = validRoamingFiles.length > 0;
-
-        this.continueBtn.disabled = !hasValidFiles;
-        this.continueBtn.textContent = hasValidFiles ? i18n.t('view.actionBar.continue') : i18n.t('view.actionBar.noDocuments');
-    }
-
-    private updateAddRoamingButtonState() {
-        if (!this.addRoamingBtn) return;
-
-        const activeFile = this.plugin.app.workspace.getActiveFile();
-        const isInRoaming = activeFile && this.plugin.settings.roamingDocs.includes(activeFile.path);
-
-        // 如果在漫游列表中，隐藏"加入漫游"按钮
-        if (isInRoaming) {
-            this.addRoamingBtn.style.display = 'none';
-        } else {
-            this.addRoamingBtn.style.display = 'flex';
-            this.addRoamingBtn.disabled = !activeFile;
-            this.addRoamingBtn.textContent = activeFile
-                ? i18n.t('view.actionBar.addCurrent')
-                : i18n.t('view.actionBar.noDocuments');
-        }
-    }
-
-    private updateRemoveRoamingButtonState() {
-        if (!this.removeRoamingBtn) return;
-
-        const activeFile = this.plugin.app.workspace.getActiveFile();
-        const isInRoaming = activeFile && this.plugin.settings.roamingDocs.includes(activeFile.path);
-
-        // 如果在漫游列表中，显示"移除漫游"按钮
-        if (isInRoaming) {
-            this.removeRoamingBtn.style.display = 'flex';
-            this.removeRoamingBtn.disabled = false;
-            this.removeRoamingBtn.textContent = i18n.t('actions.removeFromRoaming');
-        } else {
-            this.removeRoamingBtn.style.display = 'none';
-        }
-    }
-
     /**
      * 更新按钮状态（当文件变化时调用）
      */
     public updateButtonStates() {
-        this.updateContinueButtonState();
-        this.updateAddRoamingButtonState();
-        this.updateRemoveRoamingButtonState();
+        this.buttonElements.forEach((btn, id) => {
+            const config = this.buttonConfigs.get(id);
+            if (!config) return;
+
+            if (config.getDisabled) {
+                btn.disabled = config.getDisabled();
+            }
+
+            if (config.getHidden) {
+                btn.style.display = config.getHidden() ? 'none' : 'flex';
+            }
+
+            if (config.getTooltip) {
+                const tooltip = config.getTooltip();
+                btn.setAttribute('aria-label', tooltip);
+                btn.setAttribute('data-tooltip', tooltip);
+            }
+        });
+        this.updateStatus();
     }
 }
