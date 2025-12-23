@@ -65,18 +65,17 @@ export class RankingList {
                 text: i18n.t('ranking.emptyMessage'),
                 cls: 'empty-message'
             });
-            return;
+        } else {
+            // Display top 10 or all if less than 10
+            const topDocuments = rankedDocuments.slice(0, 10);
+
+            topDocuments.forEach(({ file, score, metrics }, index) => {
+                const rankingItem = this.createRankingItem(file, score, metrics, index + 1);
+                rankingList.appendChild(rankingItem);
+            });
         }
 
-        // Display top 10 or all if less than 10
-        const topDocuments = rankedDocuments.slice(0, 10);
-
-        topDocuments.forEach(({ file, score, metrics }, index) => {
-            const rankingItem = this.createRankingItem(file, score, metrics, index + 1);
-            rankingList.appendChild(rankingItem);
-        });
-
-        // Add refresh button
+        // Always add refresh button
         const refreshBtn = rankingSection.createEl('button', {
             cls: 'refresh-ranking-btn',
             text: i18n.t('ranking.refreshButton')

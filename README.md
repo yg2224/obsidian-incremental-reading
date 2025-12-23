@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Obsidian](https://img.shields.io/badge/Obsidian-Plugin-7C3AED.svg)](https://obsidian.md)
-[![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)](https://github.com/yg2224/obsidian-incremental-reading/releases)
+[![Version](https://img.shields.io/badge/version-2.1.1-blue.svg)](https://github.com/yg2224/obsidian-incremental-reading/releases)
 
 🌐 **中英文切换** | 📊 **智能指标管理** | 🧠 **AI推荐算法** | 📈 **优先级可视化** | 📁 **批量文件操作** | 🎨 **动态主题系统**
 
@@ -13,6 +13,12 @@
 **Incremental Reading** 是一个功能强大的 Obsidian 插件，将您的知识库转化为智能学习系统。通过先进的推荐算法和多维度优先级管理，帮助您在成百上千的笔记中找到最值得阅读的文档，实现真正的增量阅读体验。
 
 > 💡 **核心理念**：让知识主动找到你，而不是你寻找知识
+
+### 🎯 v2.1.1 最新更新
+
+- 🐛 **修复 Document Metrics 更新问题**：解决在未添加漫游的文档中添加漫游后切换文档时，指标显示不更新的问题
+- 🎨 **优化非漫游提示样式**：统一标题和描述文字大小，移除多余图标，界面更加简洁
+- ✨ **修复启动显示问题**：解决 Smart Recommendations、Priority Ranking 等模块在启动时不显示内容的问题，确保 UI 元素始终正确渲染
 
 ### 🎯 v2.1.0 重大更新
 

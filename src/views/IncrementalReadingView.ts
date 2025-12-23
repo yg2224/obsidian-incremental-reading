@@ -26,6 +26,7 @@ export class IncrementalReadingView extends ItemView {
 
     // 状态元素
     private statusText: HTMLElement | null = null;
+    private statusNumber: HTMLElement | null = null;
 
     // 组件实例
     private actionBar: ActionBar | null = null;
@@ -93,10 +94,11 @@ export class IncrementalReadingView extends ItemView {
 
         // 初始数据加载 - 延迟到所有组件创建完成后
         setTimeout(() => {
-            this.refreshData();
-
-            // 默认显示指标部分
+            // 先切换到默认标签页，确保至少一个部分可见
             this.switchToTab('metrics', 0);
+
+            // 然后刷新所有数据
+            this.refreshData();
 
             // 立即更新按钮状态（基于当前活动文件）
             const activeFile = this.app.workspace.getActiveFile();
@@ -106,23 +108,11 @@ export class IncrementalReadingView extends ItemView {
                 // 即使没有活动文件，也要更新按钮状态
                 this.actionBar?.updateButtonStates();
             }
-        }, 100);
+        }, 200);
     }
 
     private createHeroSection(container: HTMLElement): void {
         const heroSection = container.createEl('div', { cls: 'hero-section' });
-
-        // 主标题
-        heroSection.createEl('h1', { cls: 'main-title', text: i18n.t('view.title') });
-
-        // 诗意副标题
-        const subtitle = heroSection.createEl('p', { cls: 'poetic-subtitle' });
-        subtitle.innerHTML = i18n.t('view.subtitle');
-
-        // 状态徽章
-        const docCount = this.getVisitedDocumentCount();
-        this.statusText = heroSection.createEl('div', { cls: 'status-text' });
-        this.statusText.textContent = i18n.t('view.statusTemplate', { count: docCount.toString() });
 
         // 操作栏
         this.actionBar = new ActionBar(heroSection, this.plugin, {
@@ -133,6 +123,27 @@ export class IncrementalReadingView extends ItemView {
             onAddCurrentToRoaming: () => this.addCurrentToRoaming(),
             onRemoveCurrentFromRoaming: () => this.removeCurrentFromRoaming()
         });
+
+        // 创建状态卡片 - 移到操作栏下面
+        const docCount = this.getVisitedDocumentCount();
+        this.statusText = heroSection.createEl('div', { cls: 'status-card' });
+
+        // 状态卡片内容
+        const statusContent = this.statusText.createEl('div', { cls: 'status-content' });
+
+        // 大数字显示
+        this.statusNumber = statusContent.createEl('div', { cls: 'status-number' });
+        this.statusNumber.textContent = docCount.toString();
+
+        // 标签文字
+        const labelDisplay = statusContent.createEl('div', { cls: 'status-label' });
+        labelDisplay.textContent = i18n.t('view.statusLabel', { count: docCount.toString() });
+
+        // 装饰性元素
+        const decorativeDots = statusContent.createEl('div', { cls: 'status-dots' });
+        for (let i = 0; i < 3; i++) {
+            const dot = decorativeDots.createEl('span', { cls: 'status-dot' });
+        }
     }
 
     private createSlidingNavigation(container: HTMLElement): void {
@@ -253,9 +264,38 @@ export class IncrementalReadingView extends ItemView {
 
     private updateMetricsSection(): void {
         const activeFile = this.app.workspace.getActiveFile();
-        if (activeFile && this.documentMetricsDisplay) {
+
+        // 如果没有 documentMetricsDisplay 实例，需要重新创建 metrics section
+        if (!this.documentMetricsDisplay) {
+            const metricsSection = this.containerEl.querySelector('[data-section="metrics"]') as HTMLElement;
+            if (metricsSection) {
+                metricsSection.empty();
+                if (activeFile) {
+                    const metrics = this.plugin.getDocumentMetrics(activeFile);
+                    this.documentMetricsDisplay = new DocumentMetricsDisplay(
+                        metricsSection,
+                        this.plugin,
+                        activeFile,
+                        metrics,
+                        () => this.refreshData()
+                    );
+                    this.documentMetricsDisplay.render();
+                } else {
+                    metricsSection.createEl('p', { text: i18n.t('metrics.noFileOpen'), cls: 'empty-message' });
+                }
+            }
+        } else if (activeFile) {
+            // 如果实例存在且有活动文件，更新指标
             const metrics = this.plugin.getDocumentMetrics(activeFile);
             this.documentMetricsDisplay.updateMetrics(activeFile, metrics);
+        } else {
+            // 如果没有活动文件，清空并显示消息
+            const metricsSection = this.containerEl.querySelector('[data-section="metrics"]') as HTMLElement;
+            if (metricsSection) {
+                metricsSection.empty();
+                metricsSection.createEl('p', { text: i18n.t('metrics.noFileOpen'), cls: 'empty-message' });
+                this.documentMetricsDisplay = null;
+            }
         }
     }
 
@@ -335,7 +375,7 @@ export class IncrementalReadingView extends ItemView {
 
         } catch (error) {
             console.error('文件切换处理失败:', error);
-            new Notice(i18n.t('notices.fileSwitchError'));
+            // 移除错误提示，因为切换到未添加的文件是正常行为
         }
     }
 
@@ -461,9 +501,9 @@ export class IncrementalReadingView extends ItemView {
     }
 
     private updateStatusText(): void {
-        if (this.statusText) {
+        if (this.statusNumber) {
             const docCount = this.getVisitedDocumentCount();
-            this.statusText.textContent = i18n.t('view.statusTemplate', { count: docCount.toString() });
+            this.statusNumber.textContent = docCount.toString();
         }
     }
 

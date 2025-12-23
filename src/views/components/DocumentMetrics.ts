@@ -52,10 +52,9 @@ export class DocumentMetricsDisplay {
     private createNonRoamingPrompt(metricsContent: HTMLElement): void {
         const promptSection = metricsContent.createEl('div', { cls: 'non-roaming-prompt' });
 
-        // Icon and title
-        const header = promptSection.createEl('div', { cls: 'prompt-header' });
-        header.createEl('span', { cls: 'prompt-icon', text: '📋' });
-        header.createEl('h3', { cls: 'prompt-title', text: i18n.t('view.nonRoaming.title') });
+        // Title - 使用 p 标签和 description 一样的样式
+        const title = promptSection.createEl('p', { cls: 'prompt-description' });
+        title.textContent = i18n.t('view.nonRoaming.title');
 
         // Description
         const description = promptSection.createEl('p', { cls: 'prompt-description' });
@@ -190,7 +189,7 @@ export class DocumentMetricsDisplay {
 
         // Weight breakdown
         const breakdown = metricsContent.createEl('div', { cls: 'weight-breakdown' });
-        this.createWeightBreakdown(breakdown);
+        this.createWeightBreakdownContent(breakdown);
     }
 
     private createCustomMetricsSection(metricsContent: HTMLElement) {
@@ -387,6 +386,7 @@ export class DocumentMetricsDisplay {
             this.metrics = fileOrMetrics as DocumentMetrics;
         }
 
+        // 强制重新渲染以确保状态正确更新
         this.container.empty();
         this.render();
     }

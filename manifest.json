@@ -1,7 +1,7 @@
 {
 	"id": "obsidian-incremental-reading",
 	"name": "Incremental Reading",
-	"version": "2.1.0",
+	"version": "2.1.1",
 	"minAppVersion": "0.15.0",
 	"description": "Enhanced incremental reading system with custom metrics, real-time ranking updates, folder/multi-file support, and intelligent document recommendations. Features fully customizable evaluation metrics (1-10 indicators with automatic weight normalization), instant ranking updates during scoring, batch file addition capabilities, and TF-IDF similarity analysis.",
 	"author": "yg2224",

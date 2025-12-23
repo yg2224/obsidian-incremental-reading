@@ -39,22 +39,21 @@ export class RecommendationList {
         const recommendationsSection = this.container.createEl('div', { cls: 'recommendations-section' });
         recommendationsSection.createEl('h3', { text: i18n.t('recommendations.title') });
 
+        const recommendationsList = recommendationsSection.createEl('div', { cls: 'recommendations-list' });
+
         if (recommendations.length === 0) {
-            recommendationsSection.createEl('p', {
+            recommendationsList.createEl('p', {
                 text: i18n.t('recommendations.emptyMessage'),
                 cls: 'empty-message'
             });
-            return;
+        } else {
+            recommendations.forEach((file, index) => {
+                const recItem = this.createRecommendationItem(file, index);
+                recommendationsList.appendChild(recItem);
+            });
         }
 
-        const recommendationsList = recommendationsSection.createEl('div', { cls: 'recommendations-list' });
-
-        recommendations.forEach((file, index) => {
-            const recItem = this.createRecommendationItem(file, index);
-            recommendationsList.appendChild(recItem);
-        });
-
-        // Add action buttons
+        // Always add action buttons
         const buttonContainer = recommendationsSection.createEl('div', { cls: 'recommendation-buttons' });
 
         const refreshBtn = buttonContainer.createEl('button', {
@@ -95,22 +94,21 @@ export class RecommendationList {
         const recommendationsSection = this.container.createEl('div', { cls: 'recommendations-section' });
         recommendationsSection.createEl('h3', { text: i18n.t('recommendations.title') });
 
+        const recommendationsList = recommendationsSection.createEl('div', { cls: 'recommendations-list' });
+
         if (recommendations.length === 0) {
-            recommendationsSection.createEl('p', {
+            recommendationsList.createEl('p', {
                 text: i18n.t('recommendations.emptyMessage'),
                 cls: 'empty-message'
             });
-            return;
+        } else {
+            recommendations.forEach((rec, index) => {
+                const recItem = this.createRecommendationItemWithScore(rec, index);
+                recommendationsList.appendChild(recItem);
+            });
         }
 
-        const recommendationsList = recommendationsSection.createEl('div', { cls: 'recommendations-list' });
-
-        recommendations.forEach((rec, index) => {
-            const recItem = this.createRecommendationItemWithScore(rec, index);
-            recommendationsList.appendChild(recItem);
-        });
-
-        // Add action buttons
+        // Always add action buttons
         const buttonContainer = recommendationsSection.createEl('div', { cls: 'recommendation-buttons' });
 
         const refreshBtn = buttonContainer.createEl('button', {
