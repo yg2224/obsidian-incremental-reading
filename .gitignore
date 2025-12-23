@@ -39,3 +39,24 @@ coverage/
 
 # Logs
 *.log
+
+# Claude Code settings and sessions
+.claude/sessions/
+.claude/settings.local.json
+
+# Backup files
+*.backup
+src.backup/
+
+# Temporary files
+*.tmp
+*.temp
+data.json
+arctic_data_visualization.html
+
+# UI development files
+obsidian-incremental-reading-UI/
+
+# Documentation (Chinese)
+需求文档.txt
+*.txt
